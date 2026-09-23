@@ -197,40 +197,46 @@
         let realAdminPass = localStorage.getItem('mps_actualAdminPass') || "rp sir mps";
         let resetOTP = "";
 
-        // Fetch Data from Cloud (JSONBin) on Page Load
-        async function fetchCloudData() {
-            try {
-                let response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
-                    headers: { 'X-Master-Key': JSONBIN_API_KEY }
-                });
-                let result = await response.json();
-                if(result && result.record && result.record.admissions) {
-                    admissions = result.record.admissions;
+       // Fetch Data from Cloud (Firebase) on Page Load
+async function fetchCloudData() {
+    try {
+        const querySnapshot = await window.getDocs(window.collection(window.db, "portalData"));
+        let isDataLoaded = false;
+        
+        querySnapshot.forEach((doc) => {
+            if (doc.id === "admissionsDoc") {
+                let cloudData = doc.data();
+                if (cloudData && cloudData.admissions) {
+                    admissions = cloudData.admissions;
+                    isDataLoaded = true;
                 }
-            } catch (err) {
-                console.log("Cloud fetch failed, using local backup");
-                admissions = JSON.parse(localStorage.getItem('mps_admissions_v3')) || [];
             }
-        }
+        });
 
-        // Save Data to Cloud (JSONBin)
-        async function saveCloudData() {
-            try {
-                await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Master-Key': JSONBIN_API_KEY
-                    },
-                    body: JSON.stringify({ admissions: admissions })
-                });
-                // Also save locally as backup
-                localStorage.setItem('mps_admissions_v3', JSON.stringify(admissions));
-            } catch (err) {
-                alert("⚠️ Cloud sync error! Data saved locally.");
-                localStorage.setItem('mps_admissions_v3', JSON.stringify(admissions));
-            }
+        if (!isDataLoaded) {
+            // Agar cloud me data nahi milta, toh local data use karein
+            admissions = JSON.parse(localStorage.getItem('mps_admissions_v3')) || [];
         }
+    } catch (err) {
+        console.log("Cloud fetch failed, using local backup", err);
+        admissions = JSON.parse(localStorage.getItem('mps_admissions_v3')) || [];
+    }
+}
+       // Save Data to Cloud (Firebase)
+async function saveCloudData() {
+    try {
+        // Firebase Firestore me data save karna
+        const docRef = window.doc(window.db, "portalData", "admissionsDoc");
+        await window.setDoc(docRef, { admissions: admissions });
+        
+        // Local backup bhi save rakhna
+        localStorage.setItem('mps_admissions_v3', JSON.stringify(admissions));
+    } catch (err) {
+        console.error("Error saving to Firebase: ", err);
+        alert("⚠️ Cloud sync error! Data saved locally.");
+        localStorage.setItem('mps_admissions_v3', JSON.stringify(admissions));
+    }
+}
 
         // Direct Admin Login
         async function adminLogin() {
