@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Motion Public School</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-100 font-sans text-slate-800 p-8">
+
+    <div class="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-lg">
+        <h1 class="text-3xl font-bold text-indigo-900 mb-6 border-b pb-4"><i class="fa-solid fa-user-shield mr-2"></i> Admin Control Center</h1>
+        
+        <!-- School Settings Section -->
+        <div class="mb-10 bg-indigo-50 p-6 rounded-lg border border-indigo-100">
+            <h2 class="text-xl font-bold mb-4 text-indigo-900"><i class="fa-solid fa-image"></i> Website Settings</h2>
+            <div class="space-y-4">
+                <div>
+                    <label class="block font-semibold mb-1">School Logo URL (Image Link)</label>
+                    <input type="text" id="logoUrl" class="w-full px-4 py-2 border rounded" placeholder="Paste image link here... (e.g. https://imgur.com/logo.png)">
+                </div>
+                <div>
+                    <label class="block font-semibold mb-1">Google Maps Location Link</label>
+                    <input type="text" id="mapUrl" class="w-full px-4 py-2 border rounded" placeholder="Paste Google Maps link here...">
+                </div>
+                <button onclick="saveSettings()" class="bg-indigo-600 text-white px-6 py-2 rounded font-bold hover:bg-indigo-700 transition">Save Settings to Website</button>
+            </div>
+        </div>
+
+        <!-- Data Management Section -->
+        <div>
+            <h2 class="text-xl font-bold mb-4 text-red-600"><i class="fa-solid fa-database"></i> Manage Records</h2>
+            <div class="overflow-x-auto border rounded-lg">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-slate-200">
+                        <tr><th class="p-3">Student Name</th><th class="p-3">Class</th><th class="p-3 text-center">Action</th></tr>
+                    </thead>
+                    <tbody id="adminTableBody" class="divide-y divide-slate-100"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let admissions = JSON.parse(localStorage.getItem('mps_admissions_v3')) || [];
+
+        // Load Settings
+        document.getElementById('logoUrl').value = localStorage.getItem('mps_logo') || "";
+        document.getElementById('mapUrl').value = localStorage.getItem('mps_map') || "";
+
+        function saveSettings() {
+            localStorage.setItem('mps_logo', document.getElementById('logoUrl').value);
+            localStorage.setItem('mps_map', document.getElementById('mapUrl').value);
+            alert("Settings Saved Successfully! Main website par logo aur location update ho gaye hain.");
+        }
+
+        function renderAdminData() {
+            let tb = document.getElementById("adminTableBody");
+            tb.innerHTML = "";
+            if (admissions.length === 0) {
+                tb.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-slate-500">No records found.</td></tr>`;
+                return;
+            }
+            admissions.forEach((ad, i) => {
+                tb.innerHTML += `
+                <tr>
+                    <td class="p-3 font-semibold">${ad.name}</td>
+                    <td class="p-3 text-slate-600">${ad.cls}</td>
+                    <td class="p-3 text-center">
+                        <button onclick="deleteData(${i})" class="bg-red-100 text-red-600 hover:bg-red-500 hover:text-white px-4 py-2 rounded font-bold transition">
+                            <i class="fa-solid fa-trash"></i> Delete
+                        </button>
+                    </td>
+                </tr>`;
+            });
+        }
+
+        function deleteData(index) {
+            if(confirm("Are you sure you want to permanently delete this student's record?")) {
+                admissions.splice(index, 1);
+                localStorage.setItem('mps_admissions_v3', JSON.stringify(admissions));
+                renderAdminData();
+            }
+        }
+
+        // Initialize table
+        renderAdminData();
+    </script>
+</body>
+</html>
