@@ -35,7 +35,14 @@
                 <h2 class="text-xl font-bold mb-4 text-indigo-900"><i class="fa-solid fa-school"></i> School Identity Setup</h2>
                 <div class="space-y-4">
                     <div><label class="block font-semibold mb-1 text-sm">Change School Name</label><input type="text" id="setSchoolName" class="w-full px-4 py-2 border rounded outline-none focus:ring-2 focus:ring-indigo-500"></div>
-                    <div><label class="block font-semibold mb-1 text-sm">School Logo URL</label><input type="text" id="logoUrl" class="w-full px-4 py-2 border rounded outline-none focus:ring-2 focus:ring-indigo-500" placeholder="https://imgur.com/logo.png"></div>
+                    
+                    <!-- NEW LOGO UPLOAD OPTION -->
+                    <div>
+                        <label class="block font-semibold mb-1 text-sm">Upload School Logo (Image)</label>
+                        <input type="file" accept="image/*" onchange="processAdminLogo(event)" class="w-full px-4 py-2 border rounded outline-none bg-white text-sm">
+                        <p class="text-xs text-indigo-500 mt-1">Select an image from your device.</p>
+                    </div>
+
                     <div><label class="block font-semibold mb-1 text-sm">Google Maps URL</label><input type="text" id="mapUrl" class="w-full px-4 py-2 border rounded outline-none focus:ring-2 focus:ring-indigo-500"></div>
                 </div>
             </div>
@@ -44,6 +51,8 @@
             <div class="bg-red-50 p-6 rounded-lg border border-red-100 shadow-sm">
                 <h2 class="text-xl font-bold mb-4 text-red-900"><i class="fa-solid fa-lock"></i> Staff Portal Login Setup</h2>
                 <div class="space-y-4">
+                    <!-- NEW LOGIN PAGE TITLE OPTION -->
+                    <div><label class="block font-semibold mb-1 text-sm">Login Page Name/Title</label><input type="text" id="setLoginTitle" class="w-full px-4 py-2 border rounded outline-none focus:ring-2 focus:ring-red-500" placeholder="e.g. STAFF LOGIN"></div>
                     <div><label class="block font-semibold mb-1 text-sm">Change Staff Username</label><input type="text" id="setStaffUser" class="w-full px-4 py-2 border rounded outline-none focus:ring-2 focus:ring-red-500"></div>
                     <div><label class="block font-semibold mb-1 text-sm">Change Staff Password</label><input type="text" id="setStaffPass" class="w-full px-4 py-2 border rounded outline-none focus:ring-2 focus:ring-red-500"></div>
                 </div>
@@ -83,6 +92,7 @@
 
     <script>
         let admissions = JSON.parse(localStorage.getItem('mps_admissions_v3')) || [];
+        let newLogoBase64 = localStorage.getItem('mps_logo') || ""; // holds the logo
 
         // Admin Security
         function adminLogin() {
@@ -93,12 +103,28 @@
         }
         function logoutAdmin() { location.reload(); }
 
+        // Process Uploaded Logo
+        function processAdminLogo(e) {
+            let file = e.target.files[0]; if(!file) return;
+            let reader = new FileReader();
+            reader.onload = function(ev) {
+                let img = new Image();
+                img.onload = function() {
+                    let canvas = document.createElement('canvas'); let ctx = canvas.getContext('2d');
+                    let scale = img.width > 200 ? 200 / img.width : 1; // Compress size for storage
+                    canvas.width = img.width * scale; canvas.height = img.height * scale;
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    newLogoBase64 = canvas.toDataURL('image/jpeg', 0.8);
+                }; img.src = ev.target.result;
+            }; reader.readAsDataURL(file);
+        }
+
         // Settings Management
         function loadSettings() {
             document.getElementById('setSchoolName').value = localStorage.getItem('mps_schoolName') || "Motion Public School";
             document.getElementById('setStaffUser').value = localStorage.getItem('mps_staffUser') || "Motion Public School";
             document.getElementById('setStaffPass').value = localStorage.getItem('mps_staffPass') || "MPS 752040";
-            document.getElementById('logoUrl').value = localStorage.getItem('mps_logo') || "";
+            document.getElementById('setLoginTitle').value = localStorage.getItem('mps_loginTitle') || "STAFF LOGIN";
             document.getElementById('mapUrl').value = localStorage.getItem('mps_map') || "";
         }
 
@@ -106,9 +132,13 @@
             localStorage.setItem('mps_schoolName', document.getElementById('setSchoolName').value);
             localStorage.setItem('mps_staffUser', document.getElementById('setStaffUser').value);
             localStorage.setItem('mps_staffPass', document.getElementById('setStaffPass').value);
-            localStorage.setItem('mps_logo', document.getElementById('logoUrl').value);
+            localStorage.setItem('mps_loginTitle', document.getElementById('setLoginTitle').value);
             localStorage.setItem('mps_map', document.getElementById('mapUrl').value);
-            alert("Success! Main website updated with new Name, Passwords, and Settings.");
+            
+            // Save the logo if uploaded
+            if(newLogoBase64) localStorage.setItem('mps_logo', newLogoBase64);
+            
+            alert("Success! Main website updated with new Logo, Name, Passwords, and Settings.");
         }
 
         // Records Management
