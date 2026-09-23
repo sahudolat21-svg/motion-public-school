@@ -6,86 +6,149 @@
     <title>Admin Panel - Motion Public School</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>.hidden { display: none !important; }</style>
 </head>
-<body class="bg-slate-100 font-sans text-slate-800 p-8">
+<body class="bg-slate-100 font-sans text-slate-800">
 
-    <div class="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-lg">
-        <h1 class="text-3xl font-bold text-indigo-900 mb-6 border-b pb-4"><i class="fa-solid fa-user-shield mr-2"></i> Admin Control Center</h1>
+    <!-- ADMIN LOGIN SCREEN -->
+    <div id="adminLoginScreen" class="min-h-screen bg-slate-900 flex items-center justify-center p-4">
+        <div class="max-w-md w-full bg-white rounded-2xl shadow-2xl p-8 border-t-4 border-red-600 text-center">
+            <h1 class="text-3xl font-bold text-slate-900 mb-2"><i class="fa-solid fa-user-shield text-red-600"></i></h1>
+            <h2 class="text-xl font-bold text-slate-800 uppercase tracking-wider mb-6">Admin Login</h2>
+            <p id="admin-error-msg" class="hidden bg-red-100 text-red-700 p-2 rounded mb-4 text-sm font-bold">Access Denied!</p>
+            <input type="text" id="adminUser" class="w-full px-4 py-3 bg-slate-50 border rounded-lg mb-4 outline-none focus:ring-2 focus:ring-red-500" placeholder="Admin Username">
+            <input type="password" id="adminPass" class="w-full px-4 py-3 bg-slate-50 border rounded-lg mb-6 outline-none focus:ring-2 focus:ring-red-500" placeholder="Admin Password">
+            <button onclick="adminLogin()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg shadow-lg transition-all">Unlock Admin Panel</button>
+        </div>
+    </div>
+
+    <!-- ADMIN DASHBOARD -->
+    <div id="adminDashboard" class="hidden max-w-5xl mx-auto p-8">
+        <div class="flex justify-between items-center bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-8">
+            <h1 class="text-3xl font-bold text-indigo-900"><i class="fa-solid fa-user-shield mr-2"></i> Admin Control Center</h1>
+            <button onclick="logoutAdmin()" class="bg-slate-200 text-slate-700 px-4 py-2 rounded font-bold hover:bg-slate-300"><i class="fa-solid fa-power-off"></i> Logout</button>
+        </div>
         
-        <!-- School Settings Section -->
-        <div class="mb-10 bg-indigo-50 p-6 rounded-lg border border-indigo-100">
-            <h2 class="text-xl font-bold mb-4 text-indigo-900"><i class="fa-solid fa-image"></i> Website Settings</h2>
-            <div class="space-y-4">
-                <div>
-                    <label class="block font-semibold mb-1">School Logo URL (Image Link)</label>
-                    <input type="text" id="logoUrl" class="w-full px-4 py-2 border rounded" placeholder="Paste image link here... (e.g. https://imgur.com/logo.png)">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <!-- Website Identity Settings -->
+            <div class="bg-indigo-50 p-6 rounded-lg border border-indigo-100 shadow-sm">
+                <h2 class="text-xl font-bold mb-4 text-indigo-900"><i class="fa-solid fa-school"></i> School Identity Setup</h2>
+                <div class="space-y-4">
+                    <div><label class="block font-semibold mb-1 text-sm">Change School Name</label><input type="text" id="setSchoolName" class="w-full px-4 py-2 border rounded outline-none focus:ring-2 focus:ring-indigo-500"></div>
+                    <div><label class="block font-semibold mb-1 text-sm">School Logo URL</label><input type="text" id="logoUrl" class="w-full px-4 py-2 border rounded outline-none focus:ring-2 focus:ring-indigo-500" placeholder="https://imgur.com/logo.png"></div>
+                    <div><label class="block font-semibold mb-1 text-sm">Google Maps URL</label><input type="text" id="mapUrl" class="w-full px-4 py-2 border rounded outline-none focus:ring-2 focus:ring-indigo-500"></div>
                 </div>
-                <div>
-                    <label class="block font-semibold mb-1">Google Maps Location Link</label>
-                    <input type="text" id="mapUrl" class="w-full px-4 py-2 border rounded" placeholder="Paste Google Maps link here...">
+            </div>
+
+            <!-- Security Settings -->
+            <div class="bg-red-50 p-6 rounded-lg border border-red-100 shadow-sm">
+                <h2 class="text-xl font-bold mb-4 text-red-900"><i class="fa-solid fa-lock"></i> Staff Portal Login Setup</h2>
+                <div class="space-y-4">
+                    <div><label class="block font-semibold mb-1 text-sm">Change Staff Username</label><input type="text" id="setStaffUser" class="w-full px-4 py-2 border rounded outline-none focus:ring-2 focus:ring-red-500"></div>
+                    <div><label class="block font-semibold mb-1 text-sm">Change Staff Password</label><input type="text" id="setStaffPass" class="w-full px-4 py-2 border rounded outline-none focus:ring-2 focus:ring-red-500"></div>
                 </div>
-                <button onclick="saveSettings()" class="bg-indigo-600 text-white px-6 py-2 rounded font-bold hover:bg-indigo-700 transition">Save Settings to Website</button>
             </div>
         </div>
 
-        <!-- Data Management Section -->
-        <div>
-            <h2 class="text-xl font-bold mb-4 text-red-600"><i class="fa-solid fa-database"></i> Manage Records</h2>
-            <div class="overflow-x-auto border rounded-lg">
+        <div class="flex justify-center mb-10 border-b pb-8">
+            <button onclick="saveAllSettings()" class="bg-indigo-600 text-white px-10 py-3 rounded-lg font-bold text-lg hover:bg-indigo-700 shadow-lg transition-all"><i class="fa-solid fa-save mr-2"></i> Save All Changes</button>
+        </div>
+
+        <!-- Manage Records -->
+        <div id="recordsView" class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+            <h2 class="text-xl font-bold mb-4 text-slate-800"><i class="fa-solid fa-database text-red-600"></i> Manage Admission Records</h2>
+            <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
-                    <thead class="bg-slate-200">
-                        <tr><th class="p-3">Student Name</th><th class="p-3">Class</th><th class="p-3 text-center">Action</th></tr>
-                    </thead>
+                    <thead class="bg-slate-200"><tr><th class="p-3">Student Name</th><th class="p-3">Class</th><th class="p-3 text-center">Action</th></tr></thead>
                     <tbody id="adminTableBody" class="divide-y divide-slate-100"></tbody>
                 </table>
             </div>
+        </div>
+
+        <!-- Quick Edit Modal in Admin -->
+        <div id="quickEditModal" class="hidden bg-white p-6 rounded-xl shadow-lg border border-amber-300 mt-8">
+            <h2 class="text-xl font-bold mb-4 text-amber-600"><i class="fa-solid fa-pen"></i> Quick Edit Details</h2>
+            <input type="hidden" id="adminEditIndex">
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <div><label class="block text-sm font-bold">Student Name</label><input type="text" id="eName" class="w-full p-2 border rounded"></div>
+                <div><label class="block text-sm font-bold">Class</label><input type="text" id="eClass" class="w-full p-2 border rounded"></div>
+            </div>
+            <div class="flex space-x-2">
+                <button onclick="saveQuickEdit()" class="bg-amber-500 text-white px-4 py-2 rounded font-bold">Save Edit</button>
+                <button onclick="document.getElementById('quickEditModal').classList.add('hidden')" class="bg-slate-400 text-white px-4 py-2 rounded font-bold">Cancel</button>
+            </div>
+            <p class="text-xs text-slate-500 mt-2">*Full editing with fees & photos is available in the Main Staff Website.</p>
         </div>
     </div>
 
     <script>
         let admissions = JSON.parse(localStorage.getItem('mps_admissions_v3')) || [];
 
-        // Load Settings
-        document.getElementById('logoUrl').value = localStorage.getItem('mps_logo') || "";
-        document.getElementById('mapUrl').value = localStorage.getItem('mps_map') || "";
+        // Admin Security
+        function adminLogin() {
+            if(document.getElementById("adminUser").value === "rp sir" && document.getElementById("adminPass").value === "rp sir mps") {
+                document.getElementById("adminLoginScreen").classList.add("hidden"); document.getElementById("adminDashboard").classList.remove("hidden");
+                loadSettings(); renderAdminData();
+            } else document.getElementById("admin-error-msg").classList.remove("hidden");
+        }
+        function logoutAdmin() { location.reload(); }
 
-        function saveSettings() {
-            localStorage.setItem('mps_logo', document.getElementById('logoUrl').value);
-            localStorage.setItem('mps_map', document.getElementById('mapUrl').value);
-            alert("Settings Saved Successfully! Main website par logo aur location update ho gaye hain.");
+        // Settings Management
+        function loadSettings() {
+            document.getElementById('setSchoolName').value = localStorage.getItem('mps_schoolName') || "Motion Public School";
+            document.getElementById('setStaffUser').value = localStorage.getItem('mps_staffUser') || "Motion Public School";
+            document.getElementById('setStaffPass').value = localStorage.getItem('mps_staffPass') || "MPS 752040";
+            document.getElementById('logoUrl').value = localStorage.getItem('mps_logo') || "";
+            document.getElementById('mapUrl').value = localStorage.getItem('mps_map') || "";
         }
 
+        function saveAllSettings() {
+            localStorage.setItem('mps_schoolName', document.getElementById('setSchoolName').value);
+            localStorage.setItem('mps_staffUser', document.getElementById('setStaffUser').value);
+            localStorage.setItem('mps_staffPass', document.getElementById('setStaffPass').value);
+            localStorage.setItem('mps_logo', document.getElementById('logoUrl').value);
+            localStorage.setItem('mps_map', document.getElementById('mapUrl').value);
+            alert("Success! Main website updated with new Name, Passwords, and Settings.");
+        }
+
+        // Records Management
         function renderAdminData() {
-            let tb = document.getElementById("adminTableBody");
-            tb.innerHTML = "";
-            if (admissions.length === 0) {
-                tb.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-slate-500">No records found.</td></tr>`;
-                return;
-            }
+            let tb = document.getElementById("adminTableBody"); tb.innerHTML = "";
             admissions.forEach((ad, i) => {
-                tb.innerHTML += `
-                <tr>
-                    <td class="p-3 font-semibold">${ad.name}</td>
-                    <td class="p-3 text-slate-600">${ad.cls}</td>
-                    <td class="p-3 text-center">
-                        <button onclick="deleteData(${i})" class="bg-red-100 text-red-600 hover:bg-red-500 hover:text-white px-4 py-2 rounded font-bold transition">
-                            <i class="fa-solid fa-trash"></i> Delete
-                        </button>
+                tb.innerHTML += `<tr>
+                    <td class="p-3 font-semibold">${ad.name}</td><td class="p-3">${ad.cls}</td>
+                    <td class="p-3 text-center space-x-2">
+                        <button onclick="openQuickEdit(${i})" class="bg-blue-100 text-blue-600 px-3 py-1 rounded font-bold hover:bg-blue-500 hover:text-white transition"><i class="fa-solid fa-pen"></i> Edit</button>
+                        <button onclick="deleteData(${i})" class="bg-red-100 text-red-600 px-3 py-1 rounded font-bold hover:bg-red-500 hover:text-white transition"><i class="fa-solid fa-trash"></i> Delete</button>
                     </td>
                 </tr>`;
             });
         }
 
+        function openQuickEdit(i) {
+            document.getElementById('adminEditIndex').value = i;
+            document.getElementById('eName').value = admissions[i].name;
+            document.getElementById('eClass').value = admissions[i].cls;
+            document.getElementById('quickEditModal').classList.remove('hidden');
+            document.getElementById('quickEditModal').scrollIntoView();
+        }
+
+        function saveQuickEdit() {
+            let i = document.getElementById('adminEditIndex').value;
+            admissions[i].name = document.getElementById('eName').value;
+            admissions[i].cls = document.getElementById('eClass').value;
+            localStorage.setItem('mps_admissions_v3', JSON.stringify(admissions));
+            document.getElementById('quickEditModal').classList.add('hidden');
+            renderAdminData(); alert("Record Updated!");
+        }
+
         function deleteData(index) {
-            if(confirm("Are you sure you want to permanently delete this student's record?")) {
+            if(confirm("Permanently delete this record?")) {
                 admissions.splice(index, 1);
                 localStorage.setItem('mps_admissions_v3', JSON.stringify(admissions));
                 renderAdminData();
             }
         }
-
-        // Initialize table
-        renderAdminData();
     </script>
 </body>
 </html>
