@@ -8,133 +8,95 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
-    
-    <style>
-        .hidden { display: none !important; }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-    </style>
+    <style>.hidden { display: none !important; }</style>
 </head>
 <body class="bg-slate-50 font-sans text-slate-800 h-screen overflow-hidden">
 
     <!-- LOGIN SCREEN -->
     <div id="loginScreen" class="min-h-screen bg-slate-900 flex items-center justify-center p-4">
-        <div class="max-w-md w-full bg-white rounded-2xl shadow-2xl overflow-hidden">
-            <div class="bg-indigo-900 p-8 text-center">
-                <div class="w-20 h-20 bg-amber-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg border-4 border-indigo-800">
-                    <i class="fa-solid fa-school text-indigo-950 text-3xl"></i>
-                </div>
-                <h1 class="text-2xl font-bold text-white uppercase tracking-wider">Motion Public School</h1>
-                <p class="text-indigo-200 mt-2 text-sm">Portal Access Control</p>
-            </div>
-            
-            <div class="p-8 space-y-5">
-                <p id="error-msg" class="hidden bg-red-100 text-red-700 p-3 rounded-lg text-sm text-center font-medium border border-red-200">Galat Username ya Password!</p>
-                <div><label class="block text-sm font-semibold text-slate-700 mb-2">Username</label>
-                    <div class="relative"><input type="text" id="username" class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg outline-none"><i class="fa-solid fa-user absolute left-3 top-4 text-slate-400"></i></div>
-                </div>
-                <div><label class="block text-sm font-semibold text-slate-700 mb-2">Password</label>
-                    <div class="relative"><input type="password" id="password" class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg outline-none"><i class="fa-solid fa-lock absolute left-3 top-4 text-slate-400"></i></div>
-                </div>
-                <button onclick="login()" class="w-full bg-indigo-900 hover:bg-indigo-800 text-white font-bold py-3 px-4 rounded-lg shadow-lg transition-all uppercase text-sm mt-4">Secure Login</button>
-            </div>
+        <div class="max-w-md w-full bg-white rounded-2xl shadow-2xl overflow-hidden p-8 text-center">
+            <h1 class="text-2xl font-bold text-indigo-900 uppercase tracking-wider mb-6">Staff Login</h1>
+            <p id="error-msg" class="hidden bg-red-100 text-red-700 p-2 rounded mb-4 text-sm">Galat Details!</p>
+            <input type="text" id="username" class="w-full px-4 py-3 bg-slate-50 border rounded-lg mb-4 outline-none" placeholder="Username">
+            <input type="password" id="password" class="w-full px-4 py-3 bg-slate-50 border rounded-lg mb-6 outline-none" placeholder="Password">
+            <button onclick="login()" class="w-full bg-indigo-900 text-white font-bold py-3 rounded-lg shadow-lg">Login</button>
         </div>
     </div>
 
     <!-- MAIN DASHBOARD -->
     <div id="dashboard" class="hidden flex h-screen">
-        <!-- Sidebar -->
-        <div class="w-72 bg-indigo-950 text-white flex flex-col shadow-2xl z-10">
+        <div class="w-72 bg-indigo-950 text-white flex flex-col z-10">
             <div class="p-6 border-b border-indigo-900/50 flex flex-col items-center">
-                <div class="w-16 h-16 bg-amber-500 rounded-full flex items-center justify-center mb-4 border-2 border-indigo-400"><i class="fa-solid fa-school text-indigo-950 text-2xl"></i></div>
+                <!-- Dynamic Logo Controlled by Admin -->
+                <img id="schoolLogo" src="https://via.placeholder.com/150" alt="Logo" class="w-20 h-20 bg-white rounded-full object-cover mb-3">
                 <h2 class="text-lg font-bold text-center">Motion Public School</h2>
             </div>
-            
             <div class="flex-1 py-6 px-4 space-y-2 overflow-y-auto">
-                <button id="nav-newAdmission" onclick="showSection('newAdmission', 'New Admission', this)" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl bg-amber-500 text-indigo-950 font-bold"><i class="fa-solid fa-user-plus w-5"></i><span>New Admission / Slip</span></button>
-                <button id="nav-admissionList" onclick="showSection('admissionList', 'Admission List', this); renderAdmissions();" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-indigo-200 hover:bg-indigo-900 hover:text-white"><i class="fa-solid fa-users w-5"></i><span>Admission List</span></button>
+                <button onclick="showSection('newAdmission')" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl bg-amber-500 text-indigo-950 font-bold"><i class="fa-solid fa-user-plus"></i><span>New Admission</span></button>
+                <button onclick="showSection('admissionList'); renderAdmissions();" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-indigo-200 hover:bg-indigo-900"><i class="fa-solid fa-users"></i><span>Admission List</span></button>
             </div>
-            <div class="p-4 border-t border-indigo-900/50"><button onclick="logout()" class="w-full flex items-center justify-center space-x-2 px-4 py-2 text-red-400 hover:bg-indigo-900 rounded-lg"><i class="fa-solid fa-right-from-bracket"></i><span>Logout</span></button></div>
+            <div class="p-4 border-t border-indigo-900/50">
+                <button onclick="openMap()" class="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 rounded-lg mb-2"><i class="fa-solid fa-map-location-dot"></i><span>View Location</span></button>
+                <button onclick="logout()" class="w-full flex items-center justify-center space-x-2 px-4 py-2 text-red-400 hover:bg-indigo-900 rounded-lg"><i class="fa-solid fa-right-from-bracket"></i><span>Logout</span></button>
+            </div>
         </div>
 
-        <!-- Content Area -->
         <div class="flex-1 flex flex-col bg-slate-50 overflow-hidden">
-            <header class="bg-white shadow-sm px-8 py-5 border-b flex justify-between items-center z-0">
-                <h2 id="pageTitle" class="text-2xl font-bold text-slate-800">New Admission / Slip</h2>
-            </header>
-
+            <header class="bg-white shadow-sm px-8 py-5 border-b"><h2 class="text-2xl font-bold">Portal Access</h2></header>
             <main class="flex-1 overflow-y-auto p-8">
-                <!-- 1. New Admission & Fee Slip Form -->
-                <div id="newAdmission" class="section block max-w-5xl mx-auto bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                    <div class="px-8 py-6 border-b bg-slate-50"><h3 class="text-xl font-bold" id="adFormTitle">Admission & Fee Slip Details</h3></div>
-                    <div class="p-8 space-y-6">
-                        <input type="hidden" id="editAdIndex" value="-1">
-                        
-                        <!-- Basic Details -->
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                            <div><label class="block text-sm font-semibold mb-1">Student Name</label><input type="text" id="adName" class="w-full px-3 py-2 border rounded-lg outline-none"></div>
-                            <div><label class="block text-sm font-semibold mb-1">Father Name</label><input type="text" id="adFName" class="w-full px-3 py-2 border rounded-lg outline-none"></div>
-                            <div><label class="block text-sm font-semibold mb-1">Roll No</label><input type="text" id="adRoll" class="w-full px-3 py-2 border rounded-lg outline-none"></div>
-                            <div><label class="block text-sm font-semibold mb-1">Class</label><input type="text" id="adClass" class="w-full px-3 py-2 border rounded-lg outline-none" value="0"></div>
-                            
-                            <div><label class="block text-sm font-semibold mb-1">Month</label><input type="text" id="adMonth" class="w-full px-3 py-2 border rounded-lg outline-none" placeholder="e.g. 00"></div>
-                        </div>
-
-                        <!-- Main Sections from Screenshot -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <!-- Left: Monthly Fee Structor -->
-                            <div class="border p-4 rounded-lg bg-slate-50">
-                                <h4 class="font-bold text-lg border-b pb-2 mb-4">Monthly fee Structor</h4>
-                                <div class="space-y-3">
-                                    <div class="flex justify-between items-center"><label class="text-sm font-semibold w-1/2">Monthly fee Amount</label><input type="number" id="f_monthly" oninput="calcAdTotal()" class="w-1/2 px-2 py-1 border rounded" value="00"></div>
-                                    <div class="flex justify-between items-center"><label class="text-sm font-semibold w-1/2">Registration Fee</label><input type="number" id="f_reg" oninput="calcAdTotal()" class="w-1/2 px-2 py-1 border rounded" value="00"></div>
-                                    <div class="flex justify-between items-center"><label class="text-sm font-semibold w-1/2">Admission Fee</label><input type="number" id="f_adm" oninput="calcAdTotal()" class="w-1/2 px-2 py-1 border rounded" value="00"></div>
-                                    <div class="flex justify-between items-center"><label class="text-sm font-semibold w-1/2">Annual Fee</label><input type="number" id="f_annual" oninput="calcAdTotal()" class="w-1/2 px-2 py-1 border rounded" value="00"></div>
-                                    <div class="flex justify-between items-center"><label class="text-sm font-semibold w-1/2">Tution fee</label><input type="number" id="f_tution" oninput="calcAdTotal()" class="w-1/2 px-2 py-1 border rounded" value="00"></div>
-                                    <div class="flex justify-between items-center pt-2 border-t border-slate-300"><label class="font-bold w-1/2">Total Pay</label><input type="number" id="f_totalPay" readonly class="w-1/2 px-2 py-1 border rounded bg-slate-200 font-bold" value="00"></div>
-                                    <div class="flex justify-between items-center"><label class="font-bold w-1/2">Total Due Month</label><input type="number" id="f_due" class="w-1/2 px-2 py-1 border rounded" value="00"></div>
-                                </div>
-                            </div>
-                            
-                            <!-- Right: Extra Accessories -->
-                            <div class="border p-4 rounded-lg bg-slate-50">
-                                <h4 class="font-bold text-lg border-b pb-2 mb-4">Extra Accessories</h4>
-                                <div class="space-y-3">
-                                    <div class="flex justify-between items-center"><label class="text-sm font-semibold w-1/2">Buss Fee</label><input type="number" id="f_buss" oninput="calcAdTotal()" class="w-1/2 px-2 py-1 border rounded" value="00"></div>
-                                    <div class="flex justify-between items-center"><label class="text-sm font-semibold w-1/2">Sport fee</label><input type="number" id="f_sport" oninput="calcAdTotal()" class="w-1/2 px-2 py-1 border rounded" value="00"></div>
-                                    <div class="flex justify-between items-center"><label class="text-sm font-semibold w-1/2">Caution Money</label><input type="number" id="f_caution" oninput="calcAdTotal()" class="w-1/2 px-2 py-1 border rounded" value="00"></div>
-                                    <div class="flex justify-between items-center"><label class="text-sm font-semibold w-1/2">Development Fee</label><input type="number" id="f_dev" oninput="calcAdTotal()" class="w-1/2 px-2 py-1 border rounded" value="00"></div>
-                                    <div class="flex justify-between items-center"><label class="text-sm font-semibold w-1/2">Library Fee</label><input type="number" id="f_lib" oninput="calcAdTotal()" class="w-1/2 px-2 py-1 border rounded" value="00"></div>
-                                    <div class="flex justify-between items-center"><label class="text-sm font-semibold w-1/2">Book</label><input type="number" id="f_book" oninput="calcAdTotal()" class="w-1/2 px-2 py-1 border rounded" value="00"></div>
-                                    <div class="flex justify-between items-center pt-2 border-t border-slate-300"><label class="font-bold w-1/2">Total Extra</label><input type="number" id="f_totalExtra" readonly class="w-1/2 px-2 py-1 border rounded bg-slate-200 font-bold" value="00"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Final Total & Uploads -->
-                        <div class="bg-emerald-100 p-4 rounded-lg flex justify-between items-center border border-emerald-200">
-                            <h3 class="text-xl font-bold text-emerald-900 italic">Total Fee Amount</h3>
-                            <input type="number" id="f_totalFinal" readonly class="bg-transparent text-right font-bold text-emerald-800 text-2xl w-32 outline-none" value="00">
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t">
-                            <div><label class="block text-sm font-bold mb-2"><i class="fa-solid fa-camera mr-2"></i>Student Photo</label><input type="file" accept="image/*" onchange="processImage(event, 'photo')" class="text-sm"></div>
-                            <div><label class="block text-sm font-bold mb-2"><i class="fa-solid fa-signature mr-2"></i>Parent's Signature</label><input type="file" accept="image/*" onchange="processImage(event, 'parent')" class="text-sm"></div>
-                            <div><label class="block text-sm font-bold mb-2"><i class="fa-solid fa-signature mr-2"></i>Accountant's Signature</label><input type="file" accept="image/*" onchange="processImage(event, 'accountant')" class="text-sm"></div>
-                        </div>
-                        <div class="flex justify-end pt-4"><button onclick="saveAdmission()" class="bg-indigo-900 text-white px-8 py-3 rounded-lg font-bold hover:bg-indigo-800 shadow-lg">Save Record</button></div>
+                
+                <!-- NEW ADMISSION FORM -->
+                <div id="newAdmission" class="section block max-w-5xl mx-auto bg-white rounded-2xl shadow-sm border p-8">
+                    <h3 class="text-xl font-bold mb-6">Admission & Fee Slip</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                        <div><label class="block text-sm font-semibold mb-1">Student Name</label><input type="text" id="adName" class="w-full px-3 py-2 border rounded-lg"></div>
+                        <div><label class="block text-sm font-semibold mb-1">Father Name</label><input type="text" id="adFName" class="w-full px-3 py-2 border rounded-lg"></div>
+                        <div><label class="block text-sm font-semibold mb-1">Roll No</label><input type="text" id="adRoll" class="w-full px-3 py-2 border rounded-lg"></div>
+                        <div><label class="block text-sm font-semibold mb-1">Class</label><input type="text" id="adClass" class="w-full px-3 py-2 border rounded-lg" value="0"></div>
+                        <div><label class="block text-sm font-semibold mb-1">Month</label><input type="text" id="adMonth" class="w-full px-3 py-2 border rounded-lg" placeholder="00"></div>
                     </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-6">
+                        <div class="border p-4 rounded-lg bg-slate-50">
+                            <h4 class="font-bold border-b pb-2 mb-4">Monthly fee Structor</h4>
+                            <div class="space-y-3">
+                                <div class="flex justify-between"><label class="text-sm">Monthly fee Amount</label><input type="number" id="f_m" oninput="calcAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="00"></div>
+                                <div class="flex justify-between"><label class="text-sm">Registration Fee</label><input type="number" id="f_r" oninput="calcAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="00"></div>
+                                <div class="flex justify-between"><label class="text-sm">Admission Fee</label><input type="number" id="f_a" oninput="calcAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="00"></div>
+                                <div class="flex justify-between"><label class="text-sm">Annual Fee</label><input type="number" id="f_an" oninput="calcAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="00"></div>
+                                <div class="flex justify-between"><label class="text-sm">Tution fee</label><input type="number" id="f_t" oninput="calcAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="00"></div>
+                                <div class="flex justify-between pt-2 border-t"><label class="font-bold">Total Pay</label><input type="number" id="f_pay" readonly class="w-1/3 px-2 py-1 border rounded bg-slate-200 font-bold" value="00"></div>
+                                <div class="flex justify-between"><label class="font-bold">Total Due</label><input type="number" id="f_due" class="w-1/3 px-2 py-1 border rounded" value="00"></div>
+                            </div>
+                        </div>
+                        <div class="border p-4 rounded-lg bg-slate-50">
+                            <h4 class="font-bold border-b pb-2 mb-4">Extra Accessories</h4>
+                            <div class="space-y-3">
+                                <div class="flex justify-between"><label class="text-sm">Buss Fee</label><input type="number" id="f_bs" oninput="calcAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="00"></div>
+                                <div class="flex justify-between"><label class="text-sm">Sport fee</label><input type="number" id="f_sp" oninput="calcAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="00"></div>
+                                <div class="flex justify-between"><label class="text-sm">Caution Money</label><input type="number" id="f_c" oninput="calcAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="00"></div>
+                                <div class="flex justify-between"><label class="text-sm">Development Fee</label><input type="number" id="f_d" oninput="calcAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="00"></div>
+                                <div class="flex justify-between"><label class="text-sm">Library Fee</label><input type="number" id="f_l" oninput="calcAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="00"></div>
+                                <div class="flex justify-between"><label class="text-sm">Book</label><input type="number" id="f_bk" oninput="calcAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="00"></div>
+                                <div class="flex justify-between pt-2 border-t"><label class="font-bold">Total Extra</label><input type="number" id="f_ext" readonly class="w-1/3 px-2 py-1 border rounded bg-slate-200 font-bold" value="00"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-emerald-100 p-4 rounded-lg flex justify-between items-center border mb-6">
+                        <h3 class="font-bold text-emerald-900">Total Fee Amount</h3>
+                        <input type="number" id="f_final" readonly class="bg-transparent text-right font-bold text-emerald-800 text-2xl w-32 outline-none" value="00">
+                    </div>
+                    <button onclick="saveAdmission()" class="w-full bg-indigo-900 text-white py-3 rounded-lg font-bold shadow-lg">Save Record</button>
                 </div>
 
-                <!-- 2. Admission List (NO DELETE BUTTON) -->
-                <div id="admissionList" class="section hidden bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                    <div class="px-8 py-5 border-b bg-slate-50"><h3 class="text-xl font-bold">Admissions & Slip Record</h3></div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
-                            <thead class="bg-slate-100 text-slate-600 text-sm uppercase"><tr><th class="px-6 py-4">Name</th><th class="px-6 py-4">Father's Name</th><th class="px-6 py-4">Class</th><th class="px-6 py-4 text-center">Action</th></tr></thead>
-                            <tbody id="adTableBody" class="divide-y divide-slate-100"></tbody>
-                        </table>
-                    </div>
+                <!-- ADMISSION LIST -->
+                <div id="admissionList" class="section hidden bg-white rounded-2xl shadow-sm border overflow-hidden">
+                    <div class="px-8 py-5 border-b bg-slate-50"><h3 class="text-xl font-bold">Records</h3></div>
+                    <table class="w-full text-left">
+                        <thead class="bg-slate-100 text-slate-600 text-sm"><tr><th class="p-4">Name</th><th class="p-4">Class</th><th class="p-4 text-center">Action</th></tr></thead>
+                        <tbody id="adTableBody" class="divide-y divide-slate-100"></tbody>
+                    </table>
                 </div>
 
             </main>
@@ -142,189 +104,93 @@
     </div>
 
     <script>
-        let admissions = JSON.parse(localStorage.getItem('mps_admissions_v2')) || [];
+        let admissions = JSON.parse(localStorage.getItem('mps_admissions_v3')) || [];
         
-        // Image storage for current form
-        let tempPhoto = "", tempParentSig = "", tempAccSig = "";
+        // Load Settings from Admin
+        let logo = localStorage.getItem('mps_logo');
+        if(logo) document.getElementById('schoolLogo').src = logo;
+        function openMap() {
+            let map = localStorage.getItem('mps_map');
+            if(map) window.open(map, '_blank'); else alert("Map link not set in Admin Panel.");
+        }
 
-        // Login & Navigation
+        // Login & UI
         function login() {
-            let u = document.getElementById("username").value, p = document.getElementById("password").value;
-            if (u === "Motion Public School" && p === "MPS 752040") {
+            if(document.getElementById("username").value === "Motion Public School" && document.getElementById("password").value === "MPS 752040") {
                 document.getElementById("loginScreen").classList.add("hidden"); document.getElementById("dashboard").classList.remove("hidden");
             } else document.getElementById("error-msg").classList.remove("hidden");
         }
         function logout() { location.reload(); }
-        function showSection(id, title, btn) {
+        function showSection(id) {
             document.querySelectorAll('.section').forEach(s => s.classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden');
-            document.getElementById('pageTitle').innerText = title;
-            document.querySelectorAll('.nav-btn').forEach(b => { b.classList.remove('bg-amber-500','text-indigo-950','font-bold'); b.classList.add('text-indigo-200'); });
-            if(btn) { btn.classList.remove('text-indigo-200'); btn.classList.add('bg-amber-500','text-indigo-950','font-bold'); }
         }
 
-        // Calculation
+        // Calculation & Save
         function calcAdTotal() {
-            let getVal = (id) => Number(document.getElementById(id).value) || 0;
-            let pay = getVal('f_monthly') + getVal('f_reg') + getVal('f_adm') + getVal('f_annual') + getVal('f_tution');
-            let ext = getVal('f_buss') + getVal('f_sport') + getVal('f_caution') + getVal('f_dev') + getVal('f_lib') + getVal('f_book');
-            document.getElementById('f_totalPay').value = pay;
-            document.getElementById('f_totalExtra').value = ext;
-            document.getElementById('f_totalFinal').value = pay + ext;
+            let g = (id) => Number(document.getElementById(id).value) || 0;
+            let pay = g('f_m') + g('f_r') + g('f_a') + g('f_an') + g('f_t');
+            let ext = g('f_bs') + g('f_sp') + g('f_c') + g('f_d') + g('f_l') + g('f_bk');
+            document.getElementById('f_pay').value = pay; document.getElementById('f_ext').value = ext;
+            document.getElementById('f_final').value = pay + ext;
         }
 
-        // Image Processing (Compress large images to save localStorage space)
-        function processImage(e, type) {
-            const file = e.target.files[0];
-            if(!file) return;
-            const reader = new FileReader();
-            reader.onload = function(ev) {
-                const img = new Image();
-                img.onload = function() {
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-                    const maxW = 400; const scale = img.width > maxW ? maxW / img.width : 1;
-                    canvas.width = img.width * scale; canvas.height = img.height * scale;
-                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    let b64 = canvas.toDataURL('image/jpeg', 0.6);
-                    if(type === 'photo') tempPhoto = b64;
-                    if(type === 'parent') tempParentSig = b64;
-                    if(type === 'accountant') tempAccSig = b64;
-                };
-                img.src = ev.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
-
-        // Save & Render Data
         function saveAdmission() {
             let data = {
-                date: new Date().toLocaleDateString('en-GB'), // 00/00/0000 format
+                date: new Date().toLocaleDateString('en-GB'),
                 name: document.getElementById("adName").value, fname: document.getElementById("adFName").value,
                 roll: document.getElementById("adRoll").value, cls: document.getElementById("adClass").value,
                 month: document.getElementById("adMonth").value, due: document.getElementById("f_due").value,
                 v: {
-                    m: document.getElementById("f_monthly").value, r: document.getElementById("f_reg").value,
-                    a: document.getElementById("f_adm").value, an: document.getElementById("f_annual").value,
-                    t: document.getElementById("f_tution").value, pay: document.getElementById("f_totalPay").value,
-                    bs: document.getElementById("f_buss").value, sp: document.getElementById("f_sport").value,
-                    c: document.getElementById("f_caution").value, d: document.getElementById("f_dev").value,
-                    l: document.getElementById("f_lib").value, bk: document.getElementById("f_book").value,
-                    ext: document.getElementById("f_totalExtra").value, final: document.getElementById("f_totalFinal").value
-                },
-                photo: tempPhoto, parentSig: tempParentSig, accSig: tempAccSig
+                    m: document.getElementById("f_m").value, r: document.getElementById("f_r").value, a: document.getElementById("f_a").value,
+                    an: document.getElementById("f_an").value, t: document.getElementById("f_t").value, pay: document.getElementById("f_pay").value,
+                    bs: document.getElementById("f_bs").value, sp: document.getElementById("f_sp").value, c: document.getElementById("f_c").value,
+                    d: document.getElementById("f_d").value, l: document.getElementById("f_l").value, bk: document.getElementById("f_bk").value,
+                    ext: document.getElementById("f_ext").value, final: document.getElementById("f_final").value
+                }
             };
-            if(!data.name) return alert("Please enter Student Name!");
-            
-            let i = document.getElementById("editAdIndex").value;
-            if(i === "-1") admissions.push(data); else {
-                if(!tempPhoto) data.photo = admissions[i].photo; // Retain old if not re-uploaded
-                if(!tempParentSig) data.parentSig = admissions[i].parentSig;
-                if(!tempAccSig) data.accSig = admissions[i].accSig;
-                admissions[i] = data; document.getElementById("editAdIndex").value = "-1";
-            }
-            localStorage.setItem('mps_admissions_v2', JSON.stringify(admissions));
-            alert("Record Saved!");
-            
-            // Reset Form
-            document.querySelectorAll('#newAdmission input').forEach(inp => { if(inp.type !== 'hidden') inp.value = inp.type==='number'?'00':''; });
-            tempPhoto = ""; tempParentSig = ""; tempAccSig = "";
-            showSection('admissionList', 'Admission List', document.getElementById('nav-admissionList')); renderAdmissions();
-        }
-
-        function editAdmission(i) {
-            let d = admissions[i]; document.getElementById("editAdIndex").value = i;
-            document.getElementById("adName").value = d.name; document.getElementById("adFName").value = d.fname;
-            document.getElementById("adRoll").value = d.roll; document.getElementById("adClass").value = d.cls;
-            document.getElementById("adMonth").value = d.month; document.getElementById("f_due").value = d.due;
-            
-            document.getElementById("f_monthly").value = d.v.m; document.getElementById("f_reg").value = d.v.r;
-            document.getElementById("f_adm").value = d.v.a; document.getElementById("f_annual").value = d.v.an;
-            document.getElementById("f_tution").value = d.v.t; document.getElementById("f_totalPay").value = d.v.pay;
-            
-            document.getElementById("f_buss").value = d.v.bs; document.getElementById("f_sport").value = d.v.sp;
-            document.getElementById("f_caution").value = d.v.c; document.getElementById("f_dev").value = d.v.d;
-            document.getElementById("f_lib").value = d.v.l; document.getElementById("f_book").value = d.v.bk;
-            document.getElementById("f_totalExtra").value = d.v.ext; document.getElementById("f_totalFinal").value = d.v.final;
-            
-            showSection('newAdmission', 'Edit Record', document.getElementById('nav-newAdmission'));
+            if(!data.name) return alert("Enter Student Name!");
+            admissions.push(data);
+            localStorage.setItem('mps_admissions_v3', JSON.stringify(admissions));
+            alert("Saved!");
+            document.querySelectorAll('#newAdmission input').forEach(i => i.value = i.type==='number'?'00':'');
         }
 
         function renderAdmissions() {
             let tb = document.getElementById("adTableBody"); tb.innerHTML = "";
             admissions.forEach((ad, i) => {
-                tb.innerHTML += `<tr class="hover:bg-slate-50">
-                    <td class="px-6 py-4 font-semibold">${ad.name}</td><td class="px-6 py-4">${ad.fname}</td><td class="px-6 py-4">${ad.cls}</td>
-                    <td class="px-6 py-4 text-center space-x-2">
-                        <button onclick="editAdmission(${i})" class="bg-blue-100 text-blue-700 hover:bg-blue-600 hover:text-white px-3 py-1.5 rounded-md font-bold text-sm"><i class="fa-solid fa-pen"></i> Edit</button>
-                        <button onclick="generateSlip(${i})" class="bg-amber-100 text-amber-700 hover:bg-amber-500 hover:text-white px-3 py-1.5 rounded-md font-bold text-sm"><i class="fa-solid fa-download"></i> PDF Slip</button>
-                    </td>
-                </tr>`;
+                tb.innerHTML += `<tr class="hover:bg-slate-50"><td class="p-4">${ad.name}</td><td class="p-4">${ad.cls}</td>
+                <td class="p-4 text-center"><button onclick="generateSlip(${i})" class="bg-amber-100 text-amber-700 px-3 py-1 rounded font-bold"><i class="fa-solid fa-download"></i> PDF</button></td></tr>`;
             });
         }
 
-        // --- EXACT SCREENSHOT PDF GENERATION ---
+        // PDF Generation
         function generateSlip(index) {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF('p', 'mm', 'a4');
-            const d = admissions[index];
+            const { jsPDF } = window.jspdf; const doc = new jsPDF('p', 'mm', 'a4'); const d = admissions[index];
+            doc.rect(10, 10, 190, 277); doc.rect(12, 12, 186, 273);
+            doc.setFont("times", "bold"); doc.setFontSize(32); doc.text("Motion Public School", 105, 30, {align: 'center'});
+            doc.setFontSize(12); doc.setFont("times", "normal"); doc.text("add ;-Near of B.S College ,Gamharia Rod Singheshwar", 105, 38, {align: 'center'});
+            doc.line(15, 42, 195, 42); doc.setFont("times", "italic"); doc.setFontSize(16); doc.text("SCHOOL FEE-SLIP", 105, 50, {align: 'center'});
+            doc.line(15, 53, 195, 53); doc.line(15, 54, 195, 54);
             
-            // Add Border
-            doc.rect(10, 10, 190, 277);
-            doc.rect(12, 12, 186, 273); // Double line border feel
-
-            // School Name & Header
-            doc.setFont("times", "bold");
-            doc.setFontSize(32);
-            doc.text("Motion Public School", 105, 30, {align: 'center'});
-            
-            doc.setFontSize(12);
-            doc.setFont("times", "normal");
-            doc.text("add ;-Near of B.S College ,Gamharia Rod Singheshwar", 105, 38, {align: 'center'});
-            doc.line(15, 42, 195, 42); // Top Line
-            
-            doc.setFont("times", "italic");
-            doc.setFontSize(16);
-            doc.text("SCHOOL FEE-SLIP", 105, 50, {align: 'center'});
-            doc.line(15, 53, 195, 53); // Bottom Line
-            doc.line(15, 54, 195, 54); // Double line
-
-            // AutoTable (Matches screenshot exactly)
             doc.autoTable({
-                startY: 56,
-                theme: 'grid',
-                styles: { font: 'times', textColor: 0, lineColor: 0, lineWidth: 0.2, fontSize: 11, cellPadding: 2, minCellHeight: 8 },
+                startY: 56, theme: 'grid', styles: { font: 'times', textColor: 0, lineColor: 0, lineWidth: 0.2, fontSize: 11 },
                 body: [
                     ['Phone Pay-', '7520400029', '', `Dat.${d.date}`],
                     ['Student Name', d.name, 'Roll No', d.roll],
                     ['Father Name', d.fname, 'Class', d.cls],
-                    [{content: 'Monthly fee Structor', colSpan: 2, styles: {fontStyle: 'italic', halign: 'center', fontSize: 13, fontStyle: 'bold'}}, {content: 'Extra Accessories', colSpan: 2, styles: {fontStyle: 'italic', halign: 'center', fontSize: 13, fontStyle: 'bold'}}],
-                    ['Monthly fee Amount', d.v.m, 'Buss Fee', d.v.bs],
-                    ['Registration Fee', d.v.r, 'Sport fee', d.v.sp],
-                    ['Admission Fee', d.v.a, 'Caution Money', d.v.c],
-                    ['Annual Fee', d.v.an, 'Development Fee', d.v.d],
-                    ['Tution fee', d.v.t, 'Library Fee', d.v.l],
-                    ['', '', 'Book', d.v.bk],
+                    [{content: 'Monthly fee Structor', colSpan: 2, styles: {fontStyle: 'bold', halign: 'center'}}, {content: 'Extra Accessories', colSpan: 2, styles: {fontStyle: 'bold', halign: 'center'}}],
+                    ['Monthly fee Amount', d.v.m, 'Buss Fee', d.v.bs], ['Registration Fee', d.v.r, 'Sport fee', d.v.sp],
+                    ['Admission Fee', d.v.a, 'Caution Money', d.v.c], ['Annual Fee', d.v.an, 'Development Fee', d.v.d],
+                    ['Tution fee', d.v.t, 'Library Fee', d.v.l], ['', '', 'Book', d.v.bk],
                     [{content: 'Total Pay', styles: {fontStyle: 'bold'}}, {content: d.v.pay, styles: {fontStyle: 'bold'}}, '', ''],
                     [{content: 'Month', styles: {fontStyle: 'bold'}}, {content: d.month, styles: {fontStyle: 'bold'}}, '', ''],
                     [{content: 'Total Due Month', styles: {fontStyle: 'bold'}}, {content: d.due, styles: {fontStyle: 'bold'}}, {content: 'Total Extra', styles: {fontStyle: 'bold'}}, d.v.ext],
-                    [{content: 'Total Fee Amount', colSpan: 2, styles: {fontStyle: 'italic', fontStyle: 'bold', halign: 'center', fontSize: 14}}, {content: d.v.final, colSpan: 2, styles: {halign: 'center', fontStyle: 'bold', fontSize: 14}}]
+                    [{content: 'Total Fee Amount', colSpan: 2, styles: {fontStyle: 'bold', halign: 'center', fontSize: 14}}, {content: d.v.final, colSpan: 2, styles: {halign: 'center', fontStyle: 'bold', fontSize: 14}}]
                 ]
             });
-
-            // Signatures at the bottom of the table
-            let finalY = doc.lastAutoTable.finalY + 12;
-            doc.setFontSize(12);
-            doc.setFont("times", "italic");
-            doc.setFont("times", "bold");
-            doc.text("Parents Signature................................", 15, finalY);
-            doc.text("AccountantSig................................", 120, finalY);
-
-            // Add Images if they exist
-            if(d.photo) doc.addImage(d.photo, 'JPEG', 160, 15, 30, 35); // Top right corner Photo
-            if(d.parentSig) doc.addImage(d.parentSig, 'JPEG', 45, finalY - 12, 35, 12);
-            if(d.accSig) doc.addImage(d.accSig, 'JPEG', 150, finalY - 12, 35, 12);
-
+            let finalY = doc.lastAutoTable.finalY + 12; doc.setFontSize(12); doc.setFont("times", "bold");
+            doc.text("Parents Signature................................", 15, finalY); doc.text("AccountantSig................................", 120, finalY);
             doc.save(`FeeSlip_${d.name}.pdf`);
         }
     </script>
