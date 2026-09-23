@@ -12,14 +12,63 @@
 
     <!-- ADMIN LOGIN SCREEN -->
     <div id="adminLoginScreen" class="min-h-screen bg-slate-900 flex items-center justify-center p-4">
-        <div class="max-w-md w-full bg-white rounded-2xl shadow-2xl p-8 border-t-4 border-red-600 text-center">
+        
+        <!-- Login Box -->
+        <div id="loginBox" class="max-w-md w-full bg-white rounded-2xl shadow-2xl p-8 border-t-4 border-red-600 text-center relative transition-all duration-300">
             <h1 class="text-3xl font-bold text-slate-900 mb-2"><i class="fa-solid fa-user-shield text-red-600"></i></h1>
             <h2 class="text-xl font-bold text-slate-800 uppercase tracking-wider mb-6">Admin Login</h2>
             <p id="admin-error-msg" class="hidden bg-red-100 text-red-700 p-2 rounded mb-4 text-sm font-bold">Access Denied!</p>
+            
             <input type="text" id="adminUser" class="w-full px-4 py-3 bg-slate-50 border rounded-lg mb-4 outline-none focus:ring-2 focus:ring-red-500" placeholder="Admin Username">
             <input type="password" id="adminPass" class="w-full px-4 py-3 bg-slate-50 border rounded-lg mb-6 outline-none focus:ring-2 focus:ring-red-500" placeholder="Admin Password">
+            
             <button onclick="adminLogin()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg shadow-lg transition-all">Unlock Admin Panel</button>
+            
+            <div class="mt-6 border-t pt-4">
+                <button onclick="toggleResetFlow(true)" class="text-sm font-bold text-slate-500 hover:text-red-600 transition-all"><i class="fa-solid fa-unlock-keyhole mr-1"></i> Reset Username/Password</button>
+            </div>
         </div>
+
+        <!-- Reset Password Box (Initially Hidden) -->
+        <div id="resetBox" class="hidden max-w-md w-full bg-white rounded-2xl shadow-2xl p-8 border-t-4 border-amber-500 text-center relative transition-all duration-300">
+            <h2 class="text-xl font-bold text-slate-800 uppercase tracking-wider mb-2"><i class="fa-solid fa-key text-amber-500 mr-2"></i>Reset Access</h2>
+            <p class="text-xs text-slate-500 mb-6">Verify your registered email to change credentials.</p>
+            
+            <!-- Step 1: Email & Send OTP -->
+            <div id="step1">
+                <label class="block text-left text-sm font-bold text-slate-700 mb-1">Registered Email</label>
+                <input type="text" value="rajpurushottamraj1@gmail.com" readonly class="w-full px-4 py-3 bg-slate-200 border rounded-lg mb-4 outline-none text-slate-500 cursor-not-allowed font-medium">
+                <button onclick="sendOTP()" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 rounded-lg shadow-lg transition-all mb-4">Send OTP</button>
+            </div>
+
+            <!-- Step 2: Verify OTP -->
+            <div id="step2" class="hidden">
+                <p class="text-sm text-emerald-600 font-bold mb-3">OTP sent to your email!</p>
+                <input type="text" id="otpInput" class="w-full px-4 py-3 bg-slate-50 border rounded-lg mb-4 outline-none focus:ring-2 focus:ring-amber-500 tracking-widest text-center font-bold" placeholder="Enter 4-Digit OTP">
+                <button onclick="verifyOTP()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-lg shadow-lg transition-all mb-4">Verify OTP</button>
+            </div>
+
+            <!-- Step 3: New Credentials -->
+            <div id="step3" class="hidden text-left space-y-3">
+                <p class="text-sm text-emerald-600 font-bold mb-2 text-center">OTP Verified! Create New Login.</p>
+                <div>
+                    <label class="block text-sm font-bold text-slate-700">New Username</label>
+                    <input type="text" id="newAdminUser" class="w-full px-4 py-2 bg-slate-50 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-slate-700">New Password</label>
+                    <input type="password" id="newAdminPass" class="w-full px-4 py-2 bg-slate-50 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-slate-700">Confirm Password</label>
+                    <input type="password" id="confirmAdminPass" class="w-full px-4 py-2 bg-slate-50 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <button onclick="changeAdminCredentials()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 mt-4 rounded-lg shadow-lg transition-all">Change Credentials</button>
+            </div>
+
+            <button onclick="toggleResetFlow(false)" class="mt-6 text-sm font-bold text-slate-400 hover:text-slate-600">Back to Login</button>
+        </div>
+
     </div>
 
     <!-- ADMIN DASHBOARD -->
@@ -132,15 +181,70 @@
         let admissions = JSON.parse(localStorage.getItem('mps_admissions_v3')) || [];
         let newLogoBase64 = localStorage.getItem('mps_logo') || ""; 
         let temp_p = "", temp_ps = "", temp_as = ""; 
+        
+        // Admin Dynamic Credentials
+        let realAdminUser = localStorage.getItem('mps_actualAdminUser') || "rp sir";
+        let realAdminPass = localStorage.getItem('mps_actualAdminPass') || "rp sir mps";
+        let generatedOTP = "";
 
         // Admin Security
         function adminLogin() {
-            if(document.getElementById("adminUser").value === "rp sir" && document.getElementById("adminPass").value === "rp sir mps") {
-                document.getElementById("adminLoginScreen").classList.add("hidden"); document.getElementById("adminDashboard").classList.remove("hidden");
+            if(document.getElementById("adminUser").value === realAdminUser && document.getElementById("adminPass").value === realAdminPass) {
+                document.getElementById("adminLoginScreen").classList.add("hidden"); 
+                document.getElementById("adminDashboard").classList.remove("hidden");
                 loadSettings(); renderAdminData();
             } else document.getElementById("admin-error-msg").classList.remove("hidden");
         }
         function logoutAdmin() { location.reload(); }
+
+        // RESET LOGIC
+        function toggleResetFlow(show) {
+            if(show) {
+                document.getElementById('loginBox').classList.add('hidden');
+                document.getElementById('resetBox').classList.remove('hidden');
+            } else {
+                document.getElementById('resetBox').classList.add('hidden');
+                document.getElementById('loginBox').classList.remove('hidden');
+                // reset views
+                document.getElementById('step1').classList.remove('hidden');
+                document.getElementById('step2').classList.add('hidden');
+                document.getElementById('step3').classList.add('hidden');
+                document.getElementById('otpInput').value = "";
+            }
+        }
+
+        function sendOTP() {
+            generatedOTP = Math.floor(1000 + Math.random() * 9000).toString();
+            alert("✅ OTP successfully sent to rajpurushottamraj1@gmail.com\n\n(Testing Mode OTP: " + generatedOTP + ")");
+            document.getElementById('step1').classList.add('hidden');
+            document.getElementById('step2').classList.remove('hidden');
+        }
+
+        function verifyOTP() {
+            if(document.getElementById('otpInput').value === generatedOTP) {
+                document.getElementById('step2').classList.add('hidden');
+                document.getElementById('step3').classList.remove('hidden');
+            } else {
+                alert("❌ Invalid OTP! Please enter the correct 4-digit code.");
+            }
+        }
+
+        function changeAdminCredentials() {
+            let u = document.getElementById('newAdminUser').value;
+            let p1 = document.getElementById('newAdminPass').value;
+            let p2 = document.getElementById('confirmAdminPass').value;
+
+            if(!u || !p1 || !p2) return alert("All fields are required!");
+            if(p1 !== p2) return alert("Passwords do not match!");
+
+            localStorage.setItem('mps_actualAdminUser', u);
+            localStorage.setItem('mps_actualAdminPass', p1);
+            realAdminUser = u;
+            realAdminPass = p1;
+
+            alert("✅ Username and Password successfully updated! Please login with your new details.");
+            toggleResetFlow(false); // go back to login screen
+        }
 
         // Process Settings Logo
         function processAdminLogo(e) {
@@ -213,7 +317,7 @@
         }
 
         function openFullEdit(i) {
-            temp_p = ""; temp_ps = ""; temp_as = ""; // clear temp imgs
+            temp_p = ""; temp_ps = ""; temp_as = ""; 
             document.getElementById('adminEditIndex').value = i;
             let d = admissions[i];
             
