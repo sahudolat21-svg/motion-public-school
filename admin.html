@@ -17,32 +17,21 @@
     <!-- ADMIN LOGIN SCREEN -->
     <div id="adminLoginScreen" class="min-h-screen bg-slate-900 flex items-center justify-center p-4">
         
-        <!-- Step 1: Username & Password Box -->
+        <!-- Login Box -->
         <div id="loginBox" class="max-w-md w-full bg-white rounded-2xl shadow-2xl p-8 border-t-4 border-red-600 text-center relative transition-all duration-300">
             <h1 class="text-3xl font-bold text-slate-900 mb-2"><i class="fa-solid fa-user-shield text-red-600"></i></h1>
             <h2 class="text-xl font-bold text-slate-800 uppercase tracking-wider mb-6">Admin Login</h2>
-            <p id="admin-error-msg" class="hidden bg-red-100 text-red-700 p-2 rounded mb-4 text-sm font-bold">Galat Username ya Password!</p>
+            <p id="admin-error-msg" class="hidden bg-red-100 text-red-700 p-2 rounded mb-4 text-sm font-bold">Galat Details!</p>
             
             <input type="text" id="adminUser" class="w-full px-4 py-3 bg-slate-50 border rounded-lg mb-4 outline-none focus:ring-2 focus:ring-red-500" placeholder="Admin Username">
             <input type="password" id="adminPass" class="w-full px-4 py-3 bg-slate-50 border rounded-lg mb-6 outline-none focus:ring-2 focus:ring-red-500" placeholder="Admin Password">
             
-            <button id="loginBtn" onclick="requestLoginOTP()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg shadow-lg transition-all">Proceed & Send Login OTP</button>
+            <button onclick="adminLogin()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg shadow-lg transition-all">Unlock Admin Panel</button>
             
             <!-- Reset Button -->
             <div class="mt-6 border-t pt-4">
                 <button onclick="toggleResetFlow(true)" class="text-sm font-bold text-slate-500 hover:text-red-600 transition-all"><i class="fa-solid fa-unlock-keyhole mr-1"></i> Reset Username/Password</button>
             </div>
-        </div>
-
-        <!-- Step 2: Login OTP Verification Box (Initially Hidden) -->
-        <div id="loginOtpBox" class="hidden max-w-md w-full bg-white rounded-2xl shadow-2xl p-8 border-t-4 border-indigo-600 text-center relative transition-all duration-300">
-            <h1 class="text-3xl font-bold text-indigo-900 mb-2"><i class="fa-solid fa-envelope-circle-check text-indigo-600"></i></h1>
-            <h2 class="text-xl font-bold text-slate-800 uppercase tracking-wider mb-2">Security Verification</h2>
-            <p class="text-xs text-slate-500 mb-6">OTP sent to <span class="font-bold text-slate-700">rajpurushottamraj1@gmail.com</span></p>
-            
-            <input type="text" id="loginOtpInput" class="w-full px-4 py-3 bg-slate-50 border rounded-lg mb-4 outline-none focus:ring-2 focus:ring-indigo-500 tracking-widest text-center font-bold text-xl" placeholder="Enter 4-Digit OTP">
-            <button onclick="verifyLoginOTP()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-lg shadow-lg transition-all mb-4">Verify & Unlock Panel</button>
-            <button onclick="backToLoginInput()" class="text-sm font-bold text-slate-400 hover:text-slate-600">Back to Login</button>
         </div>
 
         <!-- Reset Password Box -->
@@ -54,8 +43,7 @@
             <div id="resetStep1">
                 <label class="block text-left text-sm font-bold text-slate-700 mb-1">Registered Email</label>
                 <input type="text" value="rajpurushottamraj1@gmail.com" readonly class="w-full px-4 py-3 bg-slate-200 border rounded-lg mb-4 outline-none text-slate-500 cursor-not-allowed font-medium text-center">
-                
-                <button id="sendOtpBtn" onclick="sendResetOTP()" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 rounded-lg shadow-lg transition-all mb-3">Send Email OTP</button>
+                <button id="sendResetOtpBtn" onclick="sendResetOTP()" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 rounded-lg shadow-lg transition-all mb-3">Send Email OTP</button>
             </div>
 
             <!-- Step 2: Verify OTP -->
@@ -203,60 +191,21 @@
         
         let realAdminUser = localStorage.getItem('mps_actualAdminUser') || "rp sir";
         let realAdminPass = localStorage.getItem('mps_actualAdminPass') || "rp sir mps";
-        
-        let loginOTP = "";
         let resetOTP = "";
 
-        // Admin Login Step 1: Check Username/Password & Send OTP
-        function requestLoginOTP() {
+        // Direct Admin Login (No OTP required at login)
+        function adminLogin() {
             let u = document.getElementById("adminUser").value;
             let p = document.getElementById("adminPass").value;
 
             if(u === realAdminUser && p === realAdminPass) {
-                document.getElementById("admin-error-msg").classList.add("hidden");
-                let btn = document.getElementById("loginBtn");
-                btn.innerText = "Sending Login OTP..."; btn.disabled = true;
-
-                loginOTP = Math.floor(1000 + Math.random() * 9000).toString();
-
-                emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-                    otp: loginOTP,
-                    to_email: "rajpurushottamraj1@gmail.com"
-                }).then(function(response) {
-                    alert("✅ Login OTP successfully sent to rajpurushottamraj1@gmail.com");
-                    document.getElementById("loginBox").classList.add("hidden");
-                    document.getElementById("loginOtpBox").classList.remove("hidden");
-                    btn.innerText = "Proceed & Send Login OTP"; btn.disabled = false;
-                }, function(error) {
-                    alert("⚠️ Network restriction detected. Your Login OTP is: " + loginOTP);
-                    document.getElementById("loginBox").classList.add("hidden");
-                    document.getElementById("loginOtpBox").classList.remove("hidden");
-                    btn.innerText = "Proceed & Send Login OTP"; btn.disabled = false;
-                });
-            } else {
-                document.getElementById("admin-error-msg").classList.remove("hidden");
-            }
-        }
-
-        // Admin Login Step 2: Verify OTP & Unlock Dashboard
-        function verifyLoginOTP() {
-            let enteredOtp = document.getElementById("loginOtpInput").value;
-            if(enteredOtp === loginOTP && loginOTP !== "") {
-                loginOTP = ""; // Expire OTP
                 document.getElementById("adminLoginScreen").classList.add("hidden"); 
                 document.getElementById("adminDashboard").classList.remove("hidden");
                 loadSettings(); renderAdminData();
             } else {
-                alert("❌ Invalid or Expired OTP! Please try again.");
+                document.getElementById("admin-error-msg").classList.remove("hidden");
             }
         }
-
-        function backToLoginInput() {
-            document.getElementById("loginOtpBox").classList.add("hidden");
-            document.getElementById("loginBox").classList.remove("hidden");
-            loginOTP = "";
-        }
-
         function logoutAdmin() { location.reload(); }
 
         // RESET LOGIC
@@ -271,13 +220,12 @@
                 document.getElementById('resetStep2').classList.add('hidden');
                 document.getElementById('resetStep3').classList.add('hidden');
                 document.getElementById('resetOtpInput').value = "";
-                resetOTP = ""; 
+                resetOTP = "";
             }
         }
 
-        // Send Reset OTP
         function sendResetOTP() {
-            let btn = document.getElementById("sendOtpBtn");
+            let btn = document.getElementById("sendResetOtpBtn");
             btn.innerText = "Sending OTP..."; btn.disabled = true;
             
             resetOTP = Math.floor(1000 + Math.random() * 9000).toString();
@@ -291,7 +239,7 @@
                 document.getElementById('resetStep2').classList.remove('hidden');
                 btn.innerText = "Send Email OTP"; btn.disabled = false;
             }, function(error) {
-                alert("⚠️ Network restriction detected. Your Reset OTP is: " + resetOTP);
+                alert("⚠️ Network restriction. Your Reset OTP is: " + resetOTP);
                 document.getElementById('resetStep1').classList.add('hidden');
                 document.getElementById('resetStep2').classList.remove('hidden');
                 btn.innerText = "Send Email OTP"; btn.disabled = false;
@@ -304,7 +252,7 @@
                 document.getElementById('resetStep2').classList.add('hidden');
                 document.getElementById('resetStep3').classList.remove('hidden');
             } else {
-                alert("❌ Invalid or Expired OTP! Please request a new OTP.");
+                alert("❌ Invalid or Expired OTP!");
             }
         }
 
