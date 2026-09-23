@@ -111,7 +111,7 @@
 
         <!-- Manage Records Table -->
         <div id="recordsView" class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-            <h2 class="text-xl font-bold mb-4 text-slate-800"><i class="fa-solid fa-database text-red-600"></i> Manage Admission Records</h2>
+            <h2 class="text-xl font-bold mb-4 text-slate-800"><i class="fa-solid fa-database text-red-600"></i> Manage Admission Records (Cloud Synced)</h2>
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead class="bg-slate-200"><tr><th class="p-3">Student Name</th><th class="p-3">Class</th><th class="p-3 text-center">Action</th></tr></thead>
@@ -180,12 +180,16 @@
 
     <script>
         (function() {
-            emailjs.init("aTznvC9ZnBpiqeBDV");
+            emailjs.init("Loh2h3yl77uqnS3I");
         })();
         const EMAILJS_SERVICE_ID = "service_uxj16r9";
         const EMAILJS_TEMPLATE_ID = "template_q3yq1vk";
 
-        let admissions = JSON.parse(localStorage.getItem('mps_admissions_v3')) || [];
+        // JSONBin Credentials
+        const JSONBIN_BIN_ID = "6ab3e3a0ac6210605aed6c4b";
+        const JSONBIN_API_KEY = "$2a$10$yyc9hu99dDO8hxlNRqiu4eao2Pa7kAKyCv6VTZk9o6MXaTNGh6mvO";
+
+        let admissions = [];
         let newLogoBase64 = localStorage.getItem('mps_logo') || ""; 
         let temp_p = "", temp_ps = "", temp_as = ""; 
         
@@ -193,15 +197,52 @@
         let realAdminPass = localStorage.getItem('mps_actualAdminPass') || "rp sir mps";
         let resetOTP = "";
 
-        // Direct Admin Login (No OTP required at login)
-        function adminLogin() {
+        // Fetch Data from Cloud (JSONBin) on Page Load
+        async function fetchCloudData() {
+            try {
+                let response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
+                    headers: { 'X-Master-Key': JSONBIN_API_KEY }
+                });
+                let result = await response.json();
+                if(result && result.record && result.record.admissions) {
+                    admissions = result.record.admissions;
+                }
+            } catch (err) {
+                console.log("Cloud fetch failed, using local backup");
+                admissions = JSON.parse(localStorage.getItem('mps_admissions_v3')) || [];
+            }
+        }
+
+        // Save Data to Cloud (JSONBin)
+        async function saveCloudData() {
+            try {
+                await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': JSONBIN_API_KEY
+                    },
+                    body: JSON.stringify({ admissions: admissions })
+                });
+                // Also save locally as backup
+                localStorage.setItem('mps_admissions_v3', JSON.stringify(admissions));
+            } catch (err) {
+                alert("⚠️ Cloud sync error! Data saved locally.");
+                localStorage.setItem('mps_admissions_v3', JSON.stringify(admissions));
+            }
+        }
+
+        // Direct Admin Login
+        async function adminLogin() {
             let u = document.getElementById("adminUser").value;
             let p = document.getElementById("adminPass").value;
 
             if(u === realAdminUser && p === realAdminPass) {
                 document.getElementById("adminLoginScreen").classList.add("hidden"); 
                 document.getElementById("adminDashboard").classList.remove("hidden");
-                loadSettings(); renderAdminData();
+                loadSettings(); 
+                await fetchCloudData(); // Load latest cloud data
+                renderAdminData();
             } else {
                 document.getElementById("admin-error-msg").classList.remove("hidden");
             }
@@ -364,7 +405,7 @@
             document.getElementById('fullEditSection').scrollIntoView({behavior: "smooth"});
         }
 
-        function saveFullEdit() {
+        async function saveFullEdit() {
             let i = document.getElementById('adminEditIndex').value;
             let d = admissions[i];
             
@@ -383,15 +424,18 @@
             
             if(temp_p) d.photo = temp_p; if(temp_ps) d.parentSig = temp_ps; if(temp_as) d.accSig = temp_as;
 
-            localStorage.setItem('mps_admissions_v3', JSON.stringify(admissions));
+            // Save to Cloud Bin
+            await saveCloudData();
+
             document.getElementById('fullEditSection').classList.add('hidden');
-            renderAdminData(); alert("Record Fully Updated!");
+            renderAdminData(); alert("Record Fully Updated & Synced to Cloud!");
         }
 
-        function deleteData(index) {
+        async function deleteData(index) {
             if(confirm("Permanently delete this record?")) {
                 admissions.splice(index, 1);
-                localStorage.setItem('mps_admissions_v3', JSON.stringify(admissions));
+                // Save to Cloud Bin
+                await saveCloudData();
                 renderAdminData();
             }
         }
