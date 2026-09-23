@@ -4,203 +4,226 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Motion Public School</title>
-    <!-- PDF banane ke liye library -->
+    
+    <!-- Tailwind CSS (Premium Design ke liye) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- PDF Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #f4f7f6; color: #333; }
-        
-        /* Premium Header */
-        header { background-color: #0b2046; color: #f4b41a; padding: 20px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        header h1 { font-size: 2.5rem; letter-spacing: 1px; }
-        header p { color: #fff; font-size: 1.1rem; margin-top: 5px; }
-
-        /* Login Screen */
-        #loginScreen { height: 80vh; display: flex; justify-content: center; align-items: center; }
-        .login-box { background: #fff; padding: 40px; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center; border-top: 5px solid #f4b41a; }
-        .login-box h2 { margin-bottom: 20px; color: #0b2046; }
-        .input-group { margin-bottom: 15px; text-align: left; }
-        .input-group label { display: block; margin-bottom: 5px; font-weight: bold; }
-        .input-group input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
-        button.btn-primary { width: 100%; padding: 12px; background: #f4b41a; color: #0b2046; border: none; border-radius: 5px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        button.btn-primary:hover { background: #dca014; }
-
-        /* Dashboard */
-        #dashboard { display: none; padding: 20px; max-width: 1200px; margin: auto; }
-        .nav-buttons { display: flex; gap: 15px; margin-bottom: 30px; flex-wrap: wrap; justify-content: center; }
-        .nav-btn { padding: 12px 25px; background: #0b2046; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 1rem; font-weight: bold; transition: 0.3s; }
-        .nav-btn:hover, .nav-btn.active { background: #f4b41a; color: #0b2046; }
-
-        /* Sections */
-        .section { display: none; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-        .section.active { display: block; }
-        .section h2 { color: #0b2046; border-bottom: 2px solid #f4b41a; padding-bottom: 10px; margin-bottom: 20px; }
-
-        /* Forms */
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; font-weight: bold; margin-bottom: 5px; }
-        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
-        .form-group.full { grid-column: span 2; }
-        .submit-btn { padding: 12px 30px; background: #0b2046; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 1.1rem; margin-top: 15px; }
-
-        /* Tables */
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
-        th { background-color: #0b2046; color: white; }
-        tr:hover { background-color: #f1f1f1; }
-        .download-btn { padding: 8px 15px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 0.9rem; }
-        .download-btn:hover { background: #218838; }
-
-        #error-msg { color: red; margin-top: 10px; display: none; }
+        .hidden { display: none !important; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
     </style>
 </head>
-<body>
+<body class="bg-slate-50 font-sans text-slate-800 h-screen overflow-hidden">
 
-    <header>
-        <h1>MOTION PUBLIC SCHOOL</h1>
-        <p>Singheshwar, Near B.S College</p>
-    </header>
-
-    <!-- Login System -->
-    <div id="loginScreen">
-        <div class="login-box">
-            <h2>School Login</h2>
-            <div class="input-group">
-                <label>Username</label>
-                <input type="text" id="username" placeholder="Enter Username">
+    <!-- LOGIN SCREEN (Same as your screenshot) -->
+    <div id="loginScreen" class="min-h-screen bg-slate-900 flex items-center justify-center p-4">
+        <div class="max-w-md w-full bg-white rounded-2xl shadow-2xl overflow-hidden">
+            <div class="bg-indigo-900 p-8 text-center">
+                <div class="w-20 h-20 bg-amber-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg border-4 border-indigo-800">
+                    <i class="fa-solid fa-school text-indigo-950 text-3xl"></i>
+                </div>
+                <h1 class="text-2xl font-bold text-white uppercase tracking-wider">Motion Public School</h1>
+                <p class="text-indigo-200 mt-2 text-sm">Portal Access Control</p>
             </div>
-            <div class="input-group">
-                <label>Password</label>
-                <input type="password" id="password" placeholder="Enter Password">
+            
+            <div class="p-8 space-y-5">
+                <p id="error-msg" class="hidden bg-red-100 text-red-700 p-3 rounded-lg text-sm text-center font-medium border border-red-200">Galat Username ya Password!</p>
+                
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Username</label>
+                    <div class="relative">
+                        <input type="text" id="username" class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="Enter Username">
+                        <i class="fa-solid fa-user absolute left-3 top-4 text-slate-400"></i>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Password</label>
+                    <div class="relative">
+                        <input type="password" id="password" class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="Enter Password">
+                        <i class="fa-solid fa-lock absolute left-3 top-4 text-slate-400"></i>
+                    </div>
+                </div>
+                
+                <button onclick="login()" class="w-full bg-indigo-900 hover:bg-indigo-800 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:shadow-xl transition-all uppercase tracking-widest text-sm mt-4">
+                    Secure Login
+                </button>
             </div>
-            <button class="btn-primary" onclick="login()">Login</button>
-            <p id="error-msg">Galat Username ya Password!</p>
         </div>
     </div>
 
-    <!-- Main Dashboard -->
-    <div id="dashboard">
-        <div class="nav-buttons">
-            <button class="nav-btn active" onclick="showSection('newAdmission')">New Admission</button>
-            <button class="nav-btn" onclick="showSection('admissionList'); renderAdmissions();">Admission List</button>
-            <button class="nav-btn" onclick="showSection('monthlyFee')">Monthly Fee</button>
-            <button class="nav-btn" onclick="showSection('feeList'); renderFees();">Fee List</button>
-            <button class="nav-btn" style="background: red; color: white;" onclick="logout()">Logout</button>
-        </div>
-
-        <!-- 1. New Admission Form -->
-        <div id="newAdmission" class="section active">
-            <h2>Student Admission Form</h2>
-            <div class="form-grid">
-                <div class="form-group"><label>Student Name</label><input type="text" id="adName"></div>
-                <div class="form-group"><label>Father's Name</label><input type="text" id="adFName"></div>
-                <div class="form-group"><label>Date of Birth</label><input type="date" id="adDob"></div>
-                <div class="form-group"><label>Class</label>
-                    <select id="adClass">
-                        <option>Nursery</option><option>LKG</option><option>UKG</option>
-                        <option>Class 1</option><option>Class 2</option><option>Class 3</option>
-                        <option>Class 4</option><option>Class 5</option><option>Class 6</option>
-                        <option>Class 7</option><option>Class 8</option><option>Class 9</option><option>Class 10</option>
-                    </select>
+    <!-- MAIN DASHBOARD -->
+    <div id="dashboard" class="hidden flex h-screen">
+        
+        <!-- Sidebar -->
+        <div class="w-72 bg-indigo-950 text-white flex flex-col shadow-2xl z-10">
+            <div class="p-6 border-b border-indigo-900/50 flex flex-col items-center">
+                <div class="w-16 h-16 bg-amber-500 rounded-full flex items-center justify-center mb-4 border-2 border-indigo-400">
+                    <i class="fa-solid fa-school text-indigo-950 text-2xl"></i>
                 </div>
-                <div class="form-group"><label>Mobile Number</label><input type="text" id="adMobile"></div>
-                <div class="form-group"><label>Admission Fee (₹)</label><input type="number" id="adFee"></div>
-                <div class="form-group full"><label>Address</label><input type="text" id="adAddress"></div>
+                <h2 class="text-lg font-bold text-center">Motion Public School</h2>
+                <p class="text-indigo-300 text-xs mt-1 text-center">Singheshwar, Near B.S College</p>
             </div>
-            <button class="submit-btn" onclick="saveAdmission()">Submit Admission</button>
+            
+            <div class="flex-1 py-6 px-4 space-y-2 overflow-y-auto">
+                <button onclick="showSection('newAdmission', 'New Admission', this)" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl bg-amber-500 text-indigo-950 font-bold transition-all">
+                    <i class="fa-solid fa-user-plus w-5"></i><span>New Admission</span>
+                </button>
+                <button onclick="showSection('admissionList', 'Admission List', this); renderAdmissions();" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-indigo-200 hover:bg-indigo-900 hover:text-white transition-all">
+                    <i class="fa-solid fa-users w-5"></i><span>Admission List</span>
+                </button>
+                <button onclick="showSection('monthlyFee', 'Monthly Fee', this)" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-indigo-200 hover:bg-indigo-900 hover:text-white transition-all">
+                    <i class="fa-solid fa-credit-card w-5"></i><span>Monthly Fee</span>
+                </button>
+                <button onclick="showSection('feeList', 'Fee List', this); renderFees();" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-indigo-200 hover:bg-indigo-900 hover:text-white transition-all">
+                    <i class="fa-solid fa-file-invoice w-5"></i><span>Fee List</span>
+                </button>
+            </div>
+            
+            <div class="p-4 border-t border-indigo-900/50">
+                <button onclick="logout()" class="w-full flex items-center justify-center space-x-2 px-4 py-2 text-red-400 hover:bg-indigo-900 rounded-lg transition-colors">
+                    <i class="fa-solid fa-right-from-bracket"></i><span>Logout</span>
+                </button>
+            </div>
         </div>
 
-        <!-- 2. Admission List -->
-        <div id="admissionList" class="section">
-            <h2>Total Admissions</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Father's Name</th>
-                        <th>Class</th>
-                        <th>Mobile</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="adTableBody"></tbody>
-            </table>
-        </div>
-
-        <!-- 3. Monthly Fee Form -->
-        <div id="monthlyFee" class="section">
-            <h2>Pay Monthly Fee</h2>
-            <div class="form-grid">
-                <div class="form-group"><label>Student Name</label><input type="text" id="feeName"></div>
-                <div class="form-group"><label>Class</label><input type="text" id="feeClass"></div>
-                <div class="form-group"><label>Month</label>
-                    <select id="feeMonth">
-                        <option>January</option><option>February</option><option>March</option><option>April</option>
-                        <option>May</option><option>June</option><option>July</option><option>August</option>
-                        <option>September</option><option>October</option><option>November</option><option>December</option>
-                    </select>
+        <!-- Content Area -->
+        <div class="flex-1 flex flex-col bg-slate-50 overflow-hidden">
+            <!-- Header -->
+            <header class="bg-white shadow-sm px-8 py-5 border-b border-slate-200 flex justify-between items-center z-0">
+                <h2 id="pageTitle" class="text-2xl font-bold text-slate-800">New Admission</h2>
+                <div class="flex items-center space-x-3">
+                    <span class="text-sm font-medium text-slate-500">Premium Portal</span>
+                    <div class="h-8 w-8 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-700"><i class="fa-solid fa-shield"></i></div>
                 </div>
-                <div class="form-group"><label>Amount Paid (₹)</label><input type="number" id="feeAmount"></div>
-            </div>
-            <button class="submit-btn" onclick="saveFee()">Submit Fee</button>
-        </div>
+            </header>
 
-        <!-- 4. Fee List -->
-        <div id="feeList" class="section">
-            <h2>Fee Collection List</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Class</th>
-                        <th>Month</th>
-                        <th>Amount</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="feeTableBody"></tbody>
-            </table>
+            <main class="flex-1 overflow-y-auto p-8">
+                
+                <!-- 1. New Admission -->
+                <div id="newAdmission" class="section block max-w-4xl mx-auto bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="px-8 py-6 border-b border-slate-100 bg-slate-50">
+                        <h3 class="text-xl font-bold text-slate-800">Student Admission Form</h3>
+                    </div>
+                    <div class="p-8 space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div><label class="block text-sm font-semibold text-slate-700 mb-1">Student Name</label><input type="text" id="adName" class="w-full px-4 py-2 bg-slate-50 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"></div>
+                            <div><label class="block text-sm font-semibold text-slate-700 mb-1">Father's Name</label><input type="text" id="adFName" class="w-full px-4 py-2 bg-slate-50 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"></div>
+                            <div><label class="block text-sm font-semibold text-slate-700 mb-1">Date of Birth</label><input type="date" id="adDob" class="w-full px-4 py-2 bg-slate-50 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"></div>
+                            <div><label class="block text-sm font-semibold text-slate-700 mb-1">Class</label>
+                                <select id="adClass" class="w-full px-4 py-2 bg-slate-50 border rounded-lg outline-none">
+                                    <option>Nursery</option><option>LKG</option><option>UKG</option>
+                                    <option>Class 1</option><option>Class 2</option><option>Class 3</option><option>Class 4</option>
+                                    <option>Class 5</option><option>Class 6</option><option>Class 7</option><option>Class 8</option>
+                                    <option>Class 9</option><option>Class 10</option>
+                                </select>
+                            </div>
+                            <div><label class="block text-sm font-semibold text-slate-700 mb-1">Mobile Number</label><input type="text" id="adMobile" class="w-full px-4 py-2 bg-slate-50 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"></div>
+                            <div><label class="block text-sm font-semibold text-slate-700 mb-1">Admission Fee (₹)</label><input type="number" id="adFee" class="w-full px-4 py-2 bg-slate-50 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"></div>
+                            <div class="md:col-span-2"><label class="block text-sm font-semibold text-slate-700 mb-1">Address</label><input type="text" id="adAddress" class="w-full px-4 py-2 bg-slate-50 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"></div>
+                        </div>
+                        <div class="flex justify-end pt-4"><button onclick="saveAdmission()" class="bg-indigo-900 text-white px-8 py-3 rounded-lg font-bold hover:bg-indigo-800 shadow-lg transition-all">Submit Admission</button></div>
+                    </div>
+                </div>
+
+                <!-- 2. Admission List -->
+                <div id="admissionList" class="section hidden bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="px-8 py-5 border-b border-slate-100 bg-slate-50"><h3 class="text-xl font-bold text-slate-800">Admissions Record</h3></div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead class="bg-slate-100 text-slate-600 text-sm uppercase">
+                                <tr><th class="px-6 py-4">Name</th><th class="px-6 py-4">Father's Name</th><th class="px-6 py-4">Class</th><th class="px-6 py-4 text-center">Action</th></tr>
+                            </thead>
+                            <tbody id="adTableBody" class="divide-y divide-slate-100"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 3. Monthly Fee Form -->
+                <div id="monthlyFee" class="section hidden max-w-4xl mx-auto bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="px-8 py-6 border-b border-slate-100 bg-slate-50"><h3 class="text-xl font-bold text-slate-800">Pay Monthly Fee</h3></div>
+                    <div class="p-8 space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div><label class="block text-sm font-semibold text-slate-700 mb-1">Student Name</label><input type="text" id="feeName" class="w-full px-4 py-2 bg-slate-50 border rounded-lg outline-none focus:ring-2 focus:ring-emerald-500"></div>
+                            <div><label class="block text-sm font-semibold text-slate-700 mb-1">Class</label><input type="text" id="feeClass" class="w-full px-4 py-2 bg-slate-50 border rounded-lg outline-none focus:ring-2 focus:ring-emerald-500"></div>
+                            <div><label class="block text-sm font-semibold text-slate-700 mb-1">Month</label>
+                                <select id="feeMonth" class="w-full px-4 py-2 bg-slate-50 border rounded-lg outline-none">
+                                    <option>January</option><option>February</option><option>March</option><option>April</option>
+                                    <option>May</option><option>June</option><option>July</option><option>August</option>
+                                    <option>September</option><option>October</option><option>November</option><option>December</option>
+                                </select>
+                            </div>
+                            <div><label class="block text-sm font-semibold text-slate-700 mb-1">Amount Paid (₹)</label><input type="number" id="feeAmount" class="w-full px-4 py-2 bg-slate-50 border rounded-lg outline-none focus:ring-2 focus:ring-emerald-500"></div>
+                        </div>
+                        <div class="flex justify-end pt-4"><button onclick="saveFee()" class="bg-emerald-600 text-white px-8 py-3 rounded-lg font-bold hover:bg-emerald-700 shadow-lg transition-all flex items-center space-x-2"><i class="fa-solid fa-check"></i><span>Submit Fee</span></button></div>
+                    </div>
+                </div>
+
+                <!-- 4. Fee List -->
+                <div id="feeList" class="section hidden bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="px-8 py-5 border-b border-slate-100 bg-slate-50"><h3 class="text-xl font-bold text-slate-800">Fee Collection Records</h3></div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead class="bg-slate-100 text-slate-600 text-sm uppercase">
+                                <tr><th class="px-6 py-4">Name</th><th class="px-6 py-4">Class</th><th class="px-6 py-4">Month</th><th class="px-6 py-4">Amount</th><th class="px-6 py-4 text-center">Action</th></tr>
+                            </thead>
+                            <tbody id="feeTableBody" class="divide-y divide-slate-100"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </main>
         </div>
     </div>
 
     <script>
-        // Data Storage (Local Storage so data stays after refresh)
+        // Data Storage
         let admissions = JSON.parse(localStorage.getItem('admissions')) || [];
         let fees = JSON.parse(localStorage.getItem('fees')) || [];
 
-        // --- LOGIN SYSTEM ---
+        // Authentication
         function login() {
             let user = document.getElementById("username").value;
             let pass = document.getElementById("password").value;
-
             if (user === "Motion Public School" && pass === "MPS 752040") {
-                document.getElementById("loginScreen").style.display = "none";
-                document.getElementById("dashboard").style.display = "block";
+                document.getElementById("loginScreen").classList.add("hidden");
+                document.getElementById("dashboard").classList.remove("hidden");
             } else {
-                document.getElementById("error-msg").style.display = "block";
+                document.getElementById("error-msg").classList.remove("hidden");
             }
         }
 
         function logout() {
-            document.getElementById("loginScreen").style.display = "flex";
-            document.getElementById("dashboard").style.display = "none";
+            document.getElementById("loginScreen").classList.remove("hidden");
+            document.getElementById("dashboard").classList.add("hidden");
             document.getElementById("username").value = "";
             document.getElementById("password").value = "";
+            document.getElementById("error-msg").classList.add("hidden");
         }
 
-        // --- NAVIGATION ---
-        function showSection(sectionId) {
-            document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(sectionId).classList.add('active');
-            event.target.classList.add('active');
+        // Navigation
+        function showSection(sectionId, title, btn) {
+            document.querySelectorAll('.section').forEach(sec => sec.classList.add('hidden'));
+            document.getElementById(sectionId).classList.remove('hidden');
+            document.getElementById('pageTitle').innerText = title;
+            
+            document.querySelectorAll('.nav-btn').forEach(b => {
+                b.classList.remove('bg-amber-500', 'text-indigo-950', 'font-bold');
+                b.classList.add('text-indigo-200', 'hover:bg-indigo-900', 'hover:text-white');
+            });
+            btn.classList.remove('text-indigo-200', 'hover:bg-indigo-900', 'hover:text-white');
+            btn.classList.add('bg-amber-500', 'text-indigo-950', 'font-bold');
         }
 
-        // --- ADMISSION LOGIC ---
+        // Admission Operations
         function saveAdmission() {
-            let adData = {
+            let data = {
                 date: new Date().toLocaleDateString(),
                 name: document.getElementById("adName").value,
                 fname: document.getElementById("adFName").value,
@@ -210,154 +233,106 @@
                 fee: document.getElementById("adFee").value,
                 addr: document.getElementById("adAddress").value
             };
-            if(!adData.name) return alert("Please enter name!");
-            
-            admissions.push(adData);
+            if(!data.name) return alert("Please enter name!");
+            admissions.push(data);
             localStorage.setItem('admissions', JSON.stringify(admissions));
             alert("Admission Saved Successfully!");
-            
-            // Clear fields
-            document.querySelectorAll('#newAdmission input').forEach(inpt => inpt.value = '');
+            document.querySelectorAll('#newAdmission input').forEach(i => i.value = '');
         }
 
         function renderAdmissions() {
             let tbody = document.getElementById("adTableBody");
             tbody.innerHTML = "";
-            admissions.forEach((ad, index) => {
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${ad.name}</td>
-                        <td>${ad.fname}</td>
-                        <td>${ad.cls}</td>
-                        <td>${ad.mob}</td>
-                        <td><button class="download-btn" onclick="generateAdmissionPDF(${index})">Download PDF</button></td>
-                    </tr>
-                `;
+            admissions.forEach((ad, i) => {
+                tbody.innerHTML += `<tr class="hover:bg-slate-50">
+                    <td class="px-6 py-4 font-semibold text-slate-800">${ad.name}</td>
+                    <td class="px-6 py-4 text-slate-600">${ad.fname}</td>
+                    <td class="px-6 py-4 text-slate-600">${ad.cls}</td>
+                    <td class="px-6 py-4 text-center">
+                        <button onclick="generatePDF(${i}, 'ad')" class="bg-amber-100 text-amber-700 hover:bg-amber-500 hover:text-white px-3 py-1.5 rounded-md font-bold text-sm transition-all"><i class="fa-solid fa-download mr-1"></i> PDF</button>
+                    </td>
+                </tr>`;
             });
         }
 
-        // --- FEE LOGIC ---
+        // Fee Operations
         function saveFee() {
-            let feeData = {
+            let data = {
                 date: new Date().toLocaleDateString(),
                 name: document.getElementById("feeName").value,
                 cls: document.getElementById("feeClass").value,
                 month: document.getElementById("feeMonth").value,
                 amt: document.getElementById("feeAmount").value
             };
-            if(!feeData.name) return alert("Please enter name!");
-
-            fees.push(feeData);
+            if(!data.name) return alert("Please enter name!");
+            fees.push(data);
             localStorage.setItem('fees', JSON.stringify(fees));
             alert("Fee Saved Successfully!");
-            
-            document.querySelectorAll('#monthlyFee input').forEach(inpt => inpt.value = '');
+            document.querySelectorAll('#monthlyFee input').forEach(i => i.value = '');
         }
 
         function renderFees() {
             let tbody = document.getElementById("feeTableBody");
             tbody.innerHTML = "";
-            fees.forEach((f, index) => {
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${f.name}</td>
-                        <td>${f.cls}</td>
-                        <td>${f.month}</td>
-                        <td>₹${f.amt}</td>
-                        <td><button class="download-btn" onclick="generateFeePDF(${index})">Download PDF</button></td>
-                    </tr>
-                `;
+            fees.forEach((f, i) => {
+                tbody.innerHTML += `<tr class="hover:bg-slate-50">
+                    <td class="px-6 py-4 font-semibold text-slate-800">${f.name}</td>
+                    <td class="px-6 py-4 text-slate-600">${f.cls}</td>
+                    <td class="px-6 py-4 font-medium text-slate-600">${f.month}</td>
+                    <td class="px-6 py-4 font-bold text-emerald-600">₹${f.amt}</td>
+                    <td class="px-6 py-4 text-center">
+                        <button onclick="generatePDF(${i}, 'fee')" class="bg-emerald-100 text-emerald-700 hover:bg-emerald-600 hover:text-white px-3 py-1.5 rounded-md font-bold text-sm transition-all"><i class="fa-solid fa-download mr-1"></i> Receipt</button>
+                    </td>
+                </tr>`;
             });
         }
 
-        // --- PREMIUM PDF GENERATION ---
-        function generateAdmissionPDF(index) {
+        // Premium PDF Generation
+        function generatePDF(index, type) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            const data = admissions[index];
-
-            // Header
-            doc.setFillColor(11, 32, 70); // Deep Blue
-            doc.rect(0, 0, 210, 30, 'F');
-            doc.setTextColor(244, 180, 26); // Gold
+            const data = type === 'ad' ? admissions[index] : fees[index];
+            
+            // Header design
+            doc.setFillColor(30, 58, 138); 
+            doc.rect(0, 0, 210, 35, 'F');
+            doc.setTextColor(245, 158, 11);
             doc.setFontSize(22);
             doc.setFont("helvetica", "bold");
-            doc.text("MOTION PUBLIC SCHOOL", 105, 15, null, null, "center");
+            doc.text("MOTION PUBLIC SCHOOL", 105, 18, null, null, "center");
             doc.setTextColor(255, 255, 255);
-            doc.setFontSize(12);
-            doc.text("Singheshwar, Near B.S College", 105, 23, null, null, "center");
+            doc.setFontSize(11);
+            doc.text("Singheshwar, Near B.S College", 105, 26, null, null, "center");
 
-            // Title
             doc.setTextColor(0, 0, 0);
             doc.setFontSize(16);
-            doc.text("ADMISSION RECEIPT & DETAILS", 105, 45, null, null, "center");
-            doc.line(70, 48, 140, 48);
-
-            // Table Data
-            doc.autoTable({
-                startY: 60,
-                theme: 'grid',
-                headStyles: { fillColor: [11, 32, 70], textColor: [255,255,255] },
-                body: [
-                    ['Admission Date', data.date],
-                    ['Student Name', data.name],
-                    ["Father's Name", data.fname],
-                    ['Date of Birth', data.dob],
-                    ['Class Admitted', data.cls],
-                    ['Contact Number', data.mob],
-                    ['Address', data.addr],
-                    ['Admission Fee Paid', `Rs. ${data.fee}/-`]
-                ]
-            });
-
-            // Footer
-            doc.setFontSize(10);
-            doc.text("Authorized Signature", 160, doc.lastAutoTable.finalY + 30);
             
-            doc.save(`Admission_${data.name}.pdf`);
-        }
-
-        function generateFeePDF(index) {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            const data = fees[index];
-
-            // Header
-            doc.setFillColor(11, 32, 70);
-            doc.rect(0, 0, 210, 30, 'F');
-            doc.setTextColor(244, 180, 26);
-            doc.setFontSize(22);
-            doc.setFont("helvetica", "bold");
-            doc.text("MOTION PUBLIC SCHOOL", 105, 15, null, null, "center");
-            doc.setTextColor(255, 255, 255);
-            doc.setFontSize(12);
-            doc.text("Singheshwar, Near B.S College", 105, 23, null, null, "center");
-
-            // Title
-            doc.setTextColor(0, 0, 0);
-            doc.setFontSize(16);
-            doc.text("MONTHLY FEE RECEIPT", 105, 45, null, null, "center");
-            doc.line(70, 48, 140, 48);
-
-            // Table Data
-            doc.autoTable({
-                startY: 60,
-                theme: 'grid',
-                headStyles: { fillColor: [11, 32, 70], textColor: [255,255,255] },
-                body: [
-                    ['Payment Date', data.date],
-                    ['Student Name', data.name],
-                    ['Class', data.cls],
-                    ['Fee for Month', data.month],
-                    ['Total Amount Paid', `Rs. ${data.amt}/-`]
-                ]
-            });
-
-            // Footer
-            doc.setFontSize(10);
-            doc.text("Authorized Signature", 160, doc.lastAutoTable.finalY + 30);
-            
-            doc.save(`FeeReceipt_${data.name}_${data.month}.pdf`);
+            if(type === 'ad') {
+                doc.text("ADMISSION DETAILS", 105, 50, null, null, "center");
+                doc.autoTable({
+                    startY: 60, theme: 'grid',
+                    headStyles: { fillColor: [30, 58, 138] },
+                    body: [
+                        ['Admission Date', data.date], ['Student Name', data.name],
+                        ["Father's Name", data.fname], ['Date of Birth', data.dob],
+                        ['Class', data.cls], ['Contact Number', data.mob],
+                        ['Address', data.addr], ['Fee Paid', `Rs. ${data.fee}/-`]
+                    ]
+                });
+                doc.save(`Admission_${data.name}.pdf`);
+            } else {
+                doc.text("FEE RECEIPT", 105, 50, null, null, "center");
+                doc.autoTable({
+                    startY: 60, theme: 'grid',
+                    headStyles: { fillColor: [5, 150, 105] },
+                    body: [
+                        ['Payment Date', data.date], ['Student Name', data.name],
+                        ['Class', data.cls], ['Fee Month', data.month],
+                        ['Amount Paid', `Rs. ${data.amt}/-`]
+                    ]
+                });
+                doc.save(`FeeReceipt_${data.name}_${data.month}.pdf`);
+            }
         }
     </script>
 </body>
