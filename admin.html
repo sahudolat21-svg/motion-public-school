@@ -35,14 +35,10 @@
                 <h2 class="text-xl font-bold mb-4 text-indigo-900"><i class="fa-solid fa-school"></i> School Identity Setup</h2>
                 <div class="space-y-4">
                     <div><label class="block font-semibold mb-1 text-sm">Change School Name</label><input type="text" id="setSchoolName" class="w-full px-4 py-2 border rounded outline-none focus:ring-2 focus:ring-indigo-500"></div>
-                    
-                    <!-- NEW LOGO UPLOAD OPTION -->
                     <div>
                         <label class="block font-semibold mb-1 text-sm">Upload School Logo (Image)</label>
                         <input type="file" accept="image/*" onchange="processAdminLogo(event)" class="w-full px-4 py-2 border rounded outline-none bg-white text-sm">
-                        <p class="text-xs text-indigo-500 mt-1">Select an image from your device.</p>
                     </div>
-
                     <div><label class="block font-semibold mb-1 text-sm">Google Maps URL</label><input type="text" id="mapUrl" class="w-full px-4 py-2 border rounded outline-none focus:ring-2 focus:ring-indigo-500"></div>
                 </div>
             </div>
@@ -51,7 +47,6 @@
             <div class="bg-red-50 p-6 rounded-lg border border-red-100 shadow-sm">
                 <h2 class="text-xl font-bold mb-4 text-red-900"><i class="fa-solid fa-lock"></i> Staff Portal Login Setup</h2>
                 <div class="space-y-4">
-                    <!-- NEW LOGIN PAGE TITLE OPTION -->
                     <div><label class="block font-semibold mb-1 text-sm">Login Page Name/Title</label><input type="text" id="setLoginTitle" class="w-full px-4 py-2 border rounded outline-none focus:ring-2 focus:ring-red-500" placeholder="e.g. STAFF LOGIN"></div>
                     <div><label class="block font-semibold mb-1 text-sm">Change Staff Username</label><input type="text" id="setStaffUser" class="w-full px-4 py-2 border rounded outline-none focus:ring-2 focus:ring-red-500"></div>
                     <div><label class="block font-semibold mb-1 text-sm">Change Staff Password</label><input type="text" id="setStaffPass" class="w-full px-4 py-2 border rounded outline-none focus:ring-2 focus:ring-red-500"></div>
@@ -63,7 +58,7 @@
             <button onclick="saveAllSettings()" class="bg-indigo-600 text-white px-10 py-3 rounded-lg font-bold text-lg hover:bg-indigo-700 shadow-lg transition-all"><i class="fa-solid fa-save mr-2"></i> Save All Changes</button>
         </div>
 
-        <!-- Manage Records -->
+        <!-- Manage Records Table -->
         <div id="recordsView" class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
             <h2 class="text-xl font-bold mb-4 text-slate-800"><i class="fa-solid fa-database text-red-600"></i> Manage Admission Records</h2>
             <div class="overflow-x-auto">
@@ -74,25 +69,69 @@
             </div>
         </div>
 
-        <!-- Quick Edit Modal in Admin -->
-        <div id="quickEditModal" class="hidden bg-white p-6 rounded-xl shadow-lg border border-amber-300 mt-8">
-            <h2 class="text-xl font-bold mb-4 text-amber-600"><i class="fa-solid fa-pen"></i> Quick Edit Details</h2>
+        <!-- FULL EDIT SECTION IN ADMIN -->
+        <div id="fullEditSection" class="hidden bg-white p-8 rounded-xl shadow-lg border-2 border-amber-400 mt-8">
+            <h2 class="text-2xl font-bold mb-6 text-amber-600 border-b pb-2"><i class="fa-solid fa-pen-to-square"></i> Full Record Edit</h2>
             <input type="hidden" id="adminEditIndex">
-            <div class="grid grid-cols-2 gap-4 mb-4">
-                <div><label class="block text-sm font-bold">Student Name</label><input type="text" id="eName" class="w-full p-2 border rounded"></div>
-                <div><label class="block text-sm font-bold">Class</label><input type="text" id="eClass" class="w-full p-2 border rounded"></div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
+                <div><label class="block text-sm font-semibold mb-1">Student Name</label><input type="text" id="e_name" class="w-full px-3 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-amber-500"></div>
+                <div><label class="block text-sm font-semibold mb-1">Father Name</label><input type="text" id="e_fname" class="w-full px-3 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-amber-500"></div>
+                <div><label class="block text-sm font-semibold mb-1">Roll No</label><input type="text" id="e_roll" class="w-full px-3 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-amber-500"></div>
+                <div><label class="block text-sm font-semibold mb-1">Class</label><input type="text" id="e_class" class="w-full px-3 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-amber-500"></div>
+                <div><label class="block text-sm font-semibold mb-1">Month</label><input type="text" id="e_month" class="w-full px-3 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-amber-500"></div>
             </div>
-            <div class="flex space-x-2">
-                <button onclick="saveQuickEdit()" class="bg-amber-500 text-white px-4 py-2 rounded font-bold">Save Edit</button>
-                <button onclick="document.getElementById('quickEditModal').classList.add('hidden')" class="bg-slate-400 text-white px-4 py-2 rounded font-bold">Cancel</button>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-6">
+                <div class="border p-4 rounded-lg bg-slate-50">
+                    <h4 class="font-bold border-b pb-2 mb-4 text-indigo-900">Monthly fee Structor</h4>
+                    <div class="space-y-3">
+                        <div class="flex justify-between"><label class="text-sm font-semibold">Monthly fee Amount</label><input type="number" id="e_m" oninput="calcAdminAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="0"></div>
+                        <div class="flex justify-between"><label class="text-sm font-semibold">Registration Fee</label><input type="number" id="e_r" oninput="calcAdminAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="0"></div>
+                        <div class="flex justify-between"><label class="text-sm font-semibold">Admission Fee</label><input type="number" id="e_a" oninput="calcAdminAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="0"></div>
+                        <div class="flex justify-between"><label class="text-sm font-semibold">Annual Fee</label><input type="number" id="e_an" oninput="calcAdminAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="0"></div>
+                        <div class="flex justify-between"><label class="text-sm font-semibold">Tution fee</label><input type="number" id="e_t" oninput="calcAdminAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="0"></div>
+                        <div class="flex justify-between pt-2 border-t"><label class="font-bold">Total Pay</label><input type="number" id="e_pay" readonly class="w-1/3 px-2 py-1 border rounded bg-slate-200 font-bold" value="0"></div>
+                        <div class="flex justify-between"><label class="font-bold">Total Due</label><input type="number" id="e_due" class="w-1/3 px-2 py-1 border rounded" value="0"></div>
+                    </div>
+                </div>
+                <div class="border p-4 rounded-lg bg-slate-50">
+                    <h4 class="font-bold border-b pb-2 mb-4 text-indigo-900">Extra Accessories</h4>
+                    <div class="space-y-3">
+                        <div class="flex justify-between"><label class="text-sm font-semibold">Buss Fee</label><input type="number" id="e_bs" oninput="calcAdminAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="0"></div>
+                        <div class="flex justify-between"><label class="text-sm font-semibold">Sport fee</label><input type="number" id="e_sp" oninput="calcAdminAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="0"></div>
+                        <div class="flex justify-between"><label class="text-sm font-semibold">Caution Money</label><input type="number" id="e_c" oninput="calcAdminAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="0"></div>
+                        <div class="flex justify-between"><label class="text-sm font-semibold">Development Fee</label><input type="number" id="e_d" oninput="calcAdminAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="0"></div>
+                        <div class="flex justify-between"><label class="text-sm font-semibold">Library Fee</label><input type="number" id="e_l" oninput="calcAdminAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="0"></div>
+                        <div class="flex justify-between"><label class="text-sm font-semibold">Book</label><input type="number" id="e_bk" oninput="calcAdminAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="0"></div>
+                        <div class="flex justify-between pt-2 border-t"><label class="font-bold">Total Extra</label><input type="number" id="e_ext" readonly class="w-1/3 px-2 py-1 border rounded bg-slate-200 font-bold" value="0"></div>
+                    </div>
+                </div>
             </div>
-            <p class="text-xs text-slate-500 mt-2">*Full editing with fees & photos is available in the Main Staff Website.</p>
+
+            <div class="bg-emerald-100 p-4 rounded-lg flex justify-between items-center border border-emerald-200 mb-6">
+                <h3 class="font-bold text-emerald-900 text-lg">Total Fee Amount</h3>
+                <input type="number" id="e_final" readonly class="bg-transparent text-right font-bold text-emerald-800 text-2xl w-32 outline-none" value="0">
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t mb-6 bg-slate-50 p-4 rounded-lg">
+                <div><label class="block text-sm font-bold mb-2">Change Photo</label><input type="file" accept="image/*" onchange="processAdminEditImg(event, 'p')" class="text-sm"></div>
+                <div><label class="block text-sm font-bold mb-2">Change Parent Sig</label><input type="file" accept="image/*" onchange="processAdminEditImg(event, 'ps')" class="text-sm"></div>
+                <div><label class="block text-sm font-bold mb-2">Change Acc. Sig</label><input type="file" accept="image/*" onchange="processAdminEditImg(event, 'as')" class="text-sm"></div>
+            </div>
+
+            <div class="flex space-x-4">
+                <button onclick="saveFullEdit()" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white py-3 rounded-lg font-bold shadow-lg text-lg transition-all"><i class="fa-solid fa-check mr-2"></i> Save Full Edit</button>
+                <button onclick="document.getElementById('fullEditSection').classList.add('hidden')" class="bg-slate-400 hover:bg-slate-500 text-white px-8 py-3 rounded-lg font-bold shadow-lg transition-all">Cancel</button>
+            </div>
         </div>
+
     </div>
 
     <script>
         let admissions = JSON.parse(localStorage.getItem('mps_admissions_v3')) || [];
-        let newLogoBase64 = localStorage.getItem('mps_logo') || ""; // holds the logo
+        let newLogoBase64 = localStorage.getItem('mps_logo') || ""; 
+        let temp_p = "", temp_ps = "", temp_as = ""; 
 
         // Admin Security
         function adminLogin() {
@@ -103,23 +142,20 @@
         }
         function logoutAdmin() { location.reload(); }
 
-        // Process Uploaded Logo
+        // Process Settings Logo
         function processAdminLogo(e) {
             let file = e.target.files[0]; if(!file) return;
-            let reader = new FileReader();
-            reader.onload = function(ev) {
-                let img = new Image();
-                img.onload = function() {
+            let r = new FileReader(); r.onload = function(ev) {
+                let img = new Image(); img.onload = function() {
                     let canvas = document.createElement('canvas'); let ctx = canvas.getContext('2d');
-                    let scale = img.width > 200 ? 200 / img.width : 1; // Compress size for storage
+                    let scale = img.width > 200 ? 200 / img.width : 1;
                     canvas.width = img.width * scale; canvas.height = img.height * scale;
                     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                     newLogoBase64 = canvas.toDataURL('image/jpeg', 0.8);
                 }; img.src = ev.target.result;
-            }; reader.readAsDataURL(file);
+            }; r.readAsDataURL(file);
         }
 
-        // Settings Management
         function loadSettings() {
             document.getElementById('setSchoolName').value = localStorage.getItem('mps_schoolName') || "Motion Public School";
             document.getElementById('setStaffUser').value = localStorage.getItem('mps_staffUser') || "Motion Public School";
@@ -134,42 +170,92 @@
             localStorage.setItem('mps_staffPass', document.getElementById('setStaffPass').value);
             localStorage.setItem('mps_loginTitle', document.getElementById('setLoginTitle').value);
             localStorage.setItem('mps_map', document.getElementById('mapUrl').value);
-            
-            // Save the logo if uploaded
             if(newLogoBase64) localStorage.setItem('mps_logo', newLogoBase64);
-            
-            alert("Success! Main website updated with new Logo, Name, Passwords, and Settings.");
+            alert("Success! Main website updated with Settings & Logo.");
         }
 
-        // Records Management
+        // Records Management Table
         function renderAdminData() {
             let tb = document.getElementById("adminTableBody"); tb.innerHTML = "";
+            if (admissions.length === 0) { tb.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-slate-500">No records found.</td></tr>`; return; }
             admissions.forEach((ad, i) => {
                 tb.innerHTML += `<tr>
-                    <td class="p-3 font-semibold">${ad.name}</td><td class="p-3">${ad.cls}</td>
+                    <td class="p-3 font-semibold">${ad.name}</td><td class="p-3 text-slate-600">${ad.cls}</td>
                     <td class="p-3 text-center space-x-2">
-                        <button onclick="openQuickEdit(${i})" class="bg-blue-100 text-blue-600 px-3 py-1 rounded font-bold hover:bg-blue-500 hover:text-white transition"><i class="fa-solid fa-pen"></i> Edit</button>
-                        <button onclick="deleteData(${i})" class="bg-red-100 text-red-600 px-3 py-1 rounded font-bold hover:bg-red-500 hover:text-white transition"><i class="fa-solid fa-trash"></i> Delete</button>
+                        <button onclick="openFullEdit(${i})" class="bg-blue-100 text-blue-600 px-4 py-2 rounded font-bold hover:bg-blue-500 hover:text-white transition"><i class="fa-solid fa-pen"></i> Edit</button>
+                        <button onclick="deleteData(${i})" class="bg-red-100 text-red-600 px-4 py-2 rounded font-bold hover:bg-red-500 hover:text-white transition"><i class="fa-solid fa-trash"></i> Delete</button>
                     </td>
                 </tr>`;
             });
         }
 
-        function openQuickEdit(i) {
-            document.getElementById('adminEditIndex').value = i;
-            document.getElementById('eName').value = admissions[i].name;
-            document.getElementById('eClass').value = admissions[i].cls;
-            document.getElementById('quickEditModal').classList.remove('hidden');
-            document.getElementById('quickEditModal').scrollIntoView();
+        // FULL EDIT SYSTEM
+        function calcAdminAdTotal() {
+            let g = (id) => Number(document.getElementById(id).value) || 0;
+            let pay = g('e_m') + g('e_r') + g('e_a') + g('e_an') + g('e_t');
+            let ext = g('e_bs') + g('e_sp') + g('e_c') + g('e_d') + g('e_l') + g('e_bk');
+            document.getElementById('e_pay').value = pay; document.getElementById('e_ext').value = ext;
+            document.getElementById('e_final').value = pay + ext;
         }
 
-        function saveQuickEdit() {
+        function processAdminEditImg(e, type) {
+            let file = e.target.files[0]; if(!file) return;
+            let r = new FileReader(); r.onload = function(ev) {
+                let img = new Image(); img.onload = function() {
+                    let canvas = document.createElement('canvas'); let ctx = canvas.getContext('2d');
+                    let scale = img.width > 400 ? 400 / img.width : 1;
+                    canvas.width = img.width * scale; canvas.height = img.height * scale;
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    let b64 = canvas.toDataURL('image/jpeg', 0.6);
+                    if(type === 'p') temp_p = b64; if(type === 'ps') temp_ps = b64; if(type === 'as') temp_as = b64;
+                }; img.src = ev.target.result;
+            }; r.readAsDataURL(file);
+        }
+
+        function openFullEdit(i) {
+            temp_p = ""; temp_ps = ""; temp_as = ""; // clear temp imgs
+            document.getElementById('adminEditIndex').value = i;
+            let d = admissions[i];
+            
+            document.getElementById('e_name').value = d.name; document.getElementById('e_fname').value = d.fname;
+            document.getElementById('e_roll').value = d.roll; document.getElementById('e_class').value = d.cls;
+            document.getElementById('e_month').value = d.month; document.getElementById('e_due').value = d.due;
+            
+            document.getElementById('e_m').value = d.v.m; document.getElementById('e_r').value = d.v.r;
+            document.getElementById('e_a').value = d.v.a; document.getElementById('e_an').value = d.v.an;
+            document.getElementById('e_t').value = d.v.t; document.getElementById('e_pay').value = d.v.pay;
+            
+            document.getElementById('e_bs').value = d.v.bs; document.getElementById('e_sp').value = d.v.sp;
+            document.getElementById('e_c').value = d.v.c; document.getElementById('e_d').value = d.v.d;
+            document.getElementById('e_l').value = d.v.l; document.getElementById('e_bk').value = d.v.bk;
+            document.getElementById('e_ext').value = d.v.ext; document.getElementById('e_final').value = d.v.final;
+
+            document.getElementById('fullEditSection').classList.remove('hidden');
+            document.getElementById('fullEditSection').scrollIntoView({behavior: "smooth"});
+        }
+
+        function saveFullEdit() {
             let i = document.getElementById('adminEditIndex').value;
-            admissions[i].name = document.getElementById('eName').value;
-            admissions[i].cls = document.getElementById('eClass').value;
+            let d = admissions[i];
+            
+            d.name = document.getElementById('e_name').value; d.fname = document.getElementById('e_fname').value;
+            d.roll = document.getElementById('e_roll').value; d.cls = document.getElementById('e_class').value;
+            d.month = document.getElementById('e_month').value; d.due = document.getElementById('e_due').value;
+            
+            d.v.m = document.getElementById('e_m').value; d.v.r = document.getElementById('e_r').value;
+            d.v.a = document.getElementById('e_a').value; d.v.an = document.getElementById('e_an').value;
+            d.v.t = document.getElementById('e_t').value; d.v.pay = document.getElementById('e_pay').value;
+            
+            d.v.bs = document.getElementById('e_bs').value; d.v.sp = document.getElementById('e_sp').value;
+            d.v.c = document.getElementById('e_c').value; d.v.d = document.getElementById('e_d').value;
+            d.v.l = document.getElementById('e_l').value; d.v.bk = document.getElementById('e_bk').value;
+            d.v.ext = document.getElementById('e_ext').value; d.v.final = document.getElementById('e_final').value;
+            
+            if(temp_p) d.photo = temp_p; if(temp_ps) d.parentSig = temp_ps; if(temp_as) d.accSig = temp_as;
+
             localStorage.setItem('mps_admissions_v3', JSON.stringify(admissions));
-            document.getElementById('quickEditModal').classList.add('hidden');
-            renderAdminData(); alert("Record Updated!");
+            document.getElementById('fullEditSection').classList.add('hidden');
+            renderAdminData(); alert("Record Fully Updated!");
         }
 
         function deleteData(index) {
