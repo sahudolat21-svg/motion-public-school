@@ -123,44 +123,70 @@
 
         let admissions = [];
         let t_p = "", t_ps = "", t_as = ""; 
-        
-        let sName = localStorage.getItem('mps_schoolName') || "Motion Public School";
-        let sUser = localStorage.getItem('mps_staffUser') || "Motion Public School";
-        let sPass = localStorage.getItem('mps_staffPass') || "MPS 752040";
-        let sTitle = localStorage.getItem('mps_loginTitle') || "STAFF LOGIN";
-        let logo = localStorage.getItem('mps_logo');
-        
-        document.getElementById('displaySchoolName1').innerText = sName;
-        document.getElementById('displaySchoolName2').innerText = sName;
-        document.getElementById('loginTitleDisplay').innerText = sTitle;
-        if(logo) document.getElementById('schoolLogo').src = logo;
 
-        // Fetch Data from JSONBin Cloud
+        // Fetch Cloud Settings & Admissions on Page Load
         async function fetchCloudData() {
             try {
                 let response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
                     headers: { 'X-Master-Key': JSONBIN_API_KEY }
                 });
                 let result = await response.json();
-                if(result && result.record && result.record.admissions) {
-                    admissions = result.record.admissions;
+                if(result && result.record) {
+                    if(result.record.admissions) {
+                        admissions = result.record.admissions;
+                    }
+                    if(result.record.settings) {
+                        let s = result.record.settings;
+                        if(s.schoolName) localStorage.setItem('mps_schoolName', s.schoolName);
+                        if(s.staffUser) localStorage.setItem('mps_staffUser', s.staffUser);
+                        if(s.staffPass) localStorage.setItem('mps_staffPass', s.staffPass);
+                        if(s.loginTitle) localStorage.setItem('mps_loginTitle', s.loginTitle);
+                        if(s.map) localStorage.setItem('mps_map', s.map);
+                        if(s.logo) localStorage.setItem('mps_logo', s.logo);
+                    }
                 }
             } catch (err) {
                 console.log("Cloud fetch failed, using local backup");
                 admissions = JSON.parse(localStorage.getItem('mps_admissions_v3')) || [];
             }
+            applySettingsToUI();
         }
+
+        // Apply loaded settings to UI elements
+        function applySettingsToUI() {
+            let sName = localStorage.getItem('mps_schoolName') || "Motion Public School";
+            let sTitle = localStorage.getItem('mps_loginTitle') || "STAFF LOGIN";
+            let logo = localStorage.getItem('mps_logo');
+            
+            document.getElementById('displaySchoolName1').innerText = sName;
+            document.getElementById('displaySchoolName2').innerText = sName;
+            document.getElementById('loginTitleDisplay').innerText = sTitle;
+            if(logo) document.getElementById('schoolLogo').src = logo;
+        }
+
+        // Run fetch when page loads
+        window.onload = function() {
+            fetchCloudData();
+        };
 
         // Save Data to JSONBin Cloud
         async function saveCloudData() {
             try {
+                let response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
+                    headers: { 'X-Master-Key': JSONBIN_API_KEY }
+                });
+                let result = await response.json();
+                let currentData = result.record || {};
+                
+                currentData.admissions = admissions;
+
                 await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
                         'X-Master-Key': JSONBIN_API_KEY
                     },
-                    body: JSON.stringify({ admissions: admissions })
+                    body: JSON.stringify(currentData)
                 });
                 localStorage.setItem('mps_admissions_v3', JSON.stringify(admissions));
             } catch (err) {
@@ -175,10 +201,13 @@
         }
 
         async function login() {
+            let sUser = localStorage.getItem('mps_staffUser') || "Motion Public School";
+            let sPass = localStorage.getItem('mps_staffPass') || "MPS 752040";
+
             if(document.getElementById("username").value === sUser && document.getElementById("password").value === sPass) {
                 document.getElementById("loginScreen").classList.add("hidden"); 
                 document.getElementById("dashboard").classList.remove("hidden");
-                await fetchCloudData(); // Load latest cloud data on login
+                await fetchCloudData(); 
             } else {
                 document.getElementById("error-msg").classList.remove("hidden");
             }
@@ -248,7 +277,7 @@
         }
 
         async function renderAdmissions() {
-            await fetchCloudData(); // Fetch latest before rendering
+            await fetchCloudData(); 
             let tb = document.getElementById("adTableBody"); tb.innerHTML = "";
             if(admissions.length === 0) {
                 tb.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-slate-500">No records found.</td></tr>`;
@@ -263,6 +292,7 @@
         }
 
         function generateSlip(index) {
+            let sName = localStorage.getItem('mps_schoolName') || "Motion Public School";
             const { jsPDF } = window.jspdf; const doc = new jsPDF('p', 'mm', 'a4'); const d = admissions[index];
             doc.rect(10, 10, 190, 277); doc.rect(12, 12, 186, 273);
             doc.setFont("times", "bold"); doc.setFontSize(32); doc.text(sName, 105, 30, {align: 'center'});
