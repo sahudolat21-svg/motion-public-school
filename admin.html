@@ -111,7 +111,10 @@
 
         <!-- Manage Records Table -->
         <div id="recordsView" class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-            <h2 class="text-xl font-bold mb-4 text-slate-800"><i class="fa-solid fa-database text-red-600"></i> Manage Admission Records (Cloud Synced)</h2>
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold text-slate-800"><i class="fa-solid fa-database text-red-600"></i> Manage Admission Records (Cloud Synced)</h2>
+                <button onclick="renderAdminData()" class="bg-slate-100 px-3 py-1 rounded text-sm font-bold hover:bg-slate-200"><i class="fa-solid fa-rotate mr-1"></i> Refresh</button>
+            </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead class="bg-slate-200"><tr><th class="p-3">Student Name</th><th class="p-3">Class</th><th class="p-3 text-center">Action</th></tr></thead>
@@ -135,7 +138,7 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-6">
                 <div class="border p-4 rounded-lg bg-slate-50">
-                    <h4 class="font-bold border-b pb-2 mb-4 text-indigo-900">Monthly fee Structor</h4>
+                    <h4 class="font-bold border-b pb-2 mb-4 text-indigo-900">Monthly fee Structure</h4>
                     <div class="space-y-3">
                         <div class="flex justify-between"><label class="text-sm font-semibold">Monthly fee Amount</label><input type="number" id="e_m" oninput="calcAdminAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="0"></div>
                         <div class="flex justify-between"><label class="text-sm font-semibold">Registration Fee</label><input type="number" id="e_r" oninput="calcAdminAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="0"></div>
@@ -149,7 +152,7 @@
                 <div class="border p-4 rounded-lg bg-slate-50">
                     <h4 class="font-bold border-b pb-2 mb-4 text-indigo-900">Extra Accessories</h4>
                     <div class="space-y-3">
-                        <div class="flex justify-between"><label class="text-sm font-semibold">Buss Fee</label><input type="number" id="e_bs" oninput="calcAdminAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="0"></div>
+                        <div class="flex justify-between"><label class="text-sm font-semibold">Bus Fee</label><input type="number" id="e_bs" oninput="calcAdminAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="0"></div>
                         <div class="flex justify-between"><label class="text-sm font-semibold">Sport fee</label><input type="number" id="e_sp" oninput="calcAdminAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="0"></div>
                         <div class="flex justify-between"><label class="text-sm font-semibold">Caution Money</label><input type="number" id="e_c" oninput="calcAdminAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="0"></div>
                         <div class="flex justify-between"><label class="text-sm font-semibold">Development Fee</label><input type="number" id="e_d" oninput="calcAdminAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="0"></div>
@@ -197,48 +200,40 @@
         let realAdminPass = localStorage.getItem('mps_actualAdminPass') || "rp sir mps";
         let resetOTP = "";
 
-       // Fetch Data from Cloud (Firebase) on Page Load
-async function fetchCloudData() {
-    try {
-        const querySnapshot = await window.getDocs(window.collection(window.db, "portalData"));
-        let isDataLoaded = false;
-        
-        querySnapshot.forEach((doc) => {
-            if (doc.id === "admissionsDoc") {
-                let cloudData = doc.data();
-                if (cloudData && cloudData.admissions) {
-                    admissions = cloudData.admissions;
-                    isDataLoaded = true;
+        // Fetch Data from Cloud (JSONBin)
+        async function fetchCloudData() {
+            try {
+                let response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
+                    headers: { 'X-Master-Key': JSONBIN_API_KEY }
+                });
+                let result = await response.json();
+                if(result && result.record && result.record.admissions) {
+                    admissions = result.record.admissions;
                 }
+            } catch (err) {
+                console.log("Cloud fetch failed, using local backup");
+                admissions = JSON.parse(localStorage.getItem('mps_admissions_v3')) || [];
             }
-        });
-
-        if (!isDataLoaded) {
-            // Agar cloud me data nahi milta, toh local data use karein
-            admissions = JSON.parse(localStorage.getItem('mps_admissions_v3')) || [];
         }
-    } catch (err) {
-        console.log("Cloud fetch failed, using local backup", err);
-        admissions = JSON.parse(localStorage.getItem('mps_admissions_v3')) || [];
-    }
-}
-       // Save Data to Cloud (Firebase)
-async function saveCloudData() {
-    try {
-        // Firebase Firestore me data save karna
-        const docRef = window.doc(window.db, "portalData", "admissionsDoc");
-        await window.setDoc(docRef, { admissions: admissions });
-        
-        // Local backup bhi save rakhna
-        localStorage.setItem('mps_admissions_v3', JSON.stringify(admissions));
-    } catch (err) {
-        console.error("Error saving to Firebase: ", err);
-        alert("⚠️ Cloud sync error! Data saved locally.");
-        localStorage.setItem('mps_admissions_v3', JSON.stringify(admissions));
-    }
-}
 
-        // Direct Admin Login
+        // Save Data to Cloud (JSONBin)
+        async function saveCloudData() {
+            try {
+                await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': JSONBIN_API_KEY
+                    },
+                    body: JSON.stringify({ admissions: admissions })
+                });
+                localStorage.setItem('mps_admissions_v3', JSON.stringify(admissions));
+            } catch (err) {
+                alert("⚠️ Cloud sync error! Data saved locally.");
+                localStorage.setItem('mps_admissions_v3', JSON.stringify(admissions));
+            }
+        }
+
         async function adminLogin() {
             let u = document.getElementById("adminUser").value;
             let p = document.getElementById("adminPass").value;
@@ -247,7 +242,7 @@ async function saveCloudData() {
                 document.getElementById("adminLoginScreen").classList.add("hidden"); 
                 document.getElementById("adminDashboard").classList.remove("hidden");
                 loadSettings(); 
-                await fetchCloudData(); // Load latest cloud data
+                await fetchCloudData(); 
                 renderAdminData();
             } else {
                 document.getElementById("admin-error-msg").classList.remove("hidden");
@@ -255,7 +250,6 @@ async function saveCloudData() {
         }
         function logoutAdmin() { location.reload(); }
 
-        // RESET LOGIC
         function toggleResetFlow(show) {
             if(show) {
                 document.getElementById('loginBox').classList.add('hidden');
@@ -274,14 +268,13 @@ async function saveCloudData() {
         function sendResetOTP() {
             let btn = document.getElementById("sendResetOtpBtn");
             btn.innerText = "Sending OTP..."; btn.disabled = true;
-            
             resetOTP = Math.floor(1000 + Math.random() * 9000).toString();
             
             emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
                 otp: resetOTP,
                 to_email: "rajpurushottamraj1@gmail.com"
             }).then(function(response) {
-                alert("✅ Reset OTP successfully sent to rajpurushottamraj1@gmail.com");
+                alert("✅ Reset OTP successfully sent to registered email");
                 document.getElementById('resetStep1').classList.add('hidden');
                 document.getElementById('resetStep2').classList.remove('hidden');
                 btn.innerText = "Send Email OTP"; btn.disabled = false;
@@ -314,14 +307,12 @@ async function saveCloudData() {
             localStorage.setItem('mps_actualAdminUser', u);
             localStorage.setItem('mps_actualAdminPass', p1);
             realAdminUser = u; realAdminPass = p1;
-
             resetOTP = ""; 
 
-            alert("✅ Admin Password successfully updated! Please login with your new details.");
+            alert("✅ Admin Password successfully updated!");
             toggleResetFlow(false); 
         }
 
-        // Processing and Full Edit Logic
         function processAdminLogo(e) {
             let file = e.target.files[0]; if(!file) return;
             let r = new FileReader(); r.onload = function(ev) {
@@ -350,10 +341,11 @@ async function saveCloudData() {
             localStorage.setItem('mps_loginTitle', document.getElementById('setLoginTitle').value);
             localStorage.setItem('mps_map', document.getElementById('mapUrl').value);
             if(newLogoBase64) localStorage.setItem('mps_logo', newLogoBase64);
-            alert("Success! Main website updated with Settings & Logo.");
+            alert("Success! Settings updated.");
         }
 
-        function renderAdminData() {
+        async function renderAdminData() {
+            await fetchCloudData();
             let tb = document.getElementById("adminTableBody"); tb.innerHTML = "";
             if (admissions.length === 0) { tb.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-slate-500">No records found.</td></tr>`; return; }
             admissions.forEach((ad, i) => {
@@ -430,9 +422,7 @@ async function saveCloudData() {
             
             if(temp_p) d.photo = temp_p; if(temp_ps) d.parentSig = temp_ps; if(temp_as) d.accSig = temp_as;
 
-            // Save to Cloud Bin
             await saveCloudData();
-
             document.getElementById('fullEditSection').classList.add('hidden');
             renderAdminData(); alert("Record Fully Updated & Synced to Cloud!");
         }
@@ -440,41 +430,10 @@ async function saveCloudData() {
         async function deleteData(index) {
             if(confirm("Permanently delete this record?")) {
                 admissions.splice(index, 1);
-                // Save to Cloud Bin
                 await saveCloudData();
                 renderAdminData();
             }
         }
-        </script>
-    
-        <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-analytics.js";
-  import { getFirestore, collection, addDoc, getDocs, setDoc, doc } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyDJN-mT849BKmhUMFeEhBWhjdw84jneg98",
-    authDomain: "mps-portal-fa086.firebaseapp.com",
-    projectId: "mps-portal-fa086",
-    storageBucket: "mps-portal-fa086.firebasestorage.app",
-    messagingSenderId: "983814295809",
-    appId: "1:983814295809:web:edbe73fb2e7855742f0b00",
-    measurementId: "G-801940BX7K"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-  
-  // Database ko initialize karein
-  const db = getFirestore(app);
-  
-  // Isko global bana dete hain taaki aapke baaki code me use ho sake
-  window.db = db;
-  window.collection = collection;
-  window.addDoc = addDoc;
-  window.getDocs = getDocs;
-  window.setDoc = setDoc;
-  window.doc = doc;
-</script>
+    </script>
 </body>
 </html>
