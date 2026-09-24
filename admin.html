@@ -106,7 +106,7 @@
         </div>
 
         <div class="flex justify-center mb-10 border-b pb-8">
-            <button onclick="saveAllSettings()" class="bg-indigo-600 text-white px-10 py-3 rounded-lg font-bold text-lg hover:bg-indigo-700 shadow-lg transition-all"><i class="fa-solid fa-save mr-2"></i> Save All Changes</button>
+            <button onclick="saveAllSettings()" class="bg-indigo-600 text-white px-10 py-3 rounded-lg font-bold text-lg hover:bg-indigo-700 shadow-lg transition-all"><i class="fa-solid fa-save mr-2"></i> Save All Changes & Sync</button>
         </div>
 
         <!-- Manage Records Table -->
@@ -200,15 +200,26 @@
         let realAdminPass = localStorage.getItem('mps_actualAdminPass') || "rp sir mps";
         let resetOTP = "";
 
-        // Fetch Data from Cloud (JSONBin)
+        // Fetch Data & Settings from Cloud (JSONBin)
         async function fetchCloudData() {
             try {
                 let response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
                     headers: { 'X-Master-Key': JSONBIN_API_KEY }
                 });
                 let result = await response.json();
-                if(result && result.record && result.record.admissions) {
-                    admissions = result.record.admissions;
+                if(result && result.record) {
+                    if(result.record.admissions) {
+                        admissions = result.record.admissions;
+                    }
+                    if(result.record.settings) {
+                        let s = result.record.settings;
+                        if(s.schoolName) localStorage.setItem('mps_schoolName', s.schoolName);
+                        if(s.staffUser) localStorage.setItem('mps_staffUser', s.staffUser);
+                        if(s.staffPass) localStorage.setItem('mps_staffPass', s.staffPass);
+                        if(s.loginTitle) localStorage.setItem('mps_loginTitle', s.loginTitle);
+                        if(s.map) localStorage.setItem('mps_map', s.map);
+                        if(s.logo) localStorage.setItem('mps_logo', s.logo);
+                    }
                 }
             } catch (err) {
                 console.log("Cloud fetch failed, using local backup");
@@ -219,13 +230,21 @@
         // Save Data to Cloud (JSONBin)
         async function saveCloudData() {
             try {
+                let response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
+                    headers: { 'X-Master-Key': JSONBIN_API_KEY }
+                });
+                let result = await response.json();
+                let currentData = result.record || {};
+                
+                currentData.admissions = admissions;
+
                 await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
                         'X-Master-Key': JSONBIN_API_KEY
                     },
-                    body: JSON.stringify({ admissions: admissions })
+                    body: JSON.stringify(currentData)
                 });
                 localStorage.setItem('mps_admissions_v3', JSON.stringify(admissions));
             } catch (err) {
@@ -241,8 +260,8 @@
             if(u === realAdminUser && p === realAdminPass) {
                 document.getElementById("adminLoginScreen").classList.add("hidden"); 
                 document.getElementById("adminDashboard").classList.remove("hidden");
-                loadSettings(); 
                 await fetchCloudData(); 
+                loadSettings(); 
                 renderAdminData();
             } else {
                 document.getElementById("admin-error-msg").classList.remove("hidden");
@@ -334,14 +353,48 @@
             document.getElementById('mapUrl').value = localStorage.getItem('mps_map') || "";
         }
 
-        function saveAllSettings() {
-            localStorage.setItem('mps_schoolName', document.getElementById('setSchoolName').value);
-            localStorage.setItem('mps_staffUser', document.getElementById('setStaffUser').value);
-            localStorage.setItem('mps_staffPass', document.getElementById('setStaffPass').value);
-            localStorage.setItem('mps_loginTitle', document.getElementById('setLoginTitle').value);
-            localStorage.setItem('mps_map', document.getElementById('mapUrl').value);
-            if(newLogoBase64) localStorage.setItem('mps_logo', newLogoBase64);
-            alert("Success! Settings updated.");
+        async function saveAllSettings() {
+            let settingsData = {
+                schoolName: document.getElementById('setSchoolName').value,
+                staffUser: document.getElementById('setStaffUser').value,
+                staffPass: document.getElementById('setStaffPass').value,
+                loginTitle: document.getElementById('setLoginTitle').value,
+                map: document.getElementById('mapUrl').value,
+                logo: newLogoBase64 || localStorage.getItem('mps_logo') || ""
+            };
+
+            // LocalStorage update
+            localStorage.setItem('mps_schoolName', settingsData.schoolName);
+            localStorage.setItem('mps_staffUser', settingsData.staffUser);
+            localStorage.setItem('mps_staffPass', settingsData.staffPass);
+            localStorage.setItem('mps_loginTitle', settingsData.loginTitle);
+            localStorage.setItem('mps_map', settingsData.map);
+            if(settingsData.logo) localStorage.setItem('mps_logo', settingsData.logo);
+
+            // Cloud Bin save
+            try {
+                let response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
+                    headers: { 'X-Master-Key': JSONBIN_API_KEY }
+                });
+                let result = await response.json();
+                let currentData = result.record || {};
+                
+                currentData.settings = settingsData;
+                currentData.admissions = admissions;
+
+                await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': JSONBIN_API_KEY
+                    },
+                    body: JSON.stringify(currentData)
+                });
+                
+                alert("✅ Success! Settings saved and synced to cloud across all devices.");
+            } catch (err) {
+                alert("⚠️ Settings saved locally, but cloud sync failed.");
+            }
         }
 
         async function renderAdminData() {
