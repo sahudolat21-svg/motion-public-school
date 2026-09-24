@@ -35,8 +35,9 @@
                 <button id="nav-admissionList" onclick="showSection('admissionList', this); renderAdmissions();" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-indigo-200 hover:bg-indigo-900 transition-all"><i class="fa-solid fa-users w-5"></i><span>Admission List</span></button>
                 <button id="nav-attendance" onclick="showSection('attendanceSection', this); initAttendanceClasses();" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-indigo-200 hover:bg-indigo-900 transition-all"><i class="fa-solid fa-clipboard-user w-5"></i><span>Attendance</span></button>
             </div>
-            <div class="p-4 border-t border-indigo-900/50">
-                <button onclick="openMap()" class="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 rounded-lg mb-2 font-bold transition-all"><i class="fa-solid fa-map-location-dot"></i><span>View Location</span></button>
+            <div class="p-4 border-t border-indigo-900/50 space-y-2">
+                <button onclick="location.reload()" class="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg font-bold text-sm transition-all text-amber-400"><i class="fa-solid fa-rotate"></i><span>Refresh Page</span></button>
+                <button onclick="openMap()" class="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 rounded-lg font-bold transition-all"><i class="fa-solid fa-map-location-dot"></i><span>View Location</span></button>
                 <button onclick="logout()" class="w-full flex items-center justify-center space-x-2 px-4 py-2 text-red-400 hover:bg-indigo-900 rounded-lg transition-all"><i class="fa-solid fa-right-from-bracket"></i><span>Logout</span></button>
             </div>
         </div>
@@ -50,7 +51,10 @@
                 
                 <!-- NEW ADMISSION FORM -->
                 <div id="newAdmission" class="section block max-w-5xl mx-auto bg-white rounded-2xl shadow-sm border p-8">
-                    <h3 class="text-xl font-bold mb-6 border-b pb-2" id="formTitle">Admission & Fee Slip</h3>
+                    <div class="flex justify-between items-center mb-6 border-b pb-2">
+                        <h3 class="text-xl font-bold" id="formTitle">Admission & Fee Slip</h3>
+                        <button onclick="location.reload()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1 rounded text-sm font-bold"><i class="fa-solid fa-rotate mr-1"></i> Refresh</button>
+                    </div>
                     <input type="hidden" id="editAdIndex" value="-1">
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                         <div><label class="block text-sm font-semibold mb-1">Student Name</label><input type="text" id="adName" class="w-full px-3 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-500"></div>
@@ -159,7 +163,10 @@
                 <!-- ATTENDANCE SECTION -->
                 <div id="attendanceSection" class="section hidden max-w-5xl mx-auto space-y-6">
                     <div class="bg-white rounded-2xl shadow-sm border p-6">
-                        <h3 class="text-xl font-bold mb-4 text-indigo-900"><i class="fa-solid fa-calendar-days mr-2"></i>Attendance Records & Report</h3>
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-bold text-indigo-900"><i class="fa-solid fa-calendar-days mr-2"></i>Attendance Records & Report</h3>
+                            <button onclick="location.reload()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1 rounded text-sm font-bold"><i class="fa-solid fa-rotate mr-1"></i> Refresh</button>
+                        </div>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 items-end">
                             <div><label class="block text-sm font-semibold mb-1">Start Date</label><input type="date" id="attStartDate" class="w-full px-3 py-2 border rounded-lg outline-none"></div>
                             <div><label class="block text-sm font-semibold mb-1">End Date</label><input type="date" id="attEndDate" class="w-full px-3 py-2 border rounded-lg outline-none"></div>
@@ -232,6 +239,21 @@
         let admissions = JSON.parse(localStorage.getItem('mps_admissions_v3')) || [];
         let attendanceRecords = JSON.parse(localStorage.getItem('mps_attendance_records')) || [];
         let t_p = "", t_ps = "", t_as = ""; 
+
+        // Active session tracking for Live Watch
+        const sessionId = 'session_' + Math.random().toString(36.substring(2));
+        function registerActiveSession() {
+            let activeSessions = JSON.parse(localStorage.getItem('mps_active_sessions')) || {};
+            activeSessions[sessionId] = { time: Date.now(), role: 'Staff Portal' };
+            localStorage.setItem('mps_active_sessions', JSON.stringify(activeSessions));
+        }
+        registerActiveSession();
+        setInterval(registerActiveSession, 10000); // Heartbeat every 10s
+        window.addEventListener('beforeunload', () => {
+            let activeSessions = JSON.parse(localStorage.getItem('mps_active_sessions')) || {};
+            delete activeSessions[sessionId];
+            localStorage.setItem('mps_active_sessions', JSON.stringify(activeSessions));
+        });
 
         applySettingsToUI();
         syncCloudDataInBackground();
