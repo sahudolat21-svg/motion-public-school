@@ -9,6 +9,9 @@
     
     <!-- EmailJS Library -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <!-- jsPDF for Attendance Report Download -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
     
     <style>.hidden { display: none !important; }</style>
 </head>
@@ -98,7 +101,7 @@
             <div class="bg-red-50 p-6 rounded-lg border border-red-100 shadow-sm">
                 <h2 class="text-xl font-bold mb-4 text-red-900"><i class="fa-solid fa-lock"></i> Staff Portal Login Setup</h2>
                 <div class="space-y-4">
-                    <div><label class="block font-semibold mb-1 text-sm">Login Page Name/Title</label><input type="text" id="setLoginTitle" class="w-full px-4 py-2 border rounded outline-none focus:ring-2 focus:ring-red-500" placeholder="e.g. STAFF LOGIN"></div>
+                    <div><label class="block font-semibold mb-1 text-sm">Login Page Name/Title</label><input type="text" id="setLoginTitle" class="w-full px-4 py-2 border rounded outline-none focus:ring-2 focus:ring-red-500" placeholder="e.g. mps"></div>
                     <div><label class="block font-semibold mb-1 text-sm">Change Staff Username</label><input type="text" id="setStaffUser" class="w-full px-4 py-2 border rounded outline-none focus:ring-2 focus:ring-red-500"></div>
                     <div><label class="block font-semibold mb-1 text-sm">Change Staff Password</label><input type="text" id="setStaffPass" class="w-full px-4 py-2 border rounded outline-none focus:ring-2 focus:ring-red-500"></div>
                 </div>
@@ -107,6 +110,39 @@
 
         <div class="flex justify-center mb-10 border-b pb-8">
             <button onclick="saveAllSettings()" class="bg-indigo-600 text-white px-10 py-3 rounded-lg font-bold text-lg hover:bg-indigo-700 shadow-lg transition-all"><i class="fa-solid fa-save mr-2"></i> Save All Changes & Sync</button>
+        </div>
+
+        <!-- ATTENDANCE RECORDS & REPORTS (ADMIN CONTROL) -->
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-8">
+            <h2 class="text-xl font-bold mb-4 text-indigo-900"><i class="fa-solid fa-calendar-days text-indigo-600 mr-2"></i> Attendance Records & Reports</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 items-end">
+                <div>
+                    <label class="block text-sm font-semibold mb-1">Start Date</label>
+                    <input type="date" id="adminAttStartDate" class="w-full px-3 py-2 border rounded-lg outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1">End Date</label>
+                    <input type="date" id="adminAttEndDate" class="w-full px-3 py-2 border rounded-lg outline-none">
+                </div>
+                <div>
+                    <button onclick="viewAdminAttendanceReport()" class="w-full bg-indigo-900 hover:bg-indigo-800 text-white font-bold py-2 px-4 rounded-lg shadow transition-all">View Report</button>
+                </div>
+            </div>
+            
+            <div id="adminAttendanceReportContainer" class="hidden mt-4">
+                <div class="flex justify-between items-center mb-3">
+                    <h4 class="font-bold text-slate-700" id="adminReportDateRangeTitle">Report List</h4>
+                    <button onclick="downloadAdminAttendancePDF()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-bold text-sm shadow"><i class="fa-solid fa-download mr-1"></i> Download PDF</button>
+                </div>
+                <div class="overflow-x-auto border rounded-lg max-h-96">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-100 text-slate-700 sticky top-0">
+                            <tr><th class="p-3">Date</th><th class="p-3">Class</th><th class="p-3">Student Name</th><th class="p-3">Roll No</th><th class="p-3">Status</th></tr>
+                        </thead>
+                        <tbody id="adminAttendanceReportTableBody" class="divide-y divide-slate-100"></tbody>
+                    </table>
+                </div>
+            </div>
         </div>
 
         <!-- Manage Records Table -->
@@ -128,12 +164,55 @@
             <h2 class="text-2xl font-bold mb-6 text-amber-600 border-b pb-2"><i class="fa-solid fa-pen-to-square"></i> Full Record Edit</h2>
             <input type="hidden" id="adminEditIndex">
             
-            <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                 <div><label class="block text-sm font-semibold mb-1">Student Name</label><input type="text" id="e_name" class="w-full px-3 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-amber-500"></div>
                 <div><label class="block text-sm font-semibold mb-1">Father Name</label><input type="text" id="e_fname" class="w-full px-3 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-amber-500"></div>
                 <div><label class="block text-sm font-semibold mb-1">Roll No</label><input type="text" id="e_roll" class="w-full px-3 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-amber-500"></div>
-                <div><label class="block text-sm font-semibold mb-1">Class</label><input type="text" id="e_class" class="w-full px-3 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-amber-500"></div>
-                <div><label class="block text-sm font-semibold mb-1">Month</label><input type="text" id="e_month" class="w-full px-3 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-amber-500"></div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div>
+                    <label class="block text-sm font-semibold mb-1">Class</label>
+                    <select id="e_class" class="w-full px-3 py-2 border rounded-lg outline-none bg-white focus:ring-2 focus:ring-amber-500">
+                        <option value="">Select Class</option>
+                        <option value="Nursery">Nursery</option>
+                        <option value="LKG">LKG</option>
+                        <option value="UKG">UKG</option>
+                        <option value="1st">1st</option>
+                        <option value="2nd">2nd</option>
+                        <option value="3rd">3rd</option>
+                        <option value="4th">4th</option>
+                        <option value="5th">5th</option>
+                        <option value="6th">6th</option>
+                        <option value="7th">7th</option>
+                        <option value="8th">8th</option>
+                        <option value="9th">9th</option>
+                        <option value="10th">10th</option>
+                        <option value="11th">11th</option>
+                        <option value="12th">12th</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1">Month</label>
+                    <select id="e_month" class="w-full px-3 py-2 border rounded-lg outline-none bg-white focus:ring-2 focus:ring-amber-500">
+                        <option value="">Select Month</option>
+                        <option value="January">January</option>
+                        <option value="February">February</option>
+                        <option value="March">March</option>
+                        <option value="April">April</option>
+                        <option value="May">May</option>
+                        <option value="June">June</option>
+                        <option value="July">July</option>
+                        <option value="August">August</option>
+                        <option value="September">September</option>
+                        <option value="October">October</option>
+                        <option value="November">November</option>
+                        <option value="December">December</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1">Admission Date</label>
+                    <input type="date" id="e_date" class="w-full px-3 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-amber-500">
+                </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-6">
@@ -191,13 +270,12 @@
         const JSONBIN_BIN_ID = "6ab3e3a0ac6210605aed6c4b";
         const JSONBIN_API_KEY = "$2a$10$yyc9hu99dDO8hxlNRqiu4eao2Pa7kAKyCv6VTZk9o6MXaTNGh6mvO";
 
-        // Turant localStorage se data load karo bina delay ke
         let admissions = JSON.parse(localStorage.getItem('mps_admissions_v3')) || [];
+        let attendanceRecords = JSON.parse(localStorage.getItem('mps_attendance_records')) || [];
         let newLogoBase64 = localStorage.getItem('mps_logo') || ""; 
         let temp_p = "", temp_ps = "", temp_as = ""; 
         let resetOTP = "";
 
-        // Background me cloud se sync karo
         syncCloudDataInBackground();
 
         async function syncCloudDataInBackground() {
@@ -210,6 +288,10 @@
                     if(result.record.admissions) {
                         admissions = result.record.admissions;
                         localStorage.setItem('mps_admissions_v3', JSON.stringify(admissions));
+                    }
+                    if(result.record.attendanceRecords) {
+                        attendanceRecords = result.record.attendanceRecords;
+                        localStorage.setItem('mps_attendance_records', JSON.stringify(attendanceRecords));
                     }
                     if(result.record.settings) {
                         let s = result.record.settings;
@@ -228,6 +310,7 @@
 
         async function saveCloudData() {
             localStorage.setItem('mps_admissions_v3', JSON.stringify(admissions));
+            localStorage.setItem('mps_attendance_records', JSON.stringify(attendanceRecords));
             try {
                 let response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
                     headers: { 'X-Master-Key': JSONBIN_API_KEY }
@@ -236,6 +319,7 @@
                 let currentData = result.record || {};
                 
                 currentData.admissions = admissions;
+                currentData.attendanceRecords = attendanceRecords;
 
                 await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
                     method: 'PUT',
@@ -250,7 +334,7 @@
             }
         }
 
-        function adminLogin() {
+        async function adminLogin() {
             let u = document.getElementById("adminUser").value;
             let p = document.getElementById("adminPass").value;
 
@@ -268,6 +352,72 @@
             }
         }
         function logoutAdmin() { location.reload(); }
+
+        function viewAdminAttendanceReport() {
+            let start = document.getElementById('adminAttStartDate').value;
+            let end = document.getElementById('adminAttEndDate').value;
+            if(!start || !end) return alert("Please select both Start Date and End Date!");
+
+            let filtered = attendanceRecords.filter(r => r.date >= start && r.date <= end);
+            let tb = document.getElementById('adminAttendanceReportTableBody');
+            tb.innerHTML = "";
+
+            if(filtered.length === 0) {
+                tb.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500">No attendance records found between selected dates.</td></tr>`;
+            } else {
+                filtered.forEach(r => {
+                    let badgeColor = r.status === 'Present' ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800';
+                    tb.innerHTML += `
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-3">${r.date}</td>
+                            <td class="p-3">${r.cls}</td>
+                            <td class="p-3 font-semibold">${r.name}</td>
+                            <td class="p-3">${r.roll}</td>
+                            <td class="p-3"><span class="px-2 py-1 rounded text-xs font-bold ${badgeColor}">${r.status}</span></td>
+                        </tr>
+                    `;
+                });
+            }
+
+            document.getElementById('adminReportDateRangeTitle').innerText = `Report from ${start} to ${end}`;
+            document.getElementById('adminAttendanceReportContainer').classList.remove('hidden');
+        }
+
+        function downloadAdminAttendancePDF() {
+            let start = document.getElementById('adminAttStartDate').value;
+            let end = document.getElementById('adminAttEndDate').value;
+            let filtered = attendanceRecords.filter(r => r.date >= start && r.date <= end);
+
+            if(filtered.length === 0) return alert("No data available to download for this range!");
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'mm', 'a4');
+            let sName = localStorage.getItem('mps_schoolName') || "Motion Public School";
+
+            doc.setFont("times", "bold");
+            doc.setFontSize(22);
+            doc.text(sName, 105, 20, {align: 'center'});
+            
+            doc.setFontSize(14);
+            doc.setFont("times", "normal");
+            doc.text("Attendance Report (Admin Control)", 105, 28, {align: 'center'});
+            
+            doc.setFontSize(11);
+            doc.text(`Date Range: ${start} to ${end}`, 14, 38);
+            doc.line(14, 42, 196, 42);
+
+            let tableData = filtered.map(r => [r.date, r.cls, r.name, r.roll, r.status]);
+
+            doc.autoTable({
+                startY: 46,
+                theme: 'grid',
+                styles: { font: 'times', fontSize: 10 },
+                head: [['Date', 'Class', 'Student Name', 'Roll No', 'Status']],
+                body: tableData
+            });
+
+            doc.save(`Admin_Attendance_${start}_to_${end}.pdf`);
+        }
 
         function toggleResetFlow(show) {
             if(show) {
@@ -348,7 +498,7 @@
             document.getElementById('setSchoolName').value = localStorage.getItem('mps_schoolName') || "Motion Public School";
             document.getElementById('setStaffUser').value = localStorage.getItem('mps_staffUser') || "Motion Public School";
             document.getElementById('setStaffPass').value = localStorage.getItem('mps_staffPass') || "MPS 752040";
-            document.getElementById('setLoginTitle').value = localStorage.getItem('mps_loginTitle') || "STAFF LOGIN";
+            document.getElementById('setLoginTitle').value = localStorage.getItem('mps_loginTitle') || "mps";
             document.getElementById('mapUrl').value = localStorage.getItem('mps_map') || "";
         }
 
@@ -380,6 +530,7 @@
                 
                 currentData.settings = settingsData;
                 currentData.admissions = admissions;
+                currentData.attendanceRecords = attendanceRecords;
 
                 await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
                     method: 'PUT',
@@ -438,6 +589,13 @@
             document.getElementById('e_name').value = d.name; document.getElementById('e_fname').value = d.fname;
             document.getElementById('e_roll').value = d.roll; document.getElementById('e_class').value = d.cls;
             document.getElementById('e_month').value = d.month; document.getElementById('e_due').value = d.due;
+            if(d.date) {
+                // Convert DD/MM/YYYY to YYYY-MM-DD for date input
+                let parts = d.date.split('/');
+                if(parts.length === 3) {
+                    document.getElementById('e_date').value = `${parts[2]}-${parts[1]}-${parts[0]}`;
+                }
+            }
             
             document.getElementById('e_m').value = d.v.m; document.getElementById('e_r').value = d.v.r;
             document.getElementById('e_a').value = d.v.a; document.getElementById('e_an').value = d.v.an;
@@ -459,6 +617,12 @@
             d.name = document.getElementById('e_name').value; d.fname = document.getElementById('e_fname').value;
             d.roll = document.getElementById('e_roll').value; d.cls = document.getElementById('e_class').value;
             d.month = document.getElementById('e_month').value; d.due = document.getElementById('e_due').value;
+            
+            let inputDate = document.getElementById('e_date').value;
+            if(inputDate) {
+                let parts = inputDate.split('-');
+                if(parts.length === 3) d.date = `${parts[2]}-${parts[1]}-${parts[0]}`;
+            }
             
             d.v.m = document.getElementById('e_m').value; d.v.r = document.getElementById('e_r').value;
             d.v.a = document.getElementById('e_a').value; d.v.an = document.getElementById('e_an').value;
