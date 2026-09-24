@@ -241,14 +241,14 @@
         let t_p = "", t_ps = "", t_as = ""; 
 
         // Active session tracking for Live Watch
-        const sessionId = 'session_' + Math.random().toString(36.substring(2));
+        const sessionId = 'session_' + Math.random().toString(36).substring(2);
         function registerActiveSession() {
             let activeSessions = JSON.parse(localStorage.getItem('mps_active_sessions')) || {};
             activeSessions[sessionId] = { time: Date.now(), role: 'Staff Portal' };
             localStorage.setItem('mps_active_sessions', JSON.stringify(activeSessions));
         }
         registerActiveSession();
-        setInterval(registerActiveSession, 10000); // Heartbeat every 10s
+        setInterval(registerActiveSession, 10000);
         window.addEventListener('beforeunload', () => {
             let activeSessions = JSON.parse(localStorage.getItem('mps_active_sessions')) || {};
             delete activeSessions[sessionId];
@@ -334,7 +334,10 @@
             let sUser = localStorage.getItem('mps_staffUser') || "Motion Public School";
             let sPass = localStorage.getItem('mps_staffPass') || "MPS 752040";
 
-            if(document.getElementById("username").value === sUser && document.getElementById("password").value === sPass) {
+            let enteredUser = document.getElementById("username").value;
+            let enteredPass = document.getElementById("password").value;
+
+            if(enteredUser === sUser && enteredPass === sPass) {
                 document.getElementById("loginScreen").classList.add("hidden"); 
                 document.getElementById("dashboard").classList.remove("hidden");
             } else {
