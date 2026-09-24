@@ -15,7 +15,6 @@
     <!-- LOGIN SCREEN -->
     <div id="loginScreen" class="min-h-screen bg-slate-900 flex items-center justify-center p-4">
         <div class="max-w-md w-full bg-white rounded-2xl shadow-2xl overflow-hidden p-8 text-center border-t-4 border-indigo-900">
-            <!-- Dynamic Login Title -->
             <h1 id="loginTitleDisplay" class="text-2xl font-bold text-indigo-900 uppercase tracking-wider mb-6">STAFF LOGIN</h1>
             <p id="error-msg" class="hidden bg-red-100 text-red-700 p-2 rounded mb-4 text-sm font-bold">Galat Details!</p>
             <input type="text" id="username" class="w-full px-4 py-3 bg-slate-50 border rounded-lg mb-4 outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Username">
@@ -44,7 +43,7 @@
         <div class="flex-1 flex flex-col bg-slate-50 overflow-hidden">
             <header class="bg-white shadow-sm px-8 py-5 border-b flex justify-between items-center">
                 <h2 id="displaySchoolName2" class="text-2xl font-bold text-slate-800">Motion Public School</h2>
-                <span class="text-sm font-bold text-indigo-600 bg-indigo-100 px-3 py-1 rounded-full">Portal Access</span>
+                <span class="text-sm font-bold text-indigo-600 bg-indigo-100 px-3 py-1 rounded-full">Cloud Synced Portal</span>
             </header>
             <main class="flex-1 overflow-y-auto p-8">
                 
@@ -62,34 +61,34 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-6">
                         <div class="border p-4 rounded-lg bg-slate-50">
-                            <h4 class="font-bold border-b pb-2 mb-4 text-indigo-900">Monthly fee Structor</h4>
+                            <h4 class="font-bold border-b pb-2 mb-4 text-indigo-900">Monthly fee Structure</h4>
                             <div class="space-y-3">
-                                <div class="flex justify-between"><label class="text-sm font-semibold">Monthly fee Amount</label><input type="number" id="f_m" oninput="calcAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="00"></div>
-                                <div class="flex justify-between"><label class="text-sm font-semibold">Registration Fee</label><input type="number" id="f_r" oninput="calcAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="00"></div>
-                                <div class="flex justify-between"><label class="text-sm font-semibold">Admission Fee</label><input type="number" id="f_a" oninput="calcAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="00"></div>
-                                <div class="flex justify-between"><label class="text-sm font-semibold">Annual Fee</label><input type="number" id="f_an" oninput="calcAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="00"></div>
-                                <div class="flex justify-between"><label class="text-sm font-semibold">Tution fee</label><input type="number" id="f_t" oninput="calcAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="00"></div>
-                                <div class="flex justify-between pt-2 border-t"><label class="font-bold">Total Pay</label><input type="number" id="f_pay" readonly class="w-1/3 px-2 py-1 border rounded bg-slate-200 font-bold" value="00"></div>
-                                <div class="flex justify-between"><label class="font-bold">Total Due</label><input type="number" id="f_due" class="w-1/3 px-2 py-1 border rounded" value="00"></div>
+                                <div class="flex justify-between"><label class="text-sm font-semibold">Monthly fee Amount</label><input type="number" id="f_m" oninput="calcAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="0"></div>
+                                <div class="flex justify-between"><label class="text-sm font-semibold">Registration Fee</label><input type="number" id="f_r" oninput="calcAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="0"></div>
+                                <div class="flex justify-between"><label class="text-sm font-semibold">Admission Fee</label><input type="number" id="f_a" oninput="calcAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="0"></div>
+                                <div class="flex justify-between"><label class="text-sm font-semibold">Annual Fee</label><input type="number" id="f_an" oninput="calcAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="0"></div>
+                                <div class="flex justify-between"><label class="text-sm font-semibold">Tution fee</label><input type="number" id="f_t" oninput="calcAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="0"></div>
+                                <div class="flex justify-between pt-2 border-t"><label class="font-bold">Total Pay</label><input type="number" id="f_pay" readonly class="w-1/3 px-2 py-1 border rounded bg-slate-200 font-bold" value="0"></div>
+                                <div class="flex justify-between"><label class="font-bold">Total Due</label><input type="number" id="f_due" class="w-1/3 px-2 py-1 border rounded" value="0"></div>
                             </div>
                         </div>
                         <div class="border p-4 rounded-lg bg-slate-50">
                             <h4 class="font-bold border-b pb-2 mb-4 text-indigo-900">Extra Accessories</h4>
                             <div class="space-y-3">
-                                <div class="flex justify-between"><label class="text-sm font-semibold">Buss Fee</label><input type="number" id="f_bs" oninput="calcAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="00"></div>
-                                <div class="flex justify-between"><label class="text-sm font-semibold">Sport fee</label><input type="number" id="f_sp" oninput="calcAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="00"></div>
-                                <div class="flex justify-between"><label class="text-sm font-semibold">Caution Money</label><input type="number" id="f_c" oninput="calcAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="00"></div>
-                                <div class="flex justify-between"><label class="text-sm font-semibold">Development Fee</label><input type="number" id="f_d" oninput="calcAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="00"></div>
-                                <div class="flex justify-between"><label class="text-sm font-semibold">Library Fee</label><input type="number" id="f_l" oninput="calcAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="00"></div>
-                                <div class="flex justify-between"><label class="text-sm font-semibold">Book</label><input type="number" id="f_bk" oninput="calcAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="00"></div>
-                                <div class="flex justify-between pt-2 border-t"><label class="font-bold">Total Extra</label><input type="number" id="f_ext" readonly class="w-1/3 px-2 py-1 border rounded bg-slate-200 font-bold" value="00"></div>
+                                <div class="flex justify-between"><label class="text-sm font-semibold">Bus Fee</label><input type="number" id="f_bs" oninput="calcAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="0"></div>
+                                <div class="flex justify-between"><label class="text-sm font-semibold">Sport fee</label><input type="number" id="f_sp" oninput="calcAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="0"></div>
+                                <div class="flex justify-between"><label class="text-sm font-semibold">Caution Money</label><input type="number" id="f_c" oninput="calcAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="0"></div>
+                                <div class="flex justify-between"><label class="text-sm font-semibold">Development Fee</label><input type="number" id="f_d" oninput="calcAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="0"></div>
+                                <div class="flex justify-between"><label class="text-sm font-semibold">Library Fee</label><input type="number" id="f_l" oninput="calcAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="0"></div>
+                                <div class="flex justify-between"><label class="text-sm font-semibold">Book</label><input type="number" id="f_bk" oninput="calcAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="0"></div>
+                                <div class="flex justify-between pt-2 border-t"><label class="font-bold">Total Extra</label><input type="number" id="f_ext" readonly class="w-1/3 px-2 py-1 border rounded bg-slate-200 font-bold" value="0"></div>
                             </div>
                         </div>
                     </div>
 
                     <div class="bg-emerald-100 p-4 rounded-lg flex justify-between items-center border border-emerald-200 mb-6">
                         <h3 class="font-bold text-emerald-900 text-lg">Total Fee Amount</h3>
-                        <input type="number" id="f_final" readonly class="bg-transparent text-right font-bold text-emerald-800 text-2xl w-32 outline-none" value="00">
+                        <input type="number" id="f_final" readonly class="bg-transparent text-right font-bold text-emerald-800 text-2xl w-32 outline-none" value="0">
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t mb-6 bg-slate-50 p-4 rounded-lg">
@@ -98,12 +97,15 @@
                         <div><label class="block text-sm font-bold mb-2 text-indigo-900"><i class="fa-solid fa-signature mr-2"></i>Accountant's Signature</label><input type="file" accept="image/*" onchange="processImg(event, 'as')" class="text-sm"></div>
                     </div>
 
-                    <button onclick="saveAdmission()" class="w-full bg-indigo-900 hover:bg-indigo-800 text-white py-3 rounded-lg font-bold shadow-lg transition-all text-lg">Save Record</button>
+                    <button onclick="saveAdmission()" class="w-full bg-indigo-900 hover:bg-indigo-800 text-white py-3 rounded-lg font-bold shadow-lg transition-all text-lg">Save Record & Sync</button>
                 </div>
 
                 <!-- ADMISSION LIST -->
                 <div id="admissionList" class="section hidden bg-white rounded-2xl shadow-sm border overflow-hidden">
-                    <div class="px-8 py-5 border-b bg-slate-50"><h3 class="text-xl font-bold text-indigo-900">Records</h3></div>
+                    <div class="px-8 py-5 border-b bg-slate-50 flex justify-between items-center">
+                        <h3 class="text-xl font-bold text-indigo-900">Cloud Records</h3>
+                        <button onclick="renderAdmissions()" class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded text-sm font-bold hover:bg-indigo-200"><i class="fa-solid fa-rotate mr-1"></i> Refresh</button>
+                    </div>
                     <table class="w-full text-left">
                         <thead class="bg-slate-100 text-slate-600 text-sm"><tr><th class="p-4">Name</th><th class="p-4">Class</th><th class="p-4 text-center">Action</th></tr></thead>
                         <tbody id="adTableBody" class="divide-y divide-slate-100"></tbody>
@@ -115,10 +117,13 @@
     </div>
 
     <script>
-        let admissions = JSON.parse(localStorage.getItem('mps_admissions_v3')) || [];
-        let t_p = "", t_ps = "", t_as = ""; // Temp images
+        // JSONBin Credentials
+        const JSONBIN_BIN_ID = "6ab3e3a0ac6210605aed6c4b";
+        const JSONBIN_API_KEY = "$2a$10$yyc9hu99dDO8hxlNRqiu4eao2Pa7kAKyCv6VTZk9o6MXaTNGh6mvO";
+
+        let admissions = [];
+        let t_p = "", t_ps = "", t_as = ""; 
         
-        // Dynamic Settings Load
         let sName = localStorage.getItem('mps_schoolName') || "Motion Public School";
         let sUser = localStorage.getItem('mps_staffUser') || "Motion Public School";
         let sPass = localStorage.getItem('mps_staffPass') || "MPS 752040";
@@ -127,19 +132,56 @@
         
         document.getElementById('displaySchoolName1').innerText = sName;
         document.getElementById('displaySchoolName2').innerText = sName;
-        document.getElementById('loginTitleDisplay').innerText = sTitle; // Dynamic Title
+        document.getElementById('loginTitleDisplay').innerText = sTitle;
         if(logo) document.getElementById('schoolLogo').src = logo;
+
+        // Fetch Data from JSONBin Cloud
+        async function fetchCloudData() {
+            try {
+                let response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
+                    headers: { 'X-Master-Key': JSONBIN_API_KEY }
+                });
+                let result = await response.json();
+                if(result && result.record && result.record.admissions) {
+                    admissions = result.record.admissions;
+                }
+            } catch (err) {
+                console.log("Cloud fetch failed, using local backup");
+                admissions = JSON.parse(localStorage.getItem('mps_admissions_v3')) || [];
+            }
+        }
+
+        // Save Data to JSONBin Cloud
+        async function saveCloudData() {
+            try {
+                await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': JSONBIN_API_KEY
+                    },
+                    body: JSON.stringify({ admissions: admissions })
+                });
+                localStorage.setItem('mps_admissions_v3', JSON.stringify(admissions));
+            } catch (err) {
+                alert("⚠️ Cloud sync error! Data saved locally.");
+                localStorage.setItem('mps_admissions_v3', JSON.stringify(admissions));
+            }
+        }
 
         function openMap() {
             let map = localStorage.getItem('mps_map');
             if(map) window.open(map, '_blank'); else alert("Map link not set in Admin Panel.");
         }
 
-        // Login & UI
-        function login() {
+        async function login() {
             if(document.getElementById("username").value === sUser && document.getElementById("password").value === sPass) {
-                document.getElementById("loginScreen").classList.add("hidden"); document.getElementById("dashboard").classList.remove("hidden");
-            } else document.getElementById("error-msg").classList.remove("hidden");
+                document.getElementById("loginScreen").classList.add("hidden"); 
+                document.getElementById("dashboard").classList.remove("hidden");
+                await fetchCloudData(); // Load latest cloud data on login
+            } else {
+                document.getElementById("error-msg").classList.remove("hidden");
+            }
         }
         function logout() { location.reload(); }
         
@@ -174,7 +216,7 @@
             document.getElementById('f_final').value = pay + ext;
         }
 
-        function saveAdmission() {
+        async function saveAdmission() {
             let data = {
                 date: new Date().toLocaleDateString('en-GB'),
                 name: document.getElementById("adName").value, fname: document.getElementById("adFName").value,
@@ -198,41 +240,28 @@
                 document.getElementById("formTitle").innerText = "Admission & Fee Slip";
             }
             
-            localStorage.setItem('mps_admissions_v3', JSON.stringify(admissions));
-            alert("Saved Successfully!");
-            document.querySelectorAll('#newAdmission input').forEach(i => { if(i.type !== 'hidden') i.value = i.type==='number'?'00':'' });
+            await saveCloudData();
+            alert("Saved & Synced to Cloud Successfully!");
+            document.querySelectorAll('#newAdmission input').forEach(i => { if(i.type !== 'hidden') i.value = i.type==='number'?'0':'' });
             t_p = ""; t_ps = ""; t_as = "";
             showSection('admissionList', document.getElementById('nav-admissionList')); renderAdmissions();
         }
 
-        function editAdmission(i) {
-            let d = admissions[i]; document.getElementById("editAdIndex").value = i;
-            document.getElementById("adName").value = d.name; document.getElementById("adFName").value = d.fname;
-            document.getElementById("adRoll").value = d.roll; document.getElementById("adClass").value = d.cls;
-            document.getElementById("adMonth").value = d.month; document.getElementById("f_due").value = d.due;
-            document.getElementById("f_m").value = d.v.m; document.getElementById("f_r").value = d.v.r;
-            document.getElementById("f_a").value = d.v.a; document.getElementById("f_an").value = d.v.an;
-            document.getElementById("f_t").value = d.v.t; document.getElementById("f_pay").value = d.v.pay;
-            document.getElementById("f_bs").value = d.v.bs; document.getElementById("f_sp").value = d.v.sp;
-            document.getElementById("f_c").value = d.v.c; document.getElementById("f_d").value = d.v.d;
-            document.getElementById("f_l").value = d.v.l; document.getElementById("f_bk").value = d.v.bk;
-            document.getElementById("f_ext").value = d.v.ext; document.getElementById("f_final").value = d.v.final;
-            document.getElementById("formTitle").innerText = "Edit Admission Details";
-            showSection('newAdmission', document.getElementById('nav-newAdmission'));
-        }
-
-        function renderAdmissions() {
+        async function renderAdmissions() {
+            await fetchCloudData(); // Fetch latest before rendering
             let tb = document.getElementById("adTableBody"); tb.innerHTML = "";
+            if(admissions.length === 0) {
+                tb.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-slate-500">No records found.</td></tr>`;
+                return;
+            }
             admissions.forEach((ad, i) => {
                 tb.innerHTML += `<tr class="hover:bg-slate-50"><td class="p-4 font-semibold">${ad.name}</td><td class="p-4">${ad.cls}</td>
                 <td class="p-4 text-center space-x-2">
-                    <button onclick="editAdmission(${i})" class="bg-blue-100 text-blue-700 px-3 py-1 rounded font-bold hover:bg-blue-600 hover:text-white transition-all"><i class="fa-solid fa-pen"></i> Edit</button>
                     <button onclick="generateSlip(${i})" class="bg-amber-100 text-amber-700 px-3 py-1 rounded font-bold hover:bg-amber-500 hover:text-white transition-all"><i class="fa-solid fa-download"></i> PDF</button>
                 </td></tr>`;
             });
         }
 
-        // PDF Generation
         function generateSlip(index) {
             const { jsPDF } = window.jspdf; const doc = new jsPDF('p', 'mm', 'a4'); const d = admissions[index];
             doc.rect(10, 10, 190, 277); doc.rect(12, 12, 186, 273);
@@ -247,8 +276,8 @@
                     ['Phone Pay-', '7520400029', '', `Dat.${d.date}`],
                     ['Student Name', d.name, 'Roll No', d.roll],
                     ['Father Name', d.fname, 'Class', d.cls],
-                    [{content: 'Monthly fee Structor', colSpan: 2, styles: {fontStyle: 'bold', halign: 'center', fontSize: 12}}, {content: 'Extra Accessories', colSpan: 2, styles: {fontStyle: 'bold', halign: 'center', fontSize: 12}}],
-                    ['Monthly fee Amount', d.v.m, 'Buss Fee', d.v.bs], ['Registration Fee', d.v.r, 'Sport fee', d.v.sp],
+                    [{content: 'Monthly fee Structure', colSpan: 2, styles: {fontStyle: 'bold', halign: 'center', fontSize: 12}}, {content: 'Extra Accessories', colSpan: 2, styles: {fontStyle: 'bold', halign: 'center', fontSize: 12}}],
+                    ['Monthly fee Amount', d.v.m, 'Bus Fee', d.v.bs], ['Registration Fee', d.v.r, 'Sport fee', d.v.sp],
                     ['Admission Fee', d.v.a, 'Caution Money', d.v.c], ['Annual Fee', d.v.an, 'Development Fee', d.v.d],
                     ['Tution fee', d.v.t, 'Library Fee', d.v.l], ['', '', 'Book', d.v.bk],
                     [{content: 'Total Pay', styles: {fontStyle: 'bold'}}, {content: d.v.pay, styles: {fontStyle: 'bold'}}, '', ''],
