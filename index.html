@@ -52,12 +52,55 @@
                 <div id="newAdmission" class="section block max-w-5xl mx-auto bg-white rounded-2xl shadow-sm border p-8">
                     <h3 class="text-xl font-bold mb-6 border-b pb-2" id="formTitle">Admission & Fee Slip</h3>
                     <input type="hidden" id="editAdIndex" value="-1">
-                    <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                         <div><label class="block text-sm font-semibold mb-1">Student Name</label><input type="text" id="adName" class="w-full px-3 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-500"></div>
                         <div><label class="block text-sm font-semibold mb-1">Father Name</label><input type="text" id="adFName" class="w-full px-3 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-500"></div>
                         <div><label class="block text-sm font-semibold mb-1">Roll No</label><input type="text" id="adRoll" class="w-full px-3 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-500"></div>
-                        <div><label class="block text-sm font-semibold mb-1">Class</label><input type="text" id="adClass" class="w-full px-3 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-500"></div>
-                        <div><label class="block text-sm font-semibold mb-1">Month</label><input type="text" id="adMonth" class="w-full px-3 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-500"></div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <div>
+                            <label class="block text-sm font-semibold mb-1">Class</label>
+                            <select id="adClass" class="w-full px-3 py-2 border rounded-lg outline-none bg-white focus:ring-2 focus:ring-indigo-500">
+                                <option value="">Select Class</option>
+                                <option value="Nursery">Nursery</option>
+                                <option value="LKG">LKG</option>
+                                <option value="UKG">UKG</option>
+                                <option value="1st">1st</option>
+                                <option value="2nd">2nd</option>
+                                <option value="3rd">3rd</option>
+                                <option value="4th">4th</option>
+                                <option value="5th">5th</option>
+                                <option value="6th">6th</option>
+                                <option value="7th">7th</option>
+                                <option value="8th">8th</option>
+                                <option value="9th">9th</option>
+                                <option value="10th">10th</option>
+                                <option value="11th">11th</option>
+                                <option value="12th">12th</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold mb-1">Month</label>
+                            <select id="adMonth" class="w-full px-3 py-2 border rounded-lg outline-none bg-white focus:ring-2 focus:ring-indigo-500">
+                                <option value="">Select Month</option>
+                                <option value="January">January</option>
+                                <option value="February">February</option>
+                                <option value="March">March</option>
+                                <option value="April">April</option>
+                                <option value="May">May</option>
+                                <option value="June">June</option>
+                                <option value="July">July</option>
+                                <option value="August">August</option>
+                                <option value="September">September</option>
+                                <option value="October">October</option>
+                                <option value="November">November</option>
+                                <option value="December">December</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold mb-1">Admission Date</label>
+                            <input type="date" id="adDate" class="w-full px-3 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-6">
@@ -115,22 +158,12 @@
 
                 <!-- ATTENDANCE SECTION -->
                 <div id="attendanceSection" class="section hidden max-w-5xl mx-auto space-y-6">
-                    
-                    <!-- ATTENDANCE RECORD (Upar Diya Gaya Hai) -->
                     <div class="bg-white rounded-2xl shadow-sm border p-6">
                         <h3 class="text-xl font-bold mb-4 text-indigo-900"><i class="fa-solid fa-calendar-days mr-2"></i>Attendance Records & Report</h3>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 items-end">
-                            <div>
-                                <label class="block text-sm font-semibold mb-1">Start Date</label>
-                                <input type="date" id="attStartDate" class="w-full px-3 py-2 border rounded-lg outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-semibold mb-1">End Date</label>
-                                <input type="date" id="attEndDate" class="w-full px-3 py-2 border rounded-lg outline-none">
-                            </div>
-                            <div>
-                                <button onclick="viewAttendanceReport()" class="w-full bg-indigo-900 hover:bg-indigo-800 text-white font-bold py-2 px-4 rounded-lg shadow transition-all">View Report</button>
-                            </div>
+                            <div><label class="block text-sm font-semibold mb-1">Start Date</label><input type="date" id="attStartDate" class="w-full px-3 py-2 border rounded-lg outline-none"></div>
+                            <div><label class="block text-sm font-semibold mb-1">End Date</label><input type="date" id="attEndDate" class="w-full px-3 py-2 border rounded-lg outline-none"></div>
+                            <div><button onclick="viewAttendanceReport()" class="w-full bg-indigo-900 hover:bg-indigo-800 text-white font-bold py-2 px-4 rounded-lg shadow transition-all">View Report</button></div>
                         </div>
                         <div id="attendanceReportContainer" class="hidden mt-4">
                             <div class="flex justify-between items-center mb-3">
@@ -139,16 +172,13 @@
                             </div>
                             <div class="overflow-x-auto border rounded-lg">
                                 <table class="w-full text-left text-sm">
-                                    <thead class="bg-slate-100 text-slate-700">
-                                        <tr><th class="p-3">Date</th><th class="p-3">Class</th><th class="p-3">Student Name</th><th class="p-3">Roll No</th><th class="p-3">Status</th></tr>
-                                    </thead>
+                                    <thead class="bg-slate-100 text-slate-700"><tr><th class="p-3">Date</th><th class="p-3">Class</th><th class="p-3">Student Name</th><th class="p-3">Roll No</th><th class="p-3">Status</th></tr></thead>
                                     <tbody id="attendanceReportTableBody" class="divide-y divide-slate-100"></tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
 
-                    <!-- ATTENDANCE TAKING AREA -->
                     <div class="bg-white rounded-2xl shadow-sm border p-6">
                         <h3 class="text-xl font-bold mb-4 text-indigo-900"><i class="fa-solid fa-user-check mr-2"></i>Daily Attendance Entry</h3>
                         <div class="flex flex-col md:flex-row gap-4 mb-6 items-end">
@@ -156,6 +186,21 @@
                                 <label class="block text-sm font-semibold mb-1">Select Class</label>
                                 <select id="attClassSelect" class="w-full px-3 py-2 border rounded-lg outline-none bg-white" onchange="loadAttendanceStudents()">
                                     <option value="">-- Choose Class --</option>
+                                    <option value="Nursery">Nursery</option>
+                                    <option value="LKG">LKG</option>
+                                    <option value="UKG">UKG</option>
+                                    <option value="1st">1st</option>
+                                    <option value="2nd">2nd</option>
+                                    <option value="3rd">3rd</option>
+                                    <option value="4th">4th</option>
+                                    <option value="5th">5th</option>
+                                    <option value="6th">6th</option>
+                                    <option value="7th">7th</option>
+                                    <option value="8th">8th</option>
+                                    <option value="9th">9th</option>
+                                    <option value="10th">10th</option>
+                                    <option value="11th">11th</option>
+                                    <option value="12th">12th</option>
                                 </select>
                             </div>
                         </div>
@@ -167,16 +212,13 @@
                         <div id="attendanceFormContainer" class="hidden">
                             <div class="overflow-x-auto border rounded-lg mb-4">
                                 <table class="w-full text-left">
-                                    <thead class="bg-slate-100 text-slate-700 text-sm">
-                                        <tr><th class="p-3">Roll No</th><th class="p-3">Student Name</th><th class="p-3 text-center">Attendance (Present / Absent)</th></tr>
-                                    </thead>
+                                    <thead class="bg-slate-100 text-slate-700 text-sm"><tr><th class="p-3">Roll No</th><th class="p-3">Student Name</th><th class="p-3 text-center">Attendance (Present / Absent)</th></tr></thead>
                                     <tbody id="attendanceStudentTableBody" class="divide-y divide-slate-100"></tbody>
                                 </table>
                             </div>
                             <button onclick="submitAttendance()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg shadow-lg transition-all text-lg">Submit Attendance</button>
                         </div>
                     </div>
-
                 </div>
 
             </main>
@@ -311,11 +353,17 @@
         }
 
         async function saveAdmission() {
+            let inputDate = document.getElementById("adDate").value;
+            let formattedDate = inputDate ? new Date(inputDate).toLocaleDateString('en-GB') : new Date().toLocaleDateString('en-GB');
+
             let data = {
-                date: new Date().toLocaleDateString('en-GB'),
-                name: document.getElementById("adName").value, fname: document.getElementById("adFName").value,
-                roll: document.getElementById("adRoll").value, cls: document.getElementById("adClass").value.trim(),
-                month: document.getElementById("adMonth").value, due: document.getElementById("f_due").value,
+                date: formattedDate,
+                name: document.getElementById("adName").value, 
+                fname: document.getElementById("adFName").value,
+                roll: document.getElementById("adRoll").value, 
+                cls: document.getElementById("adClass").value.trim(),
+                month: document.getElementById("adMonth").value, 
+                due: document.getElementById("f_due").value,
                 v: {
                     m: document.getElementById("f_m").value, r: document.getElementById("f_r").value, a: document.getElementById("f_a").value,
                     an: document.getElementById("f_an").value, t: document.getElementById("f_t").value, pay: document.getElementById("f_pay").value,
@@ -326,6 +374,8 @@
                 photo: t_p, parentSig: t_ps, accSig: t_as
             };
             if(!data.name) return alert("Enter Student Name!");
+            if(!data.cls) return alert("Please select a Class!");
+            if(!data.month) return alert("Please select a Month!");
             
             let i = document.getElementById("editAdIndex").value;
             if(i === "-1") admissions.push(data); else {
@@ -335,7 +385,10 @@
             }
             
             alert("Saved Successfully!");
-            document.querySelectorAll('#newAdmission input').forEach(i => { if(i.type !== 'hidden') i.value = i.type==='number'?'0':'' });
+            document.querySelectorAll('#newAdmission input').forEach(i => { if(i.type !== 'hidden' && i.type !== 'date') i.value = i.type==='number'?'0':'' });
+            document.getElementById("adClass").value = "";
+            document.getElementById("adMonth").value = "";
+            document.getElementById("adDate").value = "";
             t_p = ""; t_ps = ""; t_as = "";
             showSection('admissionList', document.getElementById('nav-admissionList')); renderAdmissions();
             await saveCloudData();
@@ -355,21 +408,13 @@
             });
         }
 
-        // --- ATTENDANCE LOGIC START ---
         function initAttendanceClasses() {
-            let classSelect = document.getElementById('attClassSelect');
-            classSelect.innerHTML = '<option value="">-- Choose Class --</option>';
-            let classes = [...new Set(admissions.map(a => a.cls))].filter(Boolean);
-            classes.forEach(c => {
-                classSelect.innerHTML += `<option value="${c}">${c}</option>`;
-            });
             document.getElementById('attendanceFormContainer').classList.add('hidden');
             document.getElementById('attendanceLockMsg').classList.add('hidden');
         }
 
         function getTodayAttendanceKey(className) {
             let now = new Date();
-            // 5 AM reset logic calculation: If current hour < 5, consider it previous calendar day's cycle
             let targetDate = new Date(now);
             if(now.getHours() < 5) {
                 targetDate.setDate(targetDate.getDate() - 1);
@@ -405,12 +450,11 @@
             tb.innerHTML = "";
 
             if(classStudents.length === 0) {
-                tb.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-slate-500">No students found in this class.</td></tr>`;
+                tb.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-slate-500">No students found in admission list for this class.</td></tr>`;
                 formContainer.classList.remove('hidden');
                 return;
             }
 
-            // Roll number wise sorting (starting from 1 sequentially based on index or roll property)
             classStudents.forEach((st, index) => {
                 let displayRoll = index + 1;
                 tb.innerHTML += `
@@ -527,7 +571,6 @@
 
             doc.save(`Attendance_${start}_to_${end}.pdf`);
         }
-        // --- ATTENDANCE LOGIC END ---
 
         function generateSlip(index) {
             let sName = localStorage.getItem('mps_schoolName') || "Motion Public School";
@@ -541,7 +584,7 @@
             doc.autoTable({
                 startY: 56, theme: 'grid', styles: { font: 'times', textColor: 0, lineColor: 0, lineWidth: 0.2, fontSize: 11, minCellHeight: 8 },
                 body: [
-                    ['Phone Pay-', '7520400029', '', `Dat.${d.date}`],
+                    ['Phone Pay-', '7520400029', '', `Admission Date: ${d.date}`],
                     ['Student Name', d.name, 'Roll No', d.roll],
                     ['Father Name', d.fname, 'Class', d.cls],
                     [{content: 'Monthly fee Structure', colSpan: 2, styles: {fontStyle: 'bold', halign: 'center', fontSize: 12}}, {content: 'Extra Accessories', colSpan: 2, styles: {fontStyle: 'bold', halign: 'center', fontSize: 12}}],
