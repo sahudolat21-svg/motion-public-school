@@ -26,8 +26,8 @@
     <!-- MAIN DASHBOARD -->
     <div id="dashboard" class="hidden flex h-screen overflow-hidden">
         
-        <!-- Sidebar: Desktop par hamesha dikhega (md:flex), Mobile par hidden rahega jab tak toggle na ho -->
-        <div id="sidebarContainer" class="w-72 bg-indigo-950 text-white flex-col z-30 shadow-2xl h-full flex-shrink-0 hidden md:flex absolute md:relative inset-y-0 left-0 transition-all duration-300">
+        <!-- Sidebar: Desktop par hamesha flex (visible), mobile par absolute aur toggleable -->
+        <div id="sidebarContainer" class="w-72 bg-indigo-950 text-white flex flex-col z-30 shadow-2xl h-full flex-shrink-0 absolute md:relative inset-y-0 left-0 transform -translate-x-full md:translate-x-0 transition-transform duration-300">
             <div class="p-6 border-b border-indigo-900/50 flex flex-col items-center relative">
                 <!-- Mobile close button -->
                 <button onclick="toggleMobileSidebar()" class="md:hidden absolute top-3 right-3 text-slate-300 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
@@ -272,12 +272,10 @@
 
         function toggleMobileSidebar() {
             let sidebar = document.getElementById('sidebarContainer');
-            if(sidebar.classList.contains('hidden')) {
-                sidebar.classList.remove('hidden');
-                sidebar.classList.add('flex');
+            if(sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.remove('-translate-x-full');
             } else {
-                sidebar.classList.remove('flex');
-                sidebar.classList.add('hidden');
+                sidebar.classList.add('-translate-x-full');
             }
         }
 
@@ -381,8 +379,7 @@
             // Auto hide sidebar on mobile only after clicking navigation
             if(window.innerWidth < 768) {
                 let sb = document.getElementById('sidebarContainer');
-                sb.classList.remove('flex');
-                sb.classList.add('hidden');
+                sb.classList.add('-translate-x-full');
             }
         }
 
