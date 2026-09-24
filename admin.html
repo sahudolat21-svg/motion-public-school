@@ -198,7 +198,9 @@
         
         let resetOTP = "";
 
-        // Fetch Data & Settings from Cloud (JSONBin)
+        // Page khulte hi turant background me fetch karo
+        fetchCloudData();
+
         async function fetchCloudData() {
             try {
                 let response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
@@ -225,7 +227,6 @@
             }
         }
 
-        // Save Data to Cloud (JSONBin)
         async function saveCloudData() {
             try {
                 let response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
@@ -262,7 +263,6 @@
                 document.getElementById("adminLoginScreen").classList.add("hidden"); 
                 document.getElementById("adminDashboard").classList.remove("hidden");
                 
-                // Pehle cloud se data fetch hoga, fir values load hongi taaki delay na ho
                 await fetchCloudData(); 
                 loadSettings(); 
                 renderAdminData();
@@ -365,7 +365,6 @@
                 logo: newLogoBase64 || localStorage.getItem('mps_logo') || ""
             };
 
-            // LocalStorage update
             localStorage.setItem('mps_schoolName', settingsData.schoolName);
             localStorage.setItem('mps_staffUser', settingsData.staffUser);
             localStorage.setItem('mps_staffPass', settingsData.staffPass);
@@ -373,7 +372,6 @@
             localStorage.setItem('mps_map', settingsData.map);
             if(settingsData.logo) localStorage.setItem('mps_logo', settingsData.logo);
 
-            // Cloud Bin save
             try {
                 let response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
                     headers: { 'X-Master-Key': JSONBIN_API_KEY }
