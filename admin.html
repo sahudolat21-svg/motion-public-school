@@ -188,20 +188,19 @@
         const EMAILJS_SERVICE_ID = "service_uxj16r9";
         const EMAILJS_TEMPLATE_ID = "template_q3yq1vk";
 
-        // JSONBin Credentials
         const JSONBIN_BIN_ID = "6ab3e3a0ac6210605aed6c4b";
         const JSONBIN_API_KEY = "$2a$10$yyc9hu99dDO8hxlNRqiu4eao2Pa7kAKyCv6VTZk9o6MXaTNGh6mvO";
 
-        let admissions = [];
+        // Turant localStorage se data load karo bina delay ke
+        let admissions = JSON.parse(localStorage.getItem('mps_admissions_v3')) || [];
         let newLogoBase64 = localStorage.getItem('mps_logo') || ""; 
         let temp_p = "", temp_ps = "", temp_as = ""; 
-        
         let resetOTP = "";
 
-        // Page khulte hi turant background me fetch karo
-        fetchCloudData();
+        // Background me cloud se sync karo
+        syncCloudDataInBackground();
 
-        async function fetchCloudData() {
+        async function syncCloudDataInBackground() {
             try {
                 let response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
                     headers: { 'X-Master-Key': JSONBIN_API_KEY }
@@ -210,6 +209,7 @@
                 if(result && result.record) {
                     if(result.record.admissions) {
                         admissions = result.record.admissions;
+                        localStorage.setItem('mps_admissions_v3', JSON.stringify(admissions));
                     }
                     if(result.record.settings) {
                         let s = result.record.settings;
@@ -222,12 +222,12 @@
                     }
                 }
             } catch (err) {
-                console.log("Cloud fetch failed, using local backup");
-                admissions = JSON.parse(localStorage.getItem('mps_admissions_v3')) || [];
+                console.log("Background sync skipped");
             }
         }
 
         async function saveCloudData() {
+            localStorage.setItem('mps_admissions_v3', JSON.stringify(admissions));
             try {
                 let response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
                     headers: { 'X-Master-Key': JSONBIN_API_KEY }
@@ -245,14 +245,12 @@
                     },
                     body: JSON.stringify(currentData)
                 });
-                localStorage.setItem('mps_admissions_v3', JSON.stringify(admissions));
             } catch (err) {
-                alert("⚠️ Cloud sync error! Data saved locally.");
-                localStorage.setItem('mps_admissions_v3', JSON.stringify(admissions));
+                console.log("Cloud sync error");
             }
         }
 
-        async function adminLogin() {
+        function adminLogin() {
             let u = document.getElementById("adminUser").value;
             let p = document.getElementById("adminPass").value;
 
@@ -263,7 +261,6 @@
                 document.getElementById("adminLoginScreen").classList.add("hidden"); 
                 document.getElementById("adminDashboard").classList.remove("hidden");
                 
-                await fetchCloudData(); 
                 loadSettings(); 
                 renderAdminData();
             } else {
@@ -372,6 +369,8 @@
             localStorage.setItem('mps_map', settingsData.map);
             if(settingsData.logo) localStorage.setItem('mps_logo', settingsData.logo);
 
+            alert("✅ Success! Settings saved instantly.");
+
             try {
                 let response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
                     headers: { 'X-Master-Key': JSONBIN_API_KEY }
@@ -390,15 +389,12 @@
                     },
                     body: JSON.stringify(currentData)
                 });
-                
-                alert("✅ Success! Settings saved and synced to cloud across all devices.");
             } catch (err) {
-                alert("⚠️ Settings saved locally, but cloud sync failed.");
+                console.log("Cloud settings sync error");
             }
         }
 
-        async function renderAdminData() {
-            await fetchCloudData();
+        function renderAdminData() {
             let tb = document.getElementById("adminTableBody"); tb.innerHTML = "";
             if (admissions.length === 0) { tb.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-slate-500">No records found.</td></tr>`; return; }
             admissions.forEach((ad, i) => {
@@ -475,16 +471,17 @@
             
             if(temp_p) d.photo = temp_p; if(temp_ps) d.parentSig = temp_ps; if(temp_as) d.accSig = temp_as;
 
-            await saveCloudData();
             document.getElementById('fullEditSection').classList.add('hidden');
-            renderAdminData(); alert("Record Fully Updated & Synced to Cloud!");
+            renderAdminData(); 
+            alert("Record Fully Updated!");
+            await saveCloudData();
         }
 
         async function deleteData(index) {
             if(confirm("Permanently delete this record?")) {
                 admissions.splice(index, 1);
-                await saveCloudData();
                 renderAdminData();
+                await saveCloudData();
             }
         }
     </script>
