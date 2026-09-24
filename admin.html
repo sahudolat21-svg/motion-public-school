@@ -82,7 +82,11 @@
     <div id="adminDashboard" class="hidden max-w-5xl mx-auto p-8">
         <div class="flex justify-between items-center bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-8">
             <h1 class="text-3xl font-bold text-indigo-900"><i class="fa-solid fa-user-shield mr-2"></i> Admin Control Center</h1>
-            <button onclick="logoutAdmin()" class="bg-slate-200 text-slate-700 px-4 py-2 rounded font-bold hover:bg-slate-300"><i class="fa-solid fa-power-off"></i> Logout</button>
+            <div class="flex space-x-3">
+                <button onclick="openLiveWatchModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded font-bold transition-all"><i class="fa-solid fa-eye mr-1"></i> Watch Live (<span id="liveCount">0</span>)</button>
+                <button onclick="location.reload()" class="bg-slate-200 text-slate-700 px-4 py-2 rounded font-bold hover:bg-slate-300"><i class="fa-solid fa-rotate"></i> Refresh</button>
+                <button onclick="logoutAdmin()" class="bg-red-100 text-red-700 px-4 py-2 rounded font-bold hover:bg-red-200"><i class="fa-solid fa-power-off"></i> Logout</button>
+            </div>
         </div>
         
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
@@ -112,35 +116,82 @@
             <button onclick="saveAllSettings()" class="bg-indigo-600 text-white px-10 py-3 rounded-lg font-bold text-lg hover:bg-indigo-700 shadow-lg transition-all"><i class="fa-solid fa-save mr-2"></i> Save All Changes & Sync</button>
         </div>
 
-        <!-- ATTENDANCE RECORDS & REPORTS (ADMIN CONTROL) -->
-        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-8">
-            <h2 class="text-xl font-bold mb-4 text-indigo-900"><i class="fa-solid fa-calendar-days text-indigo-600 mr-2"></i> Attendance Records & Reports</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 items-end">
-                <div>
-                    <label class="block text-sm font-semibold mb-1">Start Date</label>
-                    <input type="date" id="adminAttStartDate" class="w-full px-3 py-2 border rounded-lg outline-none">
+        <!-- ATTENDANCE RECORDS & REPORTS & EDIT (ADMIN CONTROL) -->
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-8 space-y-6">
+            <h2 class="text-xl font-bold text-indigo-900"><i class="fa-solid fa-calendar-days text-indigo-600 mr-2"></i> Attendance Records, Reports & Editing</h2>
+            
+            <!-- Edit Attendance Form (Locked to Today's Date Only) -->
+            <div class="bg-slate-50 p-4 rounded-lg border">
+                <h4 class="font-bold text-slate-700 mb-3"><i class="fa-solid fa-pen-to-square text-amber-600 mr-1"></i> Edit Today's Class Attendance</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3 items-end">
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Select Class</label>
+                        <select id="editAttClass" class="w-full px-3 py-2 border rounded-lg outline-none bg-white">
+                            <option value="">-- Choose Class --</option>
+                            <option value="Nursery">Nursery</option>
+                            <option value="LKG">LKG</option>
+                            <option value="UKG">UKG</option>
+                            <option value="1st">1st</option>
+                            <option value="2nd">2nd</option>
+                            <option value="3rd">3rd</option>
+                            <option value="4th">4th</option>
+                            <option value="5th">5th</option>
+                            <option value="6th">6th</option>
+                            <option value="7th">7th</option>
+                            <option value="8th">8th</option>
+                            <option value="9th">9th</option>
+                            <option value="10th">10th</option>
+                            <option value="11th">11th</option>
+                            <option value="12th">12th</option>
+                        </select>
+                    </div>
+                    <div>
+                        <button onclick="loadAttendanceForEdit()" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 px-4 rounded-lg shadow transition-all">Load Today's Attendance</button>
+                    </div>
                 </div>
-                <div>
-                    <label class="block text-sm font-semibold mb-1">End Date</label>
-                    <input type="date" id="adminAttEndDate" class="w-full px-3 py-2 border rounded-lg outline-none">
-                </div>
-                <div>
-                    <button onclick="viewAdminAttendanceReport()" class="w-full bg-indigo-900 hover:bg-indigo-800 text-white font-bold py-2 px-4 rounded-lg shadow transition-all">View Report</button>
+
+                <div id="adminEditAttendanceContainer" class="hidden mt-4 space-y-3">
+                    <div class="overflow-x-auto border rounded-lg max-h-60 bg-white">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-slate-100 text-slate-700 sticky top-0">
+                                <tr><th class="p-2">Roll</th><th class="p-2">Student Name</th><th class="p-2 text-center">Status</th></tr>
+                            </thead>
+                            <tbody id="adminEditAttendanceBody" class="divide-y divide-slate-100"></tbody>
+                        </table>
+                    </div>
+                    <button onclick="saveEditedAttendance()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-lg font-bold text-sm shadow">Save Attendance Changes</button>
                 </div>
             </div>
-            
-            <div id="adminAttendanceReportContainer" class="hidden mt-4">
-                <div class="flex justify-between items-center mb-3">
-                    <h4 class="font-bold text-slate-700" id="adminReportDateRangeTitle">Report List</h4>
-                    <button onclick="downloadAdminAttendancePDF()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-bold text-sm shadow"><i class="fa-solid fa-download mr-1"></i> Download PDF</button>
+
+            <!-- View Report & Download PDF -->
+            <div class="border-t pt-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 items-end">
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Start Date</label>
+                        <input type="date" id="adminAttStartDate" class="w-full px-3 py-2 border rounded-lg outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">End Date</label>
+                        <input type="date" id="adminAttEndDate" class="w-full px-3 py-2 border rounded-lg outline-none">
+                    </div>
+                    <div>
+                        <button onclick="viewAdminAttendanceReport()" class="w-full bg-indigo-900 hover:bg-indigo-800 text-white font-bold py-2 px-4 rounded-lg shadow transition-all">View Report</button>
+                    </div>
                 </div>
-                <div class="overflow-x-auto border rounded-lg max-h-96">
-                    <table class="w-full text-left text-sm">
-                        <thead class="bg-slate-100 text-slate-700 sticky top-0">
-                            <tr><th class="p-3">Date</th><th class="p-3">Class</th><th class="p-3">Student Name</th><th class="p-3">Roll No</th><th class="p-3">Status</th></tr>
-                        </thead>
-                        <tbody id="adminAttendanceReportTableBody" class="divide-y divide-slate-100"></tbody>
-                    </table>
+                
+                <div id="adminAttendanceReportContainer" class="hidden mt-4">
+                    <div class="flex justify-between items-center mb-3">
+                        <h4 class="font-bold text-slate-700" id="adminReportDateRangeTitle">Report List</h4>
+                        <button onclick="downloadAdminAttendancePDF()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-bold text-sm shadow"><i class="fa-solid fa-download mr-1"></i> Download PDF</button>
+                    </div>
+                    <div class="overflow-x-auto border rounded-lg max-h-96">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-slate-100 text-slate-700 sticky top-0">
+                                <tr><th class="p-3">Date</th><th class="p-3">Class</th><th class="p-3">Student Name</th><th class="p-3">Roll No</th><th class="p-3">Status</th></tr>
+                            </thead>
+                            <tbody id="adminAttendanceReportTableBody" class="divide-y divide-slate-100"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -260,6 +311,19 @@
         </div>
     </div>
 
+    <!-- LIVE WATCH MODAL -->
+    <div id="liveWatchModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl p-6 max-w-lg w-full shadow-2xl">
+            <div class="flex justify-between items-center mb-4 border-b pb-2">
+                <h3 class="text-xl font-bold text-indigo-900"><i class="fa-solid fa-eye text-indigo-600 mr-2"></i> Active Sessions Watch Live</h3>
+                <button onclick="document.getElementById('liveWatchModal').classList.add('hidden')" class="text-slate-500 hover:text-red-600 font-bold text-lg"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <p class="text-sm text-slate-600 mb-4">Current active browser instances connected to the portal:</p>
+            <div id="liveSessionsList" class="space-y-2 max-h-60 overflow-y-auto border p-3 rounded-lg bg-slate-50"></div>
+            <button onclick="document.getElementById('liveWatchModal').classList.add('hidden')" class="w-full mt-4 bg-slate-800 hover:bg-slate-900 text-white font-bold py-2 rounded-lg">Close</button>
+        </div>
+    </div>
+
     <script>
         (function() {
             emailjs.init("Loh2h3yl77uqnS3I");
@@ -275,6 +339,42 @@
         let newLogoBase64 = localStorage.getItem('mps_logo') || ""; 
         let temp_p = "", temp_ps = "", temp_as = ""; 
         let resetOTP = "";
+
+        // Live Watch Polling & Count
+        function updateLiveCount() {
+            let activeSessions = JSON.parse(localStorage.getItem('mps_active_sessions')) || {};
+            let now = Date.now();
+            let validCount = 0;
+            Object.keys(activeSessions).forEach(id => {
+                if (now - activeSessions[id].time > 20000) {
+                    delete activeSessions[id];
+                } else {
+                    validCount++;
+                }
+            });
+            localStorage.setItem('mps_active_sessions', JSON.stringify(activeSessions));
+            document.getElementById('liveCount').innerText = validCount;
+        }
+        setInterval(updateLiveCount, 3000);
+        updateLiveCount();
+
+        function openLiveWatchModal() {
+            let activeSessions = JSON.parse(localStorage.getItem('mps_active_sessions')) || {};
+            let listDiv = document.getElementById('liveSessionsList');
+            listDiv.innerHTML = "";
+            let keys = Object.keys(activeSessions);
+            if(keys.length === 0) {
+                listDiv.innerHTML = `<p class="text-slate-500 text-center py-4">No active websites running currently.</p>`;
+            } else {
+                keys.forEach((k, idx) => {
+                    listDiv.innerHTML += `<div class="flex justify-between items-center bg-white p-2 border rounded shadow-sm text-sm">
+                        <span><i class="fa-solid fa-circle text-emerald-500 text-xs mr-2"></i> Client Session #${idx + 1} (${activeSessions[k].role})</span>
+                        <span class="text-xs text-slate-400">Active</span>
+                    </div>`;
+                });
+            }
+            document.getElementById('liveWatchModal').classList.remove('hidden');
+        }
 
         syncCloudDataInBackground();
 
@@ -352,6 +452,69 @@
             }
         }
         function logoutAdmin() { location.reload(); }
+
+        // --- TODAY'S ATTENDANCE EDIT & REPORT LOGIC ---
+        function getTodayDateStr() {
+            let now = new Date();
+            let targetDate = new Date(now);
+            if(now.getHours() < 5) {
+                targetDate.setDate(targetDate.getDate() - 1);
+            }
+            return targetDate.toISOString().split('T')[0];
+        }
+
+        function loadAttendanceForEdit() {
+            let cls = document.getElementById('editAttClass').value;
+            if(!cls) return alert("Please select a Class!");
+
+            let todayStr = getTodayDateStr();
+            let classRecords = attendanceRecords.filter(r => r.date === todayStr && r.cls === cls);
+            let tbody = document.getElementById('adminEditAttendanceBody');
+            tbody.innerHTML = "";
+
+            if(classRecords.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="3" class="p-3 text-center text-slate-500">No attendance submitted for this class today yet.</td></tr>`;
+            } else {
+                classRecords.forEach((rec, idx) => {
+                    let isPresent = rec.status === 'Present' ? 'checked' : '';
+                    let isAbsent = rec.status === 'Absent' ? 'checked' : '';
+                    tbody.innerHTML += `
+                        <tr>
+                            <td class="p-2">${rec.roll}</td>
+                            <td class="p-2 font-semibold">${rec.name}</td>
+                            <td class="p-2 text-center">
+                                <label class="inline-flex items-center mr-3 cursor-pointer">
+                                    <input type="radio" name="edit_att_${idx}" value="Present" ${isPresent} class="form-radio text-emerald-600">
+                                    <span class="ml-1 text-xs text-emerald-700 font-bold">P</span>
+                                </label>
+                                <label class="inline-flex items-center cursor-pointer">
+                                    <input type="radio" name="edit_att_${idx}" value="Absent" ${isAbsent} class="form-radio text-red-600">
+                                    <span class="ml-1 text-xs text-red-700 font-bold">A</span>
+                                </label>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+            document.getElementById('adminEditAttendanceContainer').classList.remove('hidden');
+        }
+
+        async function saveEditedAttendance() {
+            let cls = document.getElementById('editAttClass').value;
+            let todayStr = getTodayDateStr();
+            let classRecords = attendanceRecords.filter(r => r.date === todayStr && r.cls === cls);
+
+            classRecords.forEach((rec, idx) => {
+                let radios = document.getElementsByName(`edit_att_${idx}`);
+                for(let r of radios) {
+                    if(r.checked) rec.status = r.value;
+                }
+            });
+
+            await saveCloudData();
+            alert("Today's attendance successfully updated!");
+            document.getElementById('adminEditAttendanceContainer').classList.add('hidden');
+        }
 
         function viewAdminAttendanceReport() {
             let start = document.getElementById('adminAttStartDate').value;
@@ -590,7 +753,6 @@
             document.getElementById('e_roll').value = d.roll; document.getElementById('e_class').value = d.cls;
             document.getElementById('e_month').value = d.month; document.getElementById('e_due').value = d.due;
             if(d.date) {
-                // Convert DD/MM/YYYY to YYYY-MM-DD for date input
                 let parts = d.date.split('/');
                 if(parts.length === 3) {
                     document.getElementById('e_date').value = `${parts[2]}-${parts[1]}-${parts[0]}`;
