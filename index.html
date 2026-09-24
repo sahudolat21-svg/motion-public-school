@@ -124,7 +124,9 @@
         let admissions = [];
         let t_p = "", t_ps = "", t_as = ""; 
 
-        // Fetch Cloud Settings & Admissions on Page Load
+        // Page khulte hi turant background me fetch karo taaki delay na ho
+        fetchCloudData();
+
         async function fetchCloudData() {
             try {
                 let response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
@@ -152,7 +154,6 @@
             applySettingsToUI();
         }
 
-        // Apply loaded settings to UI elements
         function applySettingsToUI() {
             let sName = localStorage.getItem('mps_schoolName') || "Motion Public School";
             let sTitle = localStorage.getItem('mps_loginTitle') || "STAFF LOGIN";
@@ -164,12 +165,6 @@
             if(logo) document.getElementById('schoolLogo').src = logo;
         }
 
-        // Run fetch when page loads
-        window.onload = function() {
-            fetchCloudData();
-        };
-
-        // Save Data to JSONBin Cloud
         async function saveCloudData() {
             try {
                 let response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
