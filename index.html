@@ -31,7 +31,8 @@
             <button onclick="toggleMobileSidebar()" class="text-white text-xl focus:outline-none"><i class="fa-solid fa-bars"></i></button>
         </div>
 
-        <div id="sidebarContainer" class="w-full md:w-72 bg-indigo-950 text-white flex flex-col z-10 shadow-2xl hidden md:flex h-full">
+        <!-- Sidebar (Visible on both PC and mobile toggle) -->
+        <div id="sidebarContainer" class="w-full md:w-72 bg-indigo-950 text-white flex-col z-10 shadow-2xl hidden md:flex h-full">
             <div class="p-6 border-b border-indigo-900/50 flex flex-col items-center">
                 <img id="schoolLogo" src="https://via.placeholder.com/150" alt="Logo" class="w-20 h-20 bg-white rounded-full object-cover mb-3 p-1">
                 <h2 id="displaySchoolName1" class="text-lg font-bold text-center text-amber-500">Motion Public School</h2>
@@ -49,7 +50,7 @@
         </div>
 
         <div class="flex-1 flex flex-col bg-slate-50 overflow-hidden">
-            <header class="hidden md:flex bg-white shadow-sm px-8 py-5 border-b justify-between items-center">
+            <header class="bg-white shadow-sm px-8 py-5 border-b hidden md:flex justify-between items-center">
                 <h2 id="displaySchoolName2" class="text-2xl font-bold text-slate-800">Motion Public School</h2>
                 <span class="text-sm font-bold text-indigo-600 bg-indigo-100 px-3 py-1 rounded-full">Cloud Synced Portal</span>
             </header>
@@ -267,7 +268,9 @@
             let sidebar = document.getElementById('sidebarContainer');
             if(sidebar.classList.contains('hidden')) {
                 sidebar.classList.remove('hidden');
+                sidebar.classList.add('flex');
             } else {
+                sidebar.classList.remove('flex');
                 sidebar.classList.add('hidden');
             }
         }
@@ -368,9 +371,12 @@
             document.getElementById(id).classList.remove('hidden');
             document.querySelectorAll('.nav-btn').forEach(b => { b.classList.remove('bg-amber-500','text-indigo-950'); b.classList.add('text-indigo-200'); });
             if(btn) { btn.classList.remove('text-indigo-200'); btn.classList.add('bg-amber-500','text-indigo-950'); }
-            // Auto hide sidebar on mobile when navigating
+            
+            // Auto hide sidebar on mobile only
             if(window.innerWidth < 768) {
-                document.getElementById('sidebarContainer').classList.add('hidden');
+                let sb = document.getElementById('sidebarContainer');
+                sb.classList.remove('flex');
+                sb.classList.add('hidden');
             }
         }
 
