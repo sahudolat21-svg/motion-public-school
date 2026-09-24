@@ -15,8 +15,7 @@
     <!-- LOGIN SCREEN -->
     <div id="loginScreen" class="min-h-screen bg-slate-900 flex items-center justify-center p-4">
         <div class="max-w-md w-full bg-white rounded-2xl shadow-2xl overflow-hidden p-8 text-center border-t-4 border-indigo-900">
-            <!-- uppercase yahan se hata diya gaya hai taaki small letters theek se dikhein -->
-            <h1 id="loginTitleDisplay" class="text-2xl font-bold text-indigo-950 tracking-wider mb-6">STAFF LOGIN</h1>
+            <h1 id="loginTitleDisplay" class="text-2xl font-bold text-indigo-950 tracking-wider mb-6">mps</h1>
             <p id="error-msg" class="hidden bg-red-100 text-red-700 p-2 rounded mb-4 text-sm font-bold">Galat Details!</p>
             <input type="text" id="username" class="w-full px-4 py-3 bg-slate-50 border rounded-lg mb-4 outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Username">
             <input type="password" id="password" class="w-full px-4 py-3 bg-slate-50 border rounded-lg mb-6 outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Password">
@@ -34,6 +33,7 @@
             <div class="flex-1 py-6 px-4 space-y-2 overflow-y-auto">
                 <button id="nav-newAdmission" onclick="showSection('newAdmission', this)" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl bg-amber-500 text-indigo-950 font-bold transition-all"><i class="fa-solid fa-user-plus w-5"></i><span>New Admission</span></button>
                 <button id="nav-admissionList" onclick="showSection('admissionList', this); renderAdmissions();" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-indigo-200 hover:bg-indigo-900 transition-all"><i class="fa-solid fa-users w-5"></i><span>Admission List</span></button>
+                <button id="nav-attendance" onclick="showSection('attendanceSection', this); initAttendanceClasses();" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-indigo-200 hover:bg-indigo-900 transition-all"><i class="fa-solid fa-clipboard-user w-5"></i><span>Attendance</span></button>
             </div>
             <div class="p-4 border-t border-indigo-900/50">
                 <button onclick="openMap()" class="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 rounded-lg mb-2 font-bold transition-all"><i class="fa-solid fa-map-location-dot"></i><span>View Location</span></button>
@@ -113,6 +113,72 @@
                     </table>
                 </div>
 
+                <!-- ATTENDANCE SECTION -->
+                <div id="attendanceSection" class="section hidden max-w-5xl mx-auto space-y-6">
+                    
+                    <!-- ATTENDANCE RECORD (Upar Diya Gaya Hai) -->
+                    <div class="bg-white rounded-2xl shadow-sm border p-6">
+                        <h3 class="text-xl font-bold mb-4 text-indigo-900"><i class="fa-solid fa-calendar-days mr-2"></i>Attendance Records & Report</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 items-end">
+                            <div>
+                                <label class="block text-sm font-semibold mb-1">Start Date</label>
+                                <input type="date" id="attStartDate" class="w-full px-3 py-2 border rounded-lg outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold mb-1">End Date</label>
+                                <input type="date" id="attEndDate" class="w-full px-3 py-2 border rounded-lg outline-none">
+                            </div>
+                            <div>
+                                <button onclick="viewAttendanceReport()" class="w-full bg-indigo-900 hover:bg-indigo-800 text-white font-bold py-2 px-4 rounded-lg shadow transition-all">View Report</button>
+                            </div>
+                        </div>
+                        <div id="attendanceReportContainer" class="hidden mt-4">
+                            <div class="flex justify-between items-center mb-3">
+                                <h4 class="font-bold text-slate-700" id="reportDateRangeTitle">Report List</h4>
+                                <button onclick="downloadAttendancePDF()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-bold text-sm shadow"><i class="fa-solid fa-download mr-1"></i> Download PDF</button>
+                            </div>
+                            <div class="overflow-x-auto border rounded-lg">
+                                <table class="w-full text-left text-sm">
+                                    <thead class="bg-slate-100 text-slate-700">
+                                        <tr><th class="p-3">Date</th><th class="p-3">Class</th><th class="p-3">Student Name</th><th class="p-3">Roll No</th><th class="p-3">Status</th></tr>
+                                    </thead>
+                                    <tbody id="attendanceReportTableBody" class="divide-y divide-slate-100"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ATTENDANCE TAKING AREA -->
+                    <div class="bg-white rounded-2xl shadow-sm border p-6">
+                        <h3 class="text-xl font-bold mb-4 text-indigo-900"><i class="fa-solid fa-user-check mr-2"></i>Daily Attendance Entry</h3>
+                        <div class="flex flex-col md:flex-row gap-4 mb-6 items-end">
+                            <div class="flex-1">
+                                <label class="block text-sm font-semibold mb-1">Select Class</label>
+                                <select id="attClassSelect" class="w-full px-3 py-2 border rounded-lg outline-none bg-white" onchange="loadAttendanceStudents()">
+                                    <option value="">-- Choose Class --</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div id="attendanceLockMsg" class="hidden bg-amber-100 text-amber-800 p-4 rounded-lg font-semibold mb-4 text-center">
+                            <i class="fa-solid fa-lock mr-2"></i> Attendance for this class has already been submitted today. Next entry will open tomorrow after 5:00 AM.
+                        </div>
+
+                        <div id="attendanceFormContainer" class="hidden">
+                            <div class="overflow-x-auto border rounded-lg mb-4">
+                                <table class="w-full text-left">
+                                    <thead class="bg-slate-100 text-slate-700 text-sm">
+                                        <tr><th class="p-3">Roll No</th><th class="p-3">Student Name</th><th class="p-3 text-center">Attendance (Present / Absent)</th></tr>
+                                    </thead>
+                                    <tbody id="attendanceStudentTableBody" class="divide-y divide-slate-100"></tbody>
+                                </table>
+                            </div>
+                            <button onclick="submitAttendance()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg shadow-lg transition-all text-lg">Submit Attendance</button>
+                        </div>
+                    </div>
+
+                </div>
+
             </main>
         </div>
     </div>
@@ -122,6 +188,7 @@
         const JSONBIN_API_KEY = "$2a$10$yyc9hu99dDO8hxlNRqiu4eao2Pa7kAKyCv6VTZk9o6MXaTNGh6mvO";
 
         let admissions = JSON.parse(localStorage.getItem('mps_admissions_v3')) || [];
+        let attendanceRecords = JSON.parse(localStorage.getItem('mps_attendance_records')) || [];
         let t_p = "", t_ps = "", t_as = ""; 
 
         applySettingsToUI();
@@ -149,6 +216,10 @@
                         admissions = result.record.admissions;
                         localStorage.setItem('mps_admissions_v3', JSON.stringify(admissions));
                     }
+                    if(result.record.attendanceRecords) {
+                        attendanceRecords = result.record.attendanceRecords;
+                        localStorage.setItem('mps_attendance_records', JSON.stringify(attendanceRecords));
+                    }
                     if(result.record.settings) {
                         let s = result.record.settings;
                         if(s.schoolName) localStorage.setItem('mps_schoolName', s.schoolName);
@@ -167,6 +238,7 @@
 
         async function saveCloudData() {
             localStorage.setItem('mps_admissions_v3', JSON.stringify(admissions));
+            localStorage.setItem('mps_attendance_records', JSON.stringify(attendanceRecords));
             try {
                 let response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
                     headers: { 'X-Master-Key': JSONBIN_API_KEY }
@@ -174,6 +246,7 @@
                 let result = await response.json();
                 let currentData = result.record || {};
                 currentData.admissions = admissions;
+                currentData.attendanceRecords = attendanceRecords;
 
                 await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
                     method: 'PUT',
@@ -241,7 +314,7 @@
             let data = {
                 date: new Date().toLocaleDateString('en-GB'),
                 name: document.getElementById("adName").value, fname: document.getElementById("adFName").value,
-                roll: document.getElementById("adRoll").value, cls: document.getElementById("adClass").value,
+                roll: document.getElementById("adRoll").value, cls: document.getElementById("adClass").value.trim(),
                 month: document.getElementById("adMonth").value, due: document.getElementById("f_due").value,
                 v: {
                     m: document.getElementById("f_m").value, r: document.getElementById("f_r").value, a: document.getElementById("f_a").value,
@@ -281,6 +354,180 @@
                 </td></tr>`;
             });
         }
+
+        // --- ATTENDANCE LOGIC START ---
+        function initAttendanceClasses() {
+            let classSelect = document.getElementById('attClassSelect');
+            classSelect.innerHTML = '<option value="">-- Choose Class --</option>';
+            let classes = [...new Set(admissions.map(a => a.cls))].filter(Boolean);
+            classes.forEach(c => {
+                classSelect.innerHTML += `<option value="${c}">${c}</option>`;
+            });
+            document.getElementById('attendanceFormContainer').classList.add('hidden');
+            document.getElementById('attendanceLockMsg').classList.add('hidden');
+        }
+
+        function getTodayAttendanceKey(className) {
+            let now = new Date();
+            // 5 AM reset logic calculation: If current hour < 5, consider it previous calendar day's cycle
+            let targetDate = new Date(now);
+            if(now.getHours() < 5) {
+                targetDate.setDate(targetDate.getDate() - 1);
+            }
+            let dateStr = targetDate.toISOString().split('T')[0];
+            return `att_${className}_${dateStr}`;
+        }
+
+        function loadAttendanceStudents() {
+            let className = document.getElementById('attClassSelect').value;
+            let formContainer = document.getElementById('attendanceFormContainer');
+            let lockMsg = document.getElementById('attendanceLockMsg');
+
+            if(!className) {
+                formContainer.classList.add('hidden');
+                lockMsg.classList.add('hidden');
+                return;
+            }
+
+            let lockKey = getTodayAttendanceKey(className);
+            let alreadySubmitted = localStorage.getItem(lockKey);
+
+            if(alreadySubmitted) {
+                formContainer.classList.add('hidden');
+                lockMsg.classList.remove('hidden');
+                return;
+            } else {
+                lockMsg.classList.add('hidden');
+            }
+
+            let classStudents = admissions.filter(a => a.cls === className);
+            let tb = document.getElementById('attendanceStudentTableBody');
+            tb.innerHTML = "";
+
+            if(classStudents.length === 0) {
+                tb.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-slate-500">No students found in this class.</td></tr>`;
+                formContainer.classList.remove('hidden');
+                return;
+            }
+
+            // Roll number wise sorting (starting from 1 sequentially based on index or roll property)
+            classStudents.forEach((st, index) => {
+                let displayRoll = index + 1;
+                tb.innerHTML += `
+                    <tr class="hover:bg-slate-50">
+                        <td class="p-3 font-semibold">${displayRoll}</td>
+                        <td class="p-3">${st.name}</td>
+                        <td class="p-3 text-center">
+                            <label class="inline-flex items-center mr-4 cursor-pointer">
+                                <input type="radio" name="att_${index}" value="Present" checked class="form-radio text-emerald-600 h-4 w-4">
+                                <span class="ml-2 font-medium text-emerald-700">Present</span>
+                            </label>
+                            <label class="inline-flex items-center cursor-pointer">
+                                <input type="radio" name="att_${index}" value="Absent" class="form-radio text-red-600 h-4 w-4">
+                                <span class="ml-2 font-medium text-red-700">Absent</span>
+                            </label>
+                        </td>
+                    </tr>
+                `;
+            });
+            formContainer.classList.remove('hidden');
+        }
+
+        async function submitAttendance() {
+            let className = document.getElementById('attClassSelect').value;
+            let classStudents = admissions.filter(a => a.cls === className);
+            let now = new Date();
+            let dateStr = now.toISOString().split('T')[0];
+
+            classStudents.forEach((st, index) => {
+                let radios = document.getElementsByName(`att_${index}`);
+                let status = "Present";
+                for(let r of radios) {
+                    if(r.checked) status = r.value;
+                }
+                attendanceRecords.push({
+                    date: dateStr,
+                    cls: className,
+                    name: st.name,
+                    roll: index + 1,
+                    status: status
+                });
+            });
+
+            let lockKey = getTodayAttendanceKey(className);
+            localStorage.setItem(lockKey, "true");
+
+            await saveCloudData();
+            alert("Attendance Submitted Successfully!");
+            loadAttendanceStudents();
+        }
+
+        function viewAttendanceReport() {
+            let start = document.getElementById('attStartDate').value;
+            let end = document.getElementById('attEndDate').value;
+            if(!start || !end) return alert("Please select both Start Date and End Date!");
+
+            let filtered = attendanceRecords.filter(r => r.date >= start && r.date <= end);
+            let tb = document.getElementById('attendanceReportTableBody');
+            tb.innerHTML = "";
+
+            if(filtered.length === 0) {
+                tb.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500">No attendance records found between selected dates.</td></tr>`;
+            } else {
+                filtered.forEach(r => {
+                    let badgeColor = r.status === 'Present' ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800';
+                    tb.innerHTML += `
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-3">${r.date}</td>
+                            <td class="p-3">${r.cls}</td>
+                            <td class="p-3 font-semibold">${r.name}</td>
+                            <td class="p-3">${r.roll}</td>
+                            <td class="p-3"><span class="px-2 py-1 rounded text-xs font-bold ${badgeColor}">${r.status}</span></td>
+                        </tr>
+                    `;
+                });
+            }
+
+            document.getElementById('reportDateRangeTitle').innerText = `Report from ${start} to ${end}`;
+            document.getElementById('attendanceReportContainer').classList.remove('hidden');
+        }
+
+        function downloadAttendancePDF() {
+            let start = document.getElementById('attStartDate').value;
+            let end = document.getElementById('attEndDate').value;
+            let filtered = attendanceRecords.filter(r => r.date >= start && r.date <= end);
+
+            if(filtered.length === 0) return alert("No data available to download for this range!");
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'mm', 'a4');
+            let sName = localStorage.getItem('mps_schoolName') || "Motion Public School";
+
+            doc.setFont("times", "bold");
+            doc.setFontSize(22);
+            doc.text(sName, 105, 20, {align: 'center'});
+            
+            doc.setFontSize(14);
+            doc.setFont("times", "normal");
+            doc.text("Attendance Report", 105, 28, {align: 'center'});
+            
+            doc.setFontSize(11);
+            doc.text(`Date Range: ${start} to ${end}`, 14, 38);
+            doc.line(14, 42, 196, 42);
+
+            let tableData = filtered.map(r => [r.date, r.cls, r.name, r.roll, r.status]);
+
+            doc.autoTable({
+                startY: 46,
+                theme: 'grid',
+                styles: { font: 'times', fontSize: 10 },
+                head: [['Date', 'Class', 'Student Name', 'Roll No', 'Status']],
+                body: tableData
+            });
+
+            doc.save(`Attendance_${start}_to_${end}.pdf`);
+        }
+        // --- ATTENDANCE LOGIC END ---
 
         function generateSlip(index) {
             let sName = localStorage.getItem('mps_schoolName') || "Motion Public School";
