@@ -196,8 +196,6 @@
         let newLogoBase64 = localStorage.getItem('mps_logo') || ""; 
         let temp_p = "", temp_ps = "", temp_as = ""; 
         
-        let realAdminUser = localStorage.getItem('mps_actualAdminUser') || "rp sir";
-        let realAdminPass = localStorage.getItem('mps_actualAdminPass') || "rp sir mps";
         let resetOTP = "";
 
         // Fetch Data & Settings from Cloud (JSONBin)
@@ -257,9 +255,14 @@
             let u = document.getElementById("adminUser").value;
             let p = document.getElementById("adminPass").value;
 
+            let realAdminUser = localStorage.getItem('mps_actualAdminUser') || "rp sir";
+            let realAdminPass = localStorage.getItem('mps_actualAdminPass') || "rp sir mps";
+
             if(u === realAdminUser && p === realAdminPass) {
                 document.getElementById("adminLoginScreen").classList.add("hidden"); 
                 document.getElementById("adminDashboard").classList.remove("hidden");
+                
+                // Pehle cloud se data fetch hoga, fir values load hongi taaki delay na ho
                 await fetchCloudData(); 
                 loadSettings(); 
                 renderAdminData();
@@ -325,7 +328,6 @@
 
             localStorage.setItem('mps_actualAdminUser', u);
             localStorage.setItem('mps_actualAdminPass', p1);
-            realAdminUser = u; realAdminPass = p1;
             resetOTP = ""; 
 
             alert("✅ Admin Password successfully updated!");
