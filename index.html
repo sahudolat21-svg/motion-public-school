@@ -117,42 +117,16 @@
     </div>
 
     <script>
-        // JSONBin Credentials
         const JSONBIN_BIN_ID = "6ab3e3a0ac6210605aed6c4b";
         const JSONBIN_API_KEY = "$2a$10$yyc9hu99dDO8hxlNRqiu4eao2Pa7kAKyCv6VTZk9o6MXaTNGh6mvO";
 
-        let admissions = [];
+        // Pehle local storage se turant data uthao taaki zero delay ho
+        let admissions = JSON.parse(localStorage.getItem('mps_admissions_v3')) || [];
         let t_p = "", t_ps = "", t_as = ""; 
 
-        // Page khulte hi turant background me fetch karo taaki delay na ho
-        fetchCloudData();
-
-        async function fetchCloudData() {
-            try {
-                let response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
-                    headers: { 'X-Master-Key': JSONBIN_API_KEY }
-                });
-                let result = await response.json();
-                if(result && result.record) {
-                    if(result.record.admissions) {
-                        admissions = result.record.admissions;
-                    }
-                    if(result.record.settings) {
-                        let s = result.record.settings;
-                        if(s.schoolName) localStorage.setItem('mps_schoolName', s.schoolName);
-                        if(s.staffUser) localStorage.setItem('mps_staffUser', s.staffUser);
-                        if(s.staffPass) localStorage.setItem('mps_staffPass', s.staffPass);
-                        if(s.loginTitle) localStorage.setItem('mps_loginTitle', s.loginTitle);
-                        if(s.map) localStorage.setItem('mps_map', s.map);
-                        if(s.logo) localStorage.setItem('mps_logo', s.logo);
-                    }
-                }
-            } catch (err) {
-                console.log("Cloud fetch failed, using local backup");
-                admissions = JSON.parse(localStorage.getItem('mps_admissions_v3')) || [];
-            }
-            applySettingsToUI();
-        }
+        // UI ko turant local data se set karo
+        applySettingsToUI();
+        syncCloudDataInBackground();
 
         function applySettingsToUI() {
             let sName = localStorage.getItem('mps_schoolName') || "Motion Public School";
@@ -165,14 +139,42 @@
             if(logo) document.getElementById('schoolLogo').src = logo;
         }
 
+        // Background me cloud se sync karo taaki latest data mile
+        async function syncCloudDataInBackground() {
+            try {
+                let response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
+                    headers: { 'X-Master-Key': JSONBIN_API_KEY }
+                });
+                let result = await response.json();
+                if(result && result.record) {
+                    if(result.record.admissions) {
+                        admissions = result.record.admissions;
+                        localStorage.setItem('mps_admissions_v3', JSON.stringify(admissions));
+                    }
+                    if(result.record.settings) {
+                        let s = result.record.settings;
+                        if(s.schoolName) localStorage.setItem('mps_schoolName', s.schoolName);
+                        if(s.staffUser) localStorage.setItem('mps_staffUser', s.staffUser);
+                        if(s.staffPass) localStorage.setItem('mps_staffPass', s.staffPass);
+                        if(s.loginTitle) localStorage.setItem('mps_loginTitle', s.loginTitle);
+                        if(s.map) localStorage.setItem('mps_map', s.map);
+                        if(s.logo) localStorage.setItem('mps_logo', s.logo);
+                    }
+                    applySettingsToUI();
+                }
+            } catch (err) {
+                console.log("Background sync skipped");
+            }
+        }
+
         async function saveCloudData() {
+            localStorage.setItem('mps_admissions_v3', JSON.stringify(admissions));
             try {
                 let response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
                     headers: { 'X-Master-Key': JSONBIN_API_KEY }
                 });
                 let result = await response.json();
                 let currentData = result.record || {};
-                
                 currentData.admissions = admissions;
 
                 await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
@@ -183,10 +185,8 @@
                     },
                     body: JSON.stringify(currentData)
                 });
-                localStorage.setItem('mps_admissions_v3', JSON.stringify(admissions));
             } catch (err) {
-                alert("⚠️ Cloud sync error! Data saved locally.");
-                localStorage.setItem('mps_admissions_v3', JSON.stringify(admissions));
+                console.log("Cloud sync error");
             }
         }
 
@@ -195,14 +195,13 @@
             if(map) window.open(map, '_blank'); else alert("Map link not set in Admin Panel.");
         }
 
-        async function login() {
+        function login() {
             let sUser = localStorage.getItem('mps_staffUser') || "Motion Public School";
             let sPass = localStorage.getItem('mps_staffPass') || "MPS 752040";
 
             if(document.getElementById("username").value === sUser && document.getElementById("password").value === sPass) {
                 document.getElementById("loginScreen").classList.add("hidden"); 
                 document.getElementById("dashboard").classList.remove("hidden");
-                await fetchCloudData(); 
             } else {
                 document.getElementById("error-msg").classList.remove("hidden");
             }
@@ -264,15 +263,14 @@
                 document.getElementById("formTitle").innerText = "Admission & Fee Slip";
             }
             
-            await saveCloudData();
-            alert("Saved & Synced to Cloud Successfully!");
+            alert("Saved Successfully!");
             document.querySelectorAll('#newAdmission input').forEach(i => { if(i.type !== 'hidden') i.value = i.type==='number'?'0':'' });
             t_p = ""; t_ps = ""; t_as = "";
             showSection('admissionList', document.getElementById('nav-admissionList')); renderAdmissions();
+            await saveCloudData();
         }
 
-        async function renderAdmissions() {
-            await fetchCloudData(); 
+        function renderAdmissions() {
             let tb = document.getElementById("adTableBody"); tb.innerHTML = "";
             if(admissions.length === 0) {
                 tb.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-slate-500">No records found.</td></tr>`;
