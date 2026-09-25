@@ -19,9 +19,7 @@
             from { opacity: 0; transform: scale(0.95); }
             to { opacity: 1; transform: scale(1); }
         }
-        .animate-fade-in {
-            animation: fadeIn 0.3s ease-out forwards;
-        }
+        .animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
     </style>
 </head>
 <body class="bg-slate-100 font-sans text-slate-800">
@@ -188,8 +186,29 @@
                         <input type="date" id="adminAttEndDate" class="w-full px-3 py-2 border rounded-lg outline-none">
                     </div>
                     <div>
-                        <button onclick="viewAdminAttendanceReport()" class="w-full bg-indigo-900 hover:bg-indigo-800 text-white font-bold py-2 px-4 rounded-lg shadow transition-all">View Report</button>
+                        <label class="block text-sm font-semibold mb-1">Select Class</label>
+                        <select id="adminAttReportClassSelect" class="w-full px-3 py-2 border rounded-lg outline-none bg-white">
+                            <option value="">-- All Classes --</option>
+                            <option value="Nursery">Nursery</option>
+                            <option value="LKG">LKG</option>
+                            <option value="UKG">UKG</option>
+                            <option value="1st">1st</option>
+                            <option value="2nd">2nd</option>
+                            <option value="3rd">3rd</option>
+                            <option value="4th">4th</option>
+                            <option value="5th">5th</option>
+                            <option value="6th">6th</option>
+                            <option value="7th">7th</option>
+                            <option value="8th">8th</option>
+                            <option value="9th">9th</option>
+                            <option value="10th">10th</option>
+                            <option value="11th">11th</option>
+                            <option value="12th">12th</option>
+                        </select>
                     </div>
+                </div>
+                <div class="mb-4">
+                    <button onclick="viewAdminAttendanceReport()" class="w-full bg-indigo-900 hover:bg-indigo-800 text-white font-bold py-2 px-4 rounded-lg shadow transition-all">View Report</button>
                 </div>
                 
                 <div id="adminAttendanceReportContainer" class="hidden mt-4">
@@ -212,12 +231,33 @@
         <!-- Manage Records Table -->
         <div id="recordsView" class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
             <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-bold text-slate-800"><i class="fa-solid fa-database text-red-600"></i> Manage Admission Records (Cloud Synced)</h2>
+                <h2 class="text-xl font-bold text-slate-800"><i class="fa-solid fa-database text-red-600"></i> Manage Admission Records (Class-wise)</h2>
                 <button onclick="renderAdminData()" class="bg-slate-100 px-3 py-1 rounded text-sm font-bold hover:bg-slate-200"><i class="fa-solid fa-rotate mr-1"></i> Refresh</button>
+            </div>
+            <div class="p-4 border-b bg-slate-50 flex items-center space-x-4 mb-4">
+                <label class="font-bold text-sm text-indigo-950">Select Class to Manage Students:</label>
+                <select id="adminFilterClass" onchange="renderAdminData()" class="px-4 py-2 border rounded-lg bg-white font-medium outline-none">
+                    <option value="">-- Choose Class --</option>
+                    <option value="Nursery">Nursery</option>
+                    <option value="LKG">LKG</option>
+                    <option value="UKG">UKG</option>
+                    <option value="1st">1st</option>
+                    <option value="2nd">2nd</option>
+                    <option value="3rd">3rd</option>
+                    <option value="4th">4th</option>
+                    <option value="5th">5th</option>
+                    <option value="6th">6th</option>
+                    <option value="7th">7th</option>
+                    <option value="8th">8th</option>
+                    <option value="9th">9th</option>
+                    <option value="10th">10th</option>
+                    <option value="11th">11th</option>
+                    <option value="12th">12th</option>
+                </select>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
-                    <thead class="bg-slate-200"><tr><th class="p-3">Student Name</th><th class="p-3">Class</th><th class="p-3 text-center">Action</th></tr></thead>
+                    <thead class="bg-slate-200"><tr><th class="p-3">Roll No</th><th class="p-3">Student Name</th><th class="p-3">Father Name</th><th class="p-3">Contact</th><th class="p-3 text-center">Action</th></tr></thead>
                     <tbody id="adminTableBody" class="divide-y divide-slate-100"></tbody>
                 </table>
             </div>
@@ -231,7 +271,7 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                 <div><label class="block text-sm font-semibold mb-1">Student Name</label><input type="text" id="e_name" class="w-full px-3 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-amber-500"></div>
                 <div><label class="block text-sm font-semibold mb-1">Father Name</label><input type="text" id="e_fname" class="w-full px-3 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-amber-500"></div>
-                <div><label class="block text-sm font-semibold mb-1">Roll No</label><input type="text" id="e_roll" class="w-full px-3 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-amber-500"></div>
+                <div><label class="block text-sm font-semibold mb-1">Parents Contact No</label><input type="text" id="e_contact" class="w-full px-3 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-amber-500"></div>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                 <div>
@@ -400,6 +440,7 @@
                 if(result && result.record) {
                     if(result.record.admissions) {
                         admissions = result.record.admissions;
+                        reindexAdmissions();
                         localStorage.setItem('mps_admissions_v3', JSON.stringify(admissions));
                     }
                     if(result.record.attendanceRecords) {
@@ -414,6 +455,8 @@
                         if(s.loginTitle) localStorage.setItem('mps_loginTitle', s.loginTitle);
                         if(s.map) localStorage.setItem('mps_map', s.map);
                         if(s.logo) localStorage.setItem('mps_logo', s.logo);
+                        if(s.adminUser) localStorage.setItem('mps_actualAdminUser', s.adminUser);
+                        if(s.adminPass) localStorage.setItem('mps_actualAdminPass', s.adminPass);
                     }
                 }
             } catch (err) {
@@ -422,6 +465,7 @@
         }
 
         async function saveCloudData() {
+            reindexAdmissions();
             localStorage.setItem('mps_admissions_v3', JSON.stringify(admissions));
             localStorage.setItem('mps_attendance_records', JSON.stringify(attendanceRecords));
             try {
@@ -433,6 +477,16 @@
                 
                 currentData.admissions = admissions;
                 currentData.attendanceRecords = attendanceRecords;
+                currentData.settings = {
+                    schoolName: localStorage.getItem('mps_schoolName') || "Motion Public School",
+                    staffUser: localStorage.getItem('mps_staffUser') || "Motion Public School",
+                    staffPass: localStorage.getItem('mps_staffPass') || "MPS 752040",
+                    loginTitle: localStorage.getItem('mps_loginTitle') || "mps",
+                    map: localStorage.getItem('mps_map') || "",
+                    logo: localStorage.getItem('mps_logo') || "",
+                    adminUser: localStorage.getItem('mps_actualAdminUser') || "rp sir",
+                    adminPass: localStorage.getItem('mps_actualAdminPass') || "rp sir mps"
+                };
 
                 await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
                     method: 'PUT',
@@ -445,6 +499,16 @@
             } catch (err) {
                 console.log("Cloud sync error");
             }
+        }
+
+        function reindexAdmissions() {
+            let classesList = ["Nursery", "LKG", "UKG", "1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th", "10th", "11th", "12th"];
+            classesList.forEach(cls => {
+                let classStudents = admissions.filter(a => a.cls === cls);
+                classStudents.forEach((st, idx) => {
+                    st.roll = (idx + 1).toString();
+                });
+            });
         }
 
         async function adminLogin() {
@@ -534,14 +598,21 @@
         function viewAdminAttendanceReport() {
             let start = document.getElementById('adminAttStartDate').value;
             let end = document.getElementById('adminAttEndDate').value;
+            let selectedClass = document.getElementById('adminAttReportClassSelect').value;
+
             if(!start || !end) return alert("Please select both Start Date and End Date!");
 
-            let filtered = attendanceRecords.filter(r => r.date >= start && r.date <= end);
+            let filtered = attendanceRecords.filter(r => {
+                let matchDate = r.date >= start && r.date <= end;
+                let matchClass = selectedClass ? r.cls === selectedClass : true;
+                return matchDate && matchClass;
+            });
+
             let tb = document.getElementById('adminAttendanceReportTableBody');
             tb.innerHTML = "";
 
             if(filtered.length === 0) {
-                tb.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500">No attendance records found between selected dates.</td></tr>`;
+                tb.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500">No attendance records found for the selected criteria.</td></tr>`;
             } else {
                 filtered.forEach(r => {
                     let badgeColor = r.status === 'Present' ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800';
@@ -557,16 +628,23 @@
                 });
             }
 
-            document.getElementById('adminReportDateRangeTitle').innerText = `Report from ${start} to ${end}`;
+            let classText = selectedClass ? ` for Class ${selectedClass}` : '';
+            document.getElementById('adminReportDateRangeTitle').innerText = `Report from ${start} to ${end}${classText}`;
             document.getElementById('adminAttendanceReportContainer').classList.remove('hidden');
         }
 
         function downloadAdminAttendancePDF() {
             let start = document.getElementById('adminAttStartDate').value;
             let end = document.getElementById('adminAttEndDate').value;
-            let filtered = attendanceRecords.filter(r => r.date >= start && r.date <= end);
+            let selectedClass = document.getElementById('adminAttReportClassSelect').value;
 
-            if(filtered.length === 0) return alert("No data available to download for this range!");
+            let filtered = attendanceRecords.filter(r => {
+                let matchDate = r.date >= start && r.date <= end;
+                let matchClass = selectedClass ? r.cls === selectedClass : true;
+                return matchDate && matchClass;
+            });
+
+            if(filtered.length === 0) return alert("No data available to download for this selection!");
 
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('p', 'mm', 'a4');
@@ -578,7 +656,8 @@
             
             doc.setFontSize(14);
             doc.setFont("times", "normal");
-            doc.text("Attendance Report (Admin Control)", 105, 28, {align: 'center'});
+            let subTitle = selectedClass ? `Attendance Report - Class ${selectedClass}` : "Attendance Report (All Classes)";
+            doc.text(subTitle, 105, 28, {align: 'center'});
             
             doc.setFontSize(11);
             doc.text(`Date Range: ${start} to ${end}`, 14, 38);
@@ -594,7 +673,8 @@
                 body: tableData
             });
 
-            doc.save(`Admin_Attendance_${start}_to_${end}.pdf`);
+            let filename = selectedClass ? `Admin_Attendance_${selectedClass}_${start}_to_${end}.pdf` : `Admin_Attendance_All_${start}_to_${end}.pdf`;
+            doc.save(filename);
         }
 
         function toggleResetFlow(show) {
@@ -636,7 +716,6 @@
             });
         }
 
-        // --- ANIMATED VERIFY OTP FUNCTION ---
         function verifyResetOTP() {
             let enteredOtp = document.getElementById('resetOtpInput').value;
             let btn = document.getElementById('verifyOtpBtn');
@@ -646,13 +725,11 @@
                 return;
             }
 
-            // Show Spinner & Animation Effect
             btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin mr-2"></i> Verifying OTP...`;
             btn.disabled = true;
 
             setTimeout(() => {
                 if(enteredOtp === resetOTP && resetOTP !== "") {
-                    // Success Effect on Button
                     btn.innerHTML = `<i class="fa-solid fa-check mr-2"></i> Verified Successfully!`;
                     btn.className = "w-full bg-emerald-600 text-white font-bold py-3 rounded-lg shadow-lg transition-all mb-4 flex items-center justify-center space-x-2 animate-fade-in";
                     
@@ -665,7 +742,6 @@
                         btn.disabled = false;
                     }, 800);
                 } else {
-                    // Failure Effect on Button
                     btn.innerHTML = `<i class="fa-solid fa-xmark mr-2"></i> Invalid OTP! Try Again`;
                     btn.className = "w-full bg-red-600 text-white font-bold py-3 rounded-lg shadow-lg transition-all mb-4 flex items-center justify-center space-x-2 animate-fade-in";
                     
@@ -675,11 +751,11 @@
                         btn.disabled = false;
                     }, 1200);
                 }
-            }, 1000); // 1 second smooth loading animation
+            }, 1000);
         }
 
-        function changeAdminCredentials() {
-            let u = document.getElementById('newAdminUser').value;
+        async function changeAdminCredentials() {
+            let u = document.getElementById('newAdminUser').value.trim();
             let p1 = document.getElementById('newAdminPass').value;
             let p2 = document.getElementById('confirmAdminPass').value;
 
@@ -690,7 +766,8 @@
             localStorage.setItem('mps_actualAdminPass', p1);
             resetOTP = ""; 
 
-            alert("✅ Admin Password successfully updated!");
+            await saveCloudData();
+            alert("✅ Admin Credentials successfully updated and synced to cloud!");
             toggleResetFlow(false); 
         }
 
@@ -722,7 +799,9 @@
                 staffPass: document.getElementById('setStaffPass').value,
                 loginTitle: document.getElementById('setLoginTitle').value,
                 map: document.getElementById('mapUrl').value,
-                logo: newLogoBase64 || localStorage.getItem('mps_logo') || ""
+                logo: newLogoBase64 || localStorage.getItem('mps_logo') || "",
+                adminUser: localStorage.getItem('mps_actualAdminUser') || "rp sir",
+                adminPass: localStorage.getItem('mps_actualAdminPass') || "rp sir mps"
             };
 
             localStorage.setItem('mps_schoolName', settingsData.schoolName);
@@ -733,40 +812,35 @@
             if(settingsData.logo) localStorage.setItem('mps_logo', settingsData.logo);
 
             alert("✅ Success! Settings saved instantly.");
-
-            try {
-                let response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
-                    headers: { 'X-Master-Key': JSONBIN_API_KEY }
-                });
-                let result = await response.json();
-                let currentData = result.record || {};
-                
-                currentData.settings = settingsData;
-                currentData.admissions = admissions;
-                currentData.attendanceRecords = attendanceRecords;
-
-                await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Master-Key': JSONBIN_API_KEY
-                    },
-                    body: JSON.stringify(currentData)
-                });
-            } catch (err) {
-                console.log("Cloud settings sync error");
-            }
+            await saveCloudData();
         }
 
         function renderAdminData() {
-            let tb = document.getElementById("adminTableBody"); tb.innerHTML = "";
-            if (admissions.length === 0) { tb.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-slate-500">No records found.</td></tr>`; return; }
-            admissions.forEach((ad, i) => {
+            let selectedClass = document.getElementById('adminFilterClass').value;
+            let tb = document.getElementById("adminTableBody"); 
+            tb.innerHTML = "";
+
+            if(!selectedClass) {
+                tb.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500">Please select a class above to manage records.</td></tr>`;
+                return;
+            }
+
+            let classStudents = admissions.filter(ad => ad.cls === selectedClass);
+            if (classStudents.length === 0) { 
+                tb.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500">No records found for class ${selectedClass}.</td></tr>`; 
+                return; 
+            }
+
+            classStudents.forEach((ad) => {
+                let actualGlobalIndex = admissions.indexOf(ad);
                 tb.innerHTML += `<tr>
-                    <td class="p-3 font-semibold">${ad.name}</td><td class="p-3 text-slate-600">${ad.cls}</td>
+                    <td class="p-3 font-bold text-indigo-900">${ad.roll}</td>
+                    <td class="p-3 font-semibold">${ad.name}</td>
+                    <td class="p-3 text-slate-600">${ad.fname || '-'}</td>
+                    <td class="p-3 text-slate-600">${ad.contact || '-'}</td>
                     <td class="p-3 text-center space-x-2">
-                        <button onclick="openFullEdit(${i})" class="bg-blue-100 text-blue-600 px-4 py-2 rounded font-bold hover:bg-blue-500 hover:text-white transition"><i class="fa-solid fa-pen"></i> Edit</button>
-                        <button onclick="deleteData(${i})" class="bg-red-100 text-red-600 px-4 py-2 rounded font-bold hover:bg-red-500 hover:text-white transition"><i class="fa-solid fa-trash"></i> Delete</button>
+                        <button onclick="openFullEdit(${actualGlobalIndex})" class="bg-blue-100 text-blue-600 px-4 py-2 rounded font-bold hover:bg-blue-500 hover:text-white transition"><i class="fa-solid fa-pen"></i> Edit</button>
+                        <button onclick="deleteData(${actualGlobalIndex})" class="bg-red-100 text-red-600 px-4 py-2 rounded font-bold hover:bg-red-500 hover:text-white transition"><i class="fa-solid fa-trash"></i> Delete</button>
                     </td>
                 </tr>`;
             });
@@ -799,9 +873,12 @@
             document.getElementById('adminEditIndex').value = i;
             let d = admissions[i];
             
-            document.getElementById('e_name').value = d.name; document.getElementById('e_fname').value = d.fname;
-            document.getElementById('e_roll').value = d.roll; document.getElementById('e_class').value = d.cls;
-            document.getElementById('e_month').value = d.month; document.getElementById('e_due').value = d.due;
+            document.getElementById('e_name').value = d.name; 
+            document.getElementById('e_fname').value = d.fname;
+            document.getElementById('e_contact').value = d.contact || '';
+            document.getElementById('e_class').value = d.cls;
+            document.getElementById('e_month').value = d.month; 
+            document.getElementById('e_due').value = d.due;
             if(d.date) {
                 let parts = d.date.split('/');
                 if(parts.length === 3) {
@@ -826,9 +903,12 @@
             let i = document.getElementById('adminEditIndex').value;
             let d = admissions[i];
             
-            d.name = document.getElementById('e_name').value; d.fname = document.getElementById('e_fname').value;
-            d.roll = document.getElementById('e_roll').value; d.cls = document.getElementById('e_class').value;
-            d.month = document.getElementById('e_month').value; d.due = document.getElementById('e_due').value;
+            d.name = document.getElementById('e_name').value; 
+            d.fname = document.getElementById('e_fname').value;
+            d.contact = document.getElementById('e_contact').value;
+            d.cls = document.getElementById('e_class').value;
+            d.month = document.getElementById('e_month').value; 
+            d.due = document.getElementById('e_due').value;
             
             let inputDate = document.getElementById('e_date').value;
             if(inputDate) {
@@ -847,6 +927,7 @@
             
             if(temp_p) d.photo = temp_p; if(temp_ps) d.parentSig = temp_ps; if(temp_as) d.accSig = temp_as;
 
+            reindexAdmissions();
             document.getElementById('fullEditSection').classList.add('hidden');
             renderAdminData(); 
             alert("Record Fully Updated!");
@@ -854,8 +935,12 @@
         }
 
         async function deleteData(index) {
-            if(confirm("Permanently delete this record?")) {
+            if(confirm("Permanently delete this record? Roll numbers will automatically re-index.")) {
+                let deletedClass = admissions[index].cls;
                 admissions.splice(index, 1);
+                reindexAdmissions();
+                renderAdminData();
+                document.getElementById('adminFilterClass').value = deletedClass;
                 renderAdminData();
                 await saveCloudData();
             }
