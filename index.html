@@ -431,11 +431,14 @@
             let inputDate = document.getElementById("adDate").value;
             let formattedDate = inputDate ? new Date(inputDate).toLocaleDateString('en-GB') : new Date().toLocaleDateString('en-GB');
 
+            let rawRoll = document.getElementById("adRoll").value.trim();
+            let parsedRoll = rawRoll !== "" ? Number(rawRoll) : "";
+
             let data = {
                 date: formattedDate,
-                name: document.getElementById("adName").value, 
-                fname: document.getElementById("adFName").value,
-                roll: document.getElementById("adRoll").value.trim(), 
+                name: document.getElementById("adName").value.trim(), 
+                fname: document.getElementById("adFName").value.trim(),
+                roll: rawRoll, 
                 cls: document.getElementById("adClass").value.trim(),
                 month: document.getElementById("adMonth").value, 
                 due: document.getElementById("f_due").value,
@@ -450,15 +453,19 @@
             };
             if(!data.name) return alert("Enter Student Name!");
             if(!data.cls) return alert("Please select a Class!");
-            if(!data.roll) return alert("Please enter Roll No!");
+            if(rawRoll === "") return alert("Please enter Roll No!");
             if(!data.month) return alert("Please select a Month!");
             
             let i = document.getElementById("editAdIndex").value;
 
-            // Check if Roll No already exists in the same class (for new admissions or if class/roll changed)
-            let existingRoll = admissions.find((ad, index) => ad.cls === data.cls && ad.roll === data.roll && index !== Number(i));
+            // Strict check: '1' and '01' will be treated as the same roll number in the same class
+            let existingRoll = admissions.find((ad, index) => {
+                let existingParsedRoll = ad.roll !== undefined && ad.roll !== "" ? Number(ad.roll) : "";
+                return ad.cls === data.cls && existingParsedRoll === parsedRoll && index !== Number(i);
+            });
+
             if(existingRoll) {
-                return alert(`⚠️ Roll No "${data.roll}" already exists in class "${data.cls}"! Please enter a different roll number.`);
+                return alert(`⚠️ Roll No "${rawRoll}" (or equivalent) already exists in class "${data.cls}"! Please enter a different roll number.`);
             }
 
             if(i === "-1") admissions.push(data); else {
