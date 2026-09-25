@@ -26,10 +26,9 @@
     <!-- MAIN DASHBOARD -->
     <div id="dashboard" class="hidden flex h-screen overflow-hidden">
         
-        <!-- Sidebar: Desktop par hamesha flex (visible), mobile par absolute aur toggleable -->
+        <!-- Sidebar -->
         <div id="sidebarContainer" class="w-72 bg-indigo-950 text-white flex flex-col z-30 shadow-2xl h-full flex-shrink-0 absolute md:relative inset-y-0 left-0 transform -translate-x-full md:translate-x-0 transition-transform duration-300">
             <div class="p-6 border-b border-indigo-900/50 flex flex-col items-center relative">
-                <!-- Mobile close button -->
                 <button onclick="toggleMobileSidebar()" class="md:hidden absolute top-3 right-3 text-slate-300 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
                 <img id="schoolLogo" src="https://via.placeholder.com/150" alt="Logo" class="w-20 h-20 bg-white rounded-full object-cover mb-3 p-1">
                 <h2 id="displaySchoolName1" class="text-lg font-bold text-center text-amber-500">Motion Public School</h2>
@@ -48,13 +47,11 @@
 
         <!-- Right Main Content Area -->
         <div class="flex-1 flex flex-col bg-slate-50 overflow-hidden h-full">
-            <!-- Mobile Header Bar with Hamburger Menu -->
             <div class="md:hidden bg-indigo-950 text-white px-4 py-3 flex justify-between items-center shadow-md flex-shrink-0">
                 <span class="font-bold text-amber-500 text-lg">Motion Public School</span>
                 <button onclick="toggleMobileSidebar()" class="text-white text-xl focus:outline-none p-1"><i class="fa-solid fa-bars"></i></button>
             </div>
 
-            <!-- Desktop Header -->
             <header class="bg-white shadow-sm px-8 py-5 border-b hidden md:flex justify-between items-center flex-shrink-0">
                 <h2 id="displaySchoolName2" class="text-2xl font-bold text-slate-800">Motion Public School</h2>
                 <span class="text-sm font-bold text-indigo-600 bg-indigo-100 px-3 py-1 rounded-full">Cloud Synced Portal</span>
@@ -185,8 +182,32 @@
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 items-end">
                             <div><label class="block text-sm font-semibold mb-1">Start Date</label><input type="date" id="attStartDate" class="w-full px-3 py-2 border rounded-lg outline-none"></div>
                             <div><label class="block text-sm font-semibold mb-1">End Date</label><input type="date" id="attEndDate" class="w-full px-3 py-2 border rounded-lg outline-none"></div>
-                            <div><button onclick="viewAttendanceReport()" class="w-full bg-indigo-900 hover:bg-indigo-800 text-white font-bold py-2 px-4 rounded-lg shadow transition-all">View Report</button></div>
+                            <div>
+                                <label class="block text-sm font-semibold mb-1">Select Class</label>
+                                <select id="attReportClassSelect" class="w-full px-3 py-2 border rounded-lg outline-none bg-white">
+                                    <option value="">-- All Classes --</option>
+                                    <option value="Nursery">Nursery</option>
+                                    <option value="LKG">LKG</option>
+                                    <option value="UKG">UKG</option>
+                                    <option value="1st">1st</option>
+                                    <option value="2nd">2nd</option>
+                                    <option value="3rd">3rd</option>
+                                    <option value="4th">4th</option>
+                                    <option value="5th">5th</option>
+                                    <option value="6th">6th</option>
+                                    <option value="7th">7th</option>
+                                    <option value="8th">8th</option>
+                                    <option value="9th">9th</option>
+                                    <option value="10th">10th</option>
+                                    <option value="11th">11th</option>
+                                    <option value="12th">12th</option>
+                                </select>
+                            </div>
                         </div>
+                        <div class="mb-4">
+                            <button onclick="viewAttendanceReport()" class="w-full bg-indigo-900 hover:bg-indigo-800 text-white font-bold py-2 px-4 rounded-lg shadow transition-all">View Report</button>
+                        </div>
+                        
                         <div id="attendanceReportContainer" class="hidden mt-4">
                             <div class="flex justify-between items-center mb-3">
                                 <h4 class="font-bold text-slate-700" id="reportDateRangeTitle">Report List</h4>
@@ -376,7 +397,6 @@
             document.querySelectorAll('.nav-btn').forEach(b => { b.classList.remove('bg-amber-500','text-indigo-950'); b.classList.add('text-indigo-200'); });
             if(btn) { btn.classList.remove('text-indigo-200'); btn.classList.add('bg-amber-500','text-indigo-950'); }
             
-            // Auto hide sidebar on mobile only after clicking navigation
             if(window.innerWidth < 768) {
                 let sb = document.getElementById('sidebarContainer');
                 sb.classList.add('-translate-x-full');
@@ -415,7 +435,7 @@
                 date: formattedDate,
                 name: document.getElementById("adName").value, 
                 fname: document.getElementById("adFName").value,
-                roll: document.getElementById("adRoll").value, 
+                roll: document.getElementById("adRoll").value.trim(), 
                 cls: document.getElementById("adClass").value.trim(),
                 month: document.getElementById("adMonth").value, 
                 due: document.getElementById("f_due").value,
@@ -430,9 +450,17 @@
             };
             if(!data.name) return alert("Enter Student Name!");
             if(!data.cls) return alert("Please select a Class!");
+            if(!data.roll) return alert("Please enter Roll No!");
             if(!data.month) return alert("Please select a Month!");
             
             let i = document.getElementById("editAdIndex").value;
+
+            // Check if Roll No already exists in the same class (for new admissions or if class/roll changed)
+            let existingRoll = admissions.find((ad, index) => ad.cls === data.cls && ad.roll === data.roll && index !== Number(i));
+            if(existingRoll) {
+                return alert(`⚠️ Roll No "${data.roll}" already exists in class "${data.cls}"! Please enter a different roll number.`);
+            }
+
             if(i === "-1") admissions.push(data); else {
                 if(!t_p) data.photo = admissions[i].photo; if(!t_ps) data.parentSig = admissions[i].parentSig; if(!t_as) data.accSig = admissions[i].accSig;
                 admissions[i] = data; document.getElementById("editAdIndex").value = "-1";
@@ -511,7 +539,7 @@
             }
 
             classStudents.forEach((st, index) => {
-                let displayRoll = index + 1;
+                let displayRoll = st.roll || (index + 1);
                 tb.innerHTML += `
                     <tr class="hover:bg-slate-50">
                         <td class="p-3 font-semibold">${displayRoll}</td>
@@ -548,7 +576,7 @@
                     date: dateStr,
                     cls: className,
                     name: st.name,
-                    roll: index + 1,
+                    roll: st.roll || (index + 1),
                     status: status
                 });
             });
@@ -564,14 +592,21 @@
         function viewAttendanceReport() {
             let start = document.getElementById('attStartDate').value;
             let end = document.getElementById('attEndDate').value;
+            let selectedClass = document.getElementById('attReportClassSelect').value;
+
             if(!start || !end) return alert("Please select both Start Date and End Date!");
 
-            let filtered = attendanceRecords.filter(r => r.date >= start && r.date <= end);
+            let filtered = attendanceRecords.filter(r => {
+                let matchDate = r.date >= start && r.date <= end;
+                let matchClass = selectedClass ? r.cls === selectedClass : true;
+                return matchDate && matchClass;
+            });
+
             let tb = document.getElementById('attendanceReportTableBody');
             tb.innerHTML = "";
 
             if(filtered.length === 0) {
-                tb.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500">No attendance records found between selected dates.</td></tr>`;
+                tb.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500">No attendance records found for the selected criteria.</td></tr>`;
             } else {
                 filtered.forEach(r => {
                     let badgeColor = r.status === 'Present' ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800';
@@ -587,16 +622,23 @@
                 });
             }
 
-            document.getElementById('reportDateRangeTitle').innerText = `Report from ${start} to ${end}`;
+            let classText = selectedClass ? ` for Class ${selectedClass}` : '';
+            document.getElementById('reportDateRangeTitle').innerText = `Report from ${start} to ${end}${classText}`;
             document.getElementById('attendanceReportContainer').classList.remove('hidden');
         }
 
         function downloadAttendancePDF() {
             let start = document.getElementById('attStartDate').value;
             let end = document.getElementById('attEndDate').value;
-            let filtered = attendanceRecords.filter(r => r.date >= start && r.date <= end);
+            let selectedClass = document.getElementById('attReportClassSelect').value;
 
-            if(filtered.length === 0) return alert("No data available to download for this range!");
+            let filtered = attendanceRecords.filter(r => {
+                let matchDate = r.date >= start && r.date <= end;
+                let matchClass = selectedClass ? r.cls === selectedClass : true;
+                return matchDate && matchClass;
+            });
+
+            if(filtered.length === 0) return alert("No data available to download for this selection!");
 
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('p', 'mm', 'a4');
@@ -608,7 +650,8 @@
             
             doc.setFontSize(14);
             doc.setFont("times", "normal");
-            doc.text("Attendance Report", 105, 28, {align: 'center'});
+            let subTitle = selectedClass ? `Attendance Report - Class ${selectedClass}` : "Attendance Report (All Classes)";
+            doc.text(subTitle, 105, 28, {align: 'center'});
             
             doc.setFontSize(11);
             doc.text(`Date Range: ${start} to ${end}`, 14, 38);
@@ -624,7 +667,8 @@
                 body: tableData
             });
 
-            doc.save(`Attendance_${start}_to_${end}.pdf`);
+            let filename = selectedClass ? `Attendance_${selectedClass}_${start}_to_${end}.pdf` : `Attendance_All_${start}_to_${end}.pdf`;
+            doc.save(filename);
         }
 
         function generateSlip(index) {
