@@ -47,8 +47,8 @@
 
         <!-- Right Main Content Area -->
         <div class="flex-1 flex flex-col bg-slate-50 overflow-hidden h-full">
-            <div class="md:hidden bg-indigo-950 text-white px-4 py-3 flex justify-between items-center shadow-md flex-shrink-0">
-                <span class="font-bold text-amber-500 text-lg">Motion Public School</span>
+            <div class="md:hidden bg-indigo-950 text-white px-5 py-4 flex justify-between items-center shadow-md flex-shrink-0">
+                <span class="font-bold text-amber-500 text-base tracking-wide">Motion Public School</span>
                 <button onclick="toggleMobileSidebar()" class="text-white text-xl focus:outline-none p-1"><i class="fa-solid fa-bars"></i></button>
             </div>
 
@@ -402,7 +402,6 @@
             }
         }
 
-        // Automatically assign and re-sequence roll numbers class-wise (1, 2, 3...)
         function reindexAdmissions() {
             let classesList = ["Nursery", "LKG", "UKG", "1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th", "10th", "11th", "12th"];
             classesList.forEach(cls => {
@@ -500,7 +499,6 @@
             if(!name) return alert("Enter Student Name!");
             if(!month) return alert("Please select a Month!");
 
-            // Prevent invalid zero roll numbers (0, 00, 000, etc.)
             let classStudents = admissions.filter(a => a.cls === cls);
             let nextRoll = classStudents.length + 1;
 
@@ -530,7 +528,7 @@
                 if(!t_p) data.photo = admissions[i].photo; 
                 if(!t_ps) data.parentSig = admissions[i].parentSig; 
                 if(!t_as) data.accSig = admissions[i].accSig;
-                data.roll = admissions[i].roll; // Keep original roll on edit
+                data.roll = admissions[i].roll;
                 admissions[i] = data; 
                 document.getElementById("editAdIndex").value = "-1";
                 document.getElementById("formTitle").innerText = "Admission & Fee Slip";
@@ -568,7 +566,7 @@
                 return;
             }
 
-            classStudents.forEach((ad, i) => {
+            classStudents.forEach((ad) => {
                 let actualGlobalIndex = admissions.indexOf(ad);
                 tb.innerHTML += `<tr class="hover:bg-slate-50">
                     <td class="p-4 font-bold text-indigo-900">${ad.roll}</td>
