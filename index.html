@@ -173,26 +173,29 @@
                         <h3 class="text-xl font-bold text-indigo-900">Cloud Records (Class-wise)</h3>
                         <button onclick="renderAdmissions()" class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded text-sm font-bold hover:bg-indigo-200"><i class="fa-solid fa-rotate mr-1"></i> Refresh</button>
                     </div>
-                    <div class="p-6 border-b bg-slate-50 flex items-center space-x-4">
-                        <label class="font-bold text-sm text-indigo-950">Select Class to View Students:</label>
-                        <select id="filterListClass" onchange="renderAdmissions()" class="px-4 py-2 border rounded-lg bg-white font-medium outline-none">
-                            <option value="">-- Choose Class --</option>
-                            <option value="Nursery">Nursery</option>
-                            <option value="LKG">LKG</option>
-                            <option value="UKG">UKG</option>
-                            <option value="1st">1st</option>
-                            <option value="2nd">2nd</option>
-                            <option value="3rd">3rd</option>
-                            <option value="4th">4th</option>
-                            <option value="5th">5th</option>
-                            <option value="6th">6th</option>
-                            <option value="7th">7th</option>
-                            <option value="8th">8th</option>
-                            <option value="9th">9th</option>
-                            <option value="10th">10th</option>
-                            <option value="11th">11th</option>
-                            <option value="12th">12th</option>
-                        </select>
+                    <div class="p-6 border-b bg-slate-50 flex items-center justify-between flex-wrap gap-4">
+                        <div class="flex items-center space-x-4">
+                            <label class="font-bold text-sm text-indigo-950">Select Class to View Students:</label>
+                            <select id="filterListClass" onchange="renderAdmissions()" class="px-4 py-2 border rounded-lg bg-white font-medium outline-none">
+                                <option value="">-- Choose Class --</option>
+                                <option value="Nursery">Nursery</option>
+                                <option value="LKG">LKG</option>
+                                <option value="UKG">UKG</option>
+                                <option value="1st">1st</option>
+                                <option value="2nd">2nd</option>
+                                <option value="3rd">3rd</option>
+                                <option value="4th">4th</option>
+                                <option value="5th">5th</option>
+                                <option value="6th">6th</option>
+                                <option value="7th">7th</option>
+                                <option value="8th">8th</option>
+                                <option value="9th">9th</option>
+                                <option value="10th">10th</option>
+                                <option value="11th">11th</option>
+                                <option value="12th">12th</option>
+                            </select>
+                        </div>
+                        <button onclick="downloadAllAdmissionsPDF()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-bold text-sm shadow"><i class="fa-solid fa-download mr-1"></i> Download All Admission PDF</button>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left">
@@ -461,6 +464,29 @@
             }
         }
 
+        // Automatic background removal for signature and images
+        function removeWhiteBackground(dataUrl, callback) {
+            let img = new Image();
+            img.onload = function() {
+                let canvas = document.createElement('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                let ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0);
+                let imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                let data = imgData.data;
+                for (let i = 0; i < data.length; i += 4) {
+                    let r = data[i], g = data[i + 1], b = data[i + 2];
+                    if (r > 200 && g > 200 && b > 200) {
+                        data[i + 3] = 0; // Make white pixels transparent
+                    }
+                }
+                ctx.putImageData(imgData, 0, 0);
+                callback(canvas.toDataURL('image/png'));
+            };
+            img.src = dataUrl;
+        }
+
         function processImg(e, type) {
             let file = e.target.files[0]; if(!file) return;
             let reader = new FileReader();
@@ -472,7 +498,13 @@
                     canvas.width = img.width * scale; canvas.height = img.height * scale;
                     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                     let b64 = canvas.toDataURL('image/jpeg', 0.6);
-                    if(type === 'p') t_p = b64; if(type === 'ps') t_ps = b64; if(type === 'as') t_as = b64;
+                    if(type === 'p') {
+                        t_p = b64;
+                    } else if(type === 'ps') {
+                        removeWhiteBackground(b64, function(transparentB64) { t_ps = transparentB64; });
+                    } else if(type === 'as') {
+                        removeWhiteBackground(b64, function(transparentB64) { t_as = transparentB64; });
+                    }
                 }; img.src = ev.target.result;
             }; reader.readAsDataURL(file);
         }
@@ -578,6 +610,37 @@
                     </td>
                 </tr>`;
             });
+        }
+
+        function downloadAllAdmissionsPDF() {
+            if(admissions.length === 0) return alert("No admission records available!");
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'mm', 'a4');
+            let sName = localStorage.getItem('mps_schoolName') || "Motion Public School";
+
+            doc.setFont("times", "bold");
+            doc.setFontSize(22);
+            doc.text(sName, 105, 20, {align: 'center'});
+            
+            doc.setFontSize(14);
+            doc.setFont("times", "normal");
+            doc.text("All Students Admission Records (All Classes)", 105, 28, {align: 'center'});
+            
+            doc.setFontSize(11);
+            doc.text(`Generated Date: ${new Date().toLocaleDateString('en-GB')}`, 14, 38);
+            doc.line(14, 42, 196, 42);
+
+            let tableData = admissions.map(a => [a.cls, a.roll, a.name, a.fname || '-', a.contact || '-', a.date]);
+
+            doc.autoTable({
+                startY: 46,
+                theme: 'grid',
+                styles: { font: 'times', fontSize: 10 },
+                head: [['Class', 'Roll No', 'Student Name', 'Father Name', 'Contact No', 'Admission Date']],
+                body: tableData
+            });
+
+            doc.save(`All_Admissions_Report.pdf`);
         }
 
         function initAttendanceClasses() {
@@ -785,12 +848,17 @@
                     [{content: 'Total Fee Amount', colSpan: 2, styles: {fontStyle: 'bold', halign: 'center', fontSize: 14}}, {content: d.v.final, colSpan: 2, styles: {halign: 'center', fontStyle: 'bold', fontSize: 14}}]
                 ]
             });
-            let finalY = doc.lastAutoTable.finalY + 12; doc.setFontSize(12); doc.setFont("times", "bold");
-            doc.text("Parents Signature................................", 15, finalY); doc.text("AccountantSig................................", 120, finalY);
+            let finalY = doc.lastAutoTable.finalY + 12; 
+            doc.setFontSize(12); 
+            doc.setFont("times", "bold");
+            
+            // Render text lines for signatures properly aligned below the table
+            doc.text("Parents Signature................................", 15, finalY); 
+            doc.text("AccountantSig................................", 120, finalY);
             
             if(d.photo) doc.addImage(d.photo, 'JPEG', 160, 15, 25, 30);
-            if(d.parentSig) doc.addImage(d.parentSig, 'JPEG', 45, finalY - 12, 35, 12);
-            if(d.accSig) doc.addImage(d.accSig, 'JPEG', 150, finalY - 12, 35, 12);
+            if(d.parentSig) doc.addImage(d.parentSig, 'PNG', 25, finalY - 14, 45, 14);
+            if(d.accSig) doc.addImage(d.accSig, 'PNG', 130, finalY - 14, 45, 14);
             
             doc.save(`FeeSlip_${d.name}.pdf`);
         }
