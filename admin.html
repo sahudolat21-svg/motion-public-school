@@ -7,9 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- EmailJS Library -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    <!-- jsPDF for Reports Download -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
     
@@ -26,8 +24,6 @@
 
     <!-- ADMIN LOGIN SCREEN -->
     <div id="adminLoginScreen" class="min-h-screen bg-slate-900 flex items-center justify-center p-4">
-        
-        <!-- Login Box -->
         <div id="loginBox" class="max-w-md w-full bg-white rounded-2xl shadow-2xl p-8 border-t-4 border-red-600 text-center relative transition-all duration-300">
             <h1 class="text-3xl font-bold text-slate-900 mb-2"><i class="fa-solid fa-user-shield text-red-600"></i></h1>
             <h2 class="text-xl font-bold text-slate-800 uppercase tracking-wider mb-6">Admin Login</h2>
@@ -38,18 +34,15 @@
             
             <button onclick="adminLogin()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg shadow-lg transition-all">Unlock Admin Panel</button>
             
-            <!-- Reset Button -->
             <div class="mt-6 border-t pt-4">
                 <button onclick="toggleResetFlow(true)" class="text-sm font-bold text-slate-500 hover:text-red-600 transition-all"><i class="fa-solid fa-unlock-keyhole mr-1"></i> Reset Username/Password</button>
             </div>
         </div>
 
-        <!-- Reset Password Box -->
         <div id="resetBox" class="hidden max-w-md w-full bg-white rounded-2xl shadow-2xl p-8 border-t-4 border-amber-500 text-center relative transition-all duration-300 animate-fade-in">
             <h2 class="text-xl font-bold text-slate-800 uppercase tracking-wider mb-2"><i class="fa-solid fa-key text-amber-500 mr-2"></i>Reset Access</h2>
             <p class="text-xs text-slate-500 mb-6">Verify your registered email to change credentials.</p>
             
-            <!-- Step 1: Email & Send OTP -->
             <div id="resetStep1">
                 <label class="block text-left text-sm font-bold text-slate-700 mb-1">Registered Email</label>
                 <input type="text" value="rajpurushottamraj1@gmail.com" readonly class="w-full px-4 py-3 bg-slate-200 border rounded-lg mb-4 outline-none text-slate-500 cursor-not-allowed font-medium text-center">
@@ -58,7 +51,6 @@
                 </button>
             </div>
 
-            <!-- Step 2: Verify OTP -->
             <div id="resetStep2" class="hidden animate-fade-in">
                 <p class="text-sm text-emerald-600 font-bold mb-3"><i class="fa-solid fa-circle-check mr-1"></i> OTP Sent to Email Successfully!</p>
                 <input type="text" id="resetOtpInput" class="w-full px-4 py-3 bg-slate-50 border rounded-lg mb-4 outline-none focus:ring-2 focus:ring-amber-500 tracking-widest text-center font-bold text-xl" placeholder="Enter 4-Digit OTP">
@@ -67,7 +59,6 @@
                 </button>
             </div>
 
-            <!-- Step 3: New Credentials -->
             <div id="resetStep3" class="hidden text-left space-y-3 animate-fade-in">
                 <p class="text-sm text-emerald-600 font-bold mb-2 text-center"><i class="fa-solid fa-shield-check mr-1"></i> Verified! Create New Login.</p>
                 <div>
@@ -127,7 +118,6 @@
             <button onclick="saveAllSettings()" class="bg-indigo-600 text-white px-10 py-3 rounded-lg font-bold text-lg hover:bg-indigo-700 shadow-lg transition-all"><i class="fa-solid fa-save mr-2"></i> Save All Changes & Sync</button>
         </div>
 
-        <!-- ATTENDANCE RECORDS & REPORTS & EDIT (ADMIN CONTROL) -->
         <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-8 space-y-6">
             <h2 class="text-xl font-bold text-indigo-900"><i class="fa-solid fa-calendar-days text-indigo-600 mr-2"></i> Attendance Records, Reports & Editing</h2>
             
@@ -226,7 +216,6 @@
             </div>
         </div>
 
-        <!-- Manage Records Table -->
         <div id="recordsView" class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
             <div class="flex justify-between items-center mb-4 flex-wrap gap-4">
                 <h2 class="text-xl font-bold text-slate-800"><i class="fa-solid fa-database text-red-600"></i> Manage Admission Records (Class-wise)</h2>
@@ -264,7 +253,6 @@
             </div>
         </div>
 
-        <!-- FULL EDIT SECTION IN ADMIN -->
         <div id="fullEditSection" class="hidden bg-white p-8 rounded-xl shadow-lg border-2 border-amber-400 mt-8">
             <h2 class="text-2xl font-bold mb-6 text-amber-600 border-b pb-2"><i class="fa-solid fa-pen-to-square"></i> Full Record Edit</h2>
             <input type="hidden" id="adminEditIndex">
@@ -367,13 +355,13 @@
 
     <!-- LIVE WATCH MODAL -->
     <div id="liveWatchModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 animate-fade-in">
-        <div class="bg-white rounded-2xl p-6 max-w-lg w-full shadow-2xl">
+        <div class="bg-white rounded-2xl p-6 max-w-xl w-full shadow-2xl">
             <div class="flex justify-between items-center mb-4 border-b pb-2">
-                <h3 class="text-xl font-bold text-indigo-900"><i class="fa-solid fa-eye text-indigo-600 mr-2"></i> Active Sessions Watch Live</h3>
+                <h3 class="text-xl font-bold text-indigo-900"><i class="fa-solid fa-eye text-indigo-600 mr-2"></i> Active Sessions & Devices Watch Live</h3>
                 <button onclick="document.getElementById('liveWatchModal').classList.add('hidden')" class="text-slate-500 hover:text-red-600 font-bold text-lg"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <p class="text-sm text-slate-600 mb-4">Current active browser instances connected to the portal:</p>
-            <div id="liveSessionsList" class="space-y-2 max-h-60 overflow-y-auto border p-3 rounded-lg bg-slate-50"></div>
+            <p class="text-sm text-slate-600 mb-4">All devices currently connected or logged into the portal across the network:</p>
+            <div id="liveSessionsList" class="space-y-2 max-h-72 overflow-y-auto border p-3 rounded-lg bg-slate-50"></div>
             <button onclick="document.getElementById('liveWatchModal').classList.add('hidden')" class="w-full mt-4 bg-slate-800 hover:bg-slate-900 text-white font-bold py-2 rounded-lg">Close</button>
         </div>
     </div>
@@ -390,46 +378,12 @@
 
         let admissions = JSON.parse(localStorage.getItem('mps_admissions_v3')) || [];
         let attendanceRecords = JSON.parse(localStorage.getItem('mps_attendance_records')) || [];
+        let activeSessions = {};
         let newLogoBase64 = localStorage.getItem('mps_logo') || ""; 
         let temp_p = "", temp_ps = "", temp_as = ""; 
         let resetOTP = "";
 
-        function updateLiveCount() {
-            let activeSessions = JSON.parse(localStorage.getItem('mps_active_sessions')) || {};
-            let now = Date.now();
-            let validCount = 0;
-            Object.keys(activeSessions).forEach(id => {
-                if (now - activeSessions[id].time > 20000) {
-                    delete activeSessions[id];
-                } else {
-                    validCount++;
-                }
-            });
-            localStorage.setItem('mps_active_sessions', JSON.stringify(activeSessions));
-            document.getElementById('liveCount').innerText = validCount;
-        }
-        setInterval(updateLiveCount, 3000);
-        updateLiveCount();
-
-        function openLiveWatchModal() {
-            let activeSessions = JSON.parse(localStorage.getItem('mps_active_sessions')) || {};
-            let listDiv = document.getElementById('liveSessionsList');
-            listDiv.innerHTML = "";
-            let keys = Object.keys(activeSessions);
-            if(keys.length === 0) {
-                listDiv.innerHTML = `<p class="text-slate-500 text-center py-4">No active websites running currently.</p>`;
-            } else {
-                keys.forEach((k, idx) => {
-                    listDiv.innerHTML += `<div class="flex justify-between items-center bg-white p-2 border rounded shadow-sm text-sm">
-                        <span><i class="fa-solid fa-circle text-emerald-500 text-xs mr-2"></i> Client Session #${idx + 1} (${activeSessions[k].role})</span>
-                        <span class="text-xs text-slate-400">Active</span>
-                    </div>`;
-                });
-            }
-            document.getElementById('liveWatchModal').classList.remove('hidden');
-        }
-
-        syncCloudDataInBackground();
+        const mySessionId = 'admin_session_' + Math.random().toString(36).substring(2);
 
         async function syncCloudDataInBackground() {
             try {
@@ -446,6 +400,9 @@
                     if(result.record.attendanceRecords) {
                         attendanceRecords = result.record.attendanceRecords;
                         localStorage.setItem('mps_attendance_records', JSON.stringify(attendanceRecords));
+                    }
+                    if(result.record.activeSessions) {
+                        activeSessions = result.record.activeSessions;
                     }
                     if(result.record.settings) {
                         let s = result.record.settings;
@@ -464,10 +421,111 @@
             }
         }
 
-        async function softRefreshAdmin() {
-            await syncCloudDataInBackground();
-            renderAdminData();
-            alert("Admin data refreshed successfully from cloud!");
+        async function updateCloudSessions() {
+            let now = Date.now();
+            let cleanedSessions = {};
+            
+            // Clean up sessions older than 20 seconds
+            Object.keys(activeSessions).forEach(id => {
+                if(now - activeSessions[id].time <= 20000 && !activeSessions[id].forceLogout) {
+                    cleanedSessions[id] = activeSessions[id];
+                }
+            });
+
+            // Register admin session
+            cleanedSessions[mySessionId] = {
+                time: now,
+                role: 'Admin Panel',
+                device: navigator.userAgent.includes('Mobile') ? 'Mobile Device' : 'Desktop PC'
+            };
+
+            activeSessions = cleanedSessions;
+            
+            // Check if this admin session was forced to logout remotely
+            if(activeSessions[mySessionId] && activeSessions[mySessionId].forceLogout) {
+                alert("⚠️ Your session was terminated by Admin.");
+                location.reload();
+                return;
+            }
+
+            document.getElementById('liveCount').innerText = Object.keys(activeSessions).length;
+
+            try {
+                let response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
+                    headers: { 'X-Master-Key': JSONBIN_API_KEY }
+                });
+                let result = await response.json();
+                let currentData = result.record || {};
+                currentData.activeSessions = activeSessions;
+
+                await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': JSONBIN_API_KEY
+                    },
+                    body: JSON.stringify(currentData)
+                });
+            } catch(e) {}
+        }
+
+        syncCloudDataInBackground().then(() => {
+            setInterval(updateCloudSessions, 5000);
+            updateCloudSessions();
+        });
+
+        function openLiveWatchModal() {
+            let listDiv = document.getElementById('liveSessionsList');
+            listDiv.innerHTML = "";
+            let keys = Object.keys(activeSessions);
+            
+            if(keys.length === 0) {
+                listDiv.innerHTML = `<p class="text-slate-500 text-center py-4">No active devices running currently.</p>`;
+            } else {
+                keys.forEach((k, idx) => {
+                    let sess = activeSessions[k];
+                    let isMe = k === mySessionId ? ' (You)' : '';
+                    listDiv.innerHTML += `<div class="flex justify-between items-center bg-white p-3 border rounded shadow-sm text-sm">
+                        <div>
+                            <span class="font-bold text-indigo-900"><i class="fa-solid fa-circle text-emerald-500 text-xs mr-2"></i>Device #${idx + 1}${isMe}</span>
+                            <p class="text-xs text-slate-500 mt-1">Type: ${sess.device || 'Browser'} | Role: ${sess.role}</p>
+                        </div>
+                        ${k !== mySessionId ? `<button onclick="forceLogoutSession('${k}')" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-xs font-bold transition"><i class="fa-solid fa-power-off mr-1"></i> Force Logout</button>` : '<span class="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-1 rounded">Connected</span>'}
+                    </div>`;
+                });
+            }
+            document.getElementById('liveWatchModal').classList.remove('hidden');
+        }
+
+        async function forceLogoutSession(sessionId) {
+            if(confirm("Are you sure you want to log out this device remotely?")) {
+                if(activeSessions[sessionId]) {
+                    activeSessions[sessionId].forceLogout = true;
+                    await saveCloudDataSessionsOnly();
+                    openLiveWatchModal();
+                    alert("Device logged out successfully!");
+                }
+            }
+        }
+
+        async function saveCloudDataSessionsOnly() {
+            try {
+                let response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
+                    headers: { 'X-Master-Key': JSONBIN_API_KEY }
+                });
+                let result = await response.json();
+                let currentData = result.record || {};
+                currentData.activeSessions = activeSessions;
+
+                await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': JSONBIN_API_KEY
+                    },
+                    body: JSON.stringify(currentData)
+                });
+            } catch(e) {}
         }
 
         async function saveCloudData() {
@@ -483,6 +541,7 @@
                 
                 currentData.admissions = admissions;
                 currentData.attendanceRecords = attendanceRecords;
+                currentData.activeSessions = activeSessions;
                 currentData.settings = {
                     schoolName: localStorage.getItem('mps_schoolName') || "Motion Public School",
                     staffUser: localStorage.getItem('mps_staffUser') || "Motion Public School",
@@ -538,6 +597,13 @@
         }
         function logoutAdmin() { location.reload(); }
 
+        async function softRefreshAdmin() {
+            await syncCloudDataInBackground();
+            renderAdminData();
+            alert("Admin data refreshed successfully from cloud!");
+        }
+
+        // Attendance & Edit Functions remain intact
         function getTodayDateStr() {
             let now = new Date();
             let targetDate = new Date(now);
