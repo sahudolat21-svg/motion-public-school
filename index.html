@@ -6,6 +6,7 @@
     <title>Motion Public School</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
     <style>.hidden { display: none !important; } ::-webkit-scrollbar { width: 8px; } ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }</style>
@@ -302,6 +303,12 @@
     </div>
 
     <script>
+        (function() {
+            emailjs.init("Loh2h3yl77uqnS3I");
+        })();
+        const EMAILJS_SERVICE_ID = "service_uxj16r9";
+        const EMAILJS_TEMPLATE_ID = "template_q3yq1vk";
+
         const JSONBIN_BIN_ID = "6ab3e3a0ac6210605aed6c4b";
         const JSONBIN_API_KEY = "$2a$10$yyc9hu99dDO8hxlNRqiu4eao2Pa7kAKyCv6VTZk9o6MXaTNGh6mvO";
 
@@ -309,7 +316,6 @@
         let attendanceRecords = JSON.parse(localStorage.getItem('mps_attendance_records')) || [];
         let t_p = "", t_ps = "", t_as = ""; 
 
-        // Active session tracking for Live Watch
         const sessionId = 'session_' + Math.random().toString(36).substring(2);
         function registerActiveSession() {
             let activeSessions = JSON.parse(localStorage.getItem('mps_active_sessions')) || {};
@@ -381,7 +387,9 @@
 
         async function softRefresh() {
             await syncCloudDataInBackground();
-            renderAdmissions();
+            if(!document.getElementById('admissionList').classList.contains('hidden')) {
+                renderAdmissions();
+            }
             alert("Data refreshed successfully from cloud!");
         }
 
@@ -868,4 +876,4 @@
         }
     </script>
 </body>
-</html>55
+</html>
