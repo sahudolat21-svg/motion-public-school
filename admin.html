@@ -9,7 +9,7 @@
     
     <!-- EmailJS Library -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    <!-- jsPDF for Attendance Report Download -->
+    <!-- jsPDF for Attendance & Fee Slip PDF Download -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
     
@@ -230,9 +230,12 @@
 
         <!-- Manage Records Table -->
         <div id="recordsView" class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-            <div class="flex justify-between items-center mb-4">
+            <div class="flex justify-between items-center mb-4 flex-wrap gap-4">
                 <h2 class="text-xl font-bold text-slate-800"><i class="fa-solid fa-database text-red-600"></i> Manage Admission Records (Class-wise)</h2>
-                <button onclick="renderAdminData()" class="bg-slate-100 px-3 py-1 rounded text-sm font-bold hover:bg-slate-200"><i class="fa-solid fa-rotate mr-1"></i> Refresh</button>
+                <div class="flex items-center space-x-3">
+                    <button onclick="renderAdminData()" class="bg-slate-100 px-3 py-2 rounded text-sm font-bold hover:bg-slate-200"><i class="fa-solid fa-rotate mr-1"></i> Refresh</button>
+                    <button onclick="downloadAllAdmissionsPDF()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-bold text-sm shadow"><i class="fa-solid fa-download mr-1"></i> All Records Download</button>
+                </div>
             </div>
             <div class="p-4 border-b bg-slate-50 flex items-center space-x-4 mb-4">
                 <label class="font-bold text-sm text-indigo-950">Select Class to Manage Students:</label>
@@ -379,7 +382,7 @@
 
     <script>
         (function() {
-            emailjs.init("aTznvC9ZnBpiqeBDV");
+            emailjs.init("Loh2h3yl77uqnS3I");
         })();
         const EMAILJS_SERVICE_ID = "service_uxj16r9";
         const EMAILJS_TEMPLATE_ID = "template_q3yq1vk";
@@ -839,8 +842,9 @@
                     <td class="p-3 text-slate-600">${ad.fname || '-'}</td>
                     <td class="p-3 text-slate-600">${ad.contact || '-'}</td>
                     <td class="p-3 text-center space-x-2">
-                        <button onclick="openFullEdit(${actualGlobalIndex})" class="bg-blue-100 text-blue-600 px-4 py-2 rounded font-bold hover:bg-blue-500 hover:text-white transition"><i class="fa-solid fa-pen"></i> Edit</button>
-                        <button onclick="deleteData(${actualGlobalIndex})" class="bg-red-100 text-red-600 px-4 py-2 rounded font-bold hover:bg-red-500 hover:text-white transition"><i class="fa-solid fa-trash"></i> Delete</button>
+                        <button onclick="generateSlip(${actualGlobalIndex})" class="bg-amber-100 text-amber-700 px-3 py-1 rounded font-bold hover:bg-amber-500 hover:text-white transition"><i class="fa-solid fa-download"></i> PDF</button>
+                        <button onclick="openFullEdit(${actualGlobalIndex})" class="bg-blue-100 text-blue-600 px-3 py-1 rounded font-bold hover:bg-blue-500 hover:text-white transition"><i class="fa-solid fa-pen"></i> Edit</button>
+                        <button onclick="deleteData(${actualGlobalIndex})" class="bg-red-100 text-red-600 px-3 py-1 rounded font-bold hover:bg-red-500 hover:text-white transition"><i class="fa-solid fa-trash"></i> Delete</button>
                     </td>
                 </tr>`;
             });
@@ -863,9 +867,37 @@
                     canvas.width = img.width * scale; canvas.height = img.height * scale;
                     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                     let b64 = canvas.toDataURL('image/jpeg', 0.6);
-                    if(type === 'p') temp_p = b64; if(type === 'ps') temp_ps = b64; if(type === 'as') temp_as = b64;
+                    if(type === 'p') {
+                        temp_p = b64;
+                    } else if(type === 'ps') {
+                        removeWhiteBackground(b64, function(transparentB64) { temp_ps = transparentB64; });
+                    } else if(type === 'as') {
+                        removeWhiteBackground(b64, function(transparentB64) { temp_as = transparentB64; });
+                    }
                 }; img.src = ev.target.result;
             }; r.readAsDataURL(file);
+        }
+
+        function removeWhiteBackground(dataUrl, callback) {
+            let img = new Image();
+            img.onload = function() {
+                let canvas = document.createElement('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                let ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0);
+                let imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                let data = imgData.data;
+                for (let i = 0; i < data.length; i += 4) {
+                    let r = data[i], g = data[i + 1], b = data[i + 2];
+                    if (r > 200 && g > 200 && b > 200) {
+                        data[i + 3] = 0;
+                    }
+                }
+                ctx.putImageData(imgData, 0, 0);
+                callback(canvas.toDataURL('image/png'));
+            };
+            img.src = dataUrl;
         }
 
         function openFullEdit(i) {
@@ -944,6 +976,77 @@
                 renderAdminData();
                 await saveCloudData();
             }
+        }
+
+        function downloadAllAdmissionsPDF() {
+            if(admissions.length === 0) return alert("No admission records available!");
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'mm', 'a4');
+            let sName = localStorage.getItem('mps_schoolName') || "Motion Public School";
+
+            doc.setFont("times", "bold");
+            doc.setFontSize(22);
+            doc.text(sName, 105, 20, {align: 'center'});
+            
+            doc.setFontSize(14);
+            doc.setFont("times", "normal");
+            doc.text("All Students Admission Records (Class-wise)", 105, 28, {align: 'center'});
+            
+            doc.setFontSize(11);
+            doc.text(`Generated Date: ${new Date().toLocaleDateString('en-GB')}`, 14, 38);
+            doc.line(14, 42, 196, 42);
+
+            let tableData = admissions.map(a => [a.cls, a.roll, a.name, a.fname || '-', a.contact || '-', a.date]);
+
+            doc.autoTable({
+                startY: 46,
+                theme: 'grid',
+                styles: { font: 'times', fontSize: 10 },
+                head: [['Class', 'Roll No', 'Student Name', 'Father Name', 'Contact No', 'Admission Date']],
+                body: tableData
+            });
+
+            doc.save(`All_Admissions_Report.pdf`);
+        }
+
+        function generateSlip(index) {
+            let sName = localStorage.getItem('mps_schoolName') || "Motion Public School";
+            const { jsPDF } = window.jspdf; const doc = new jsPDF('p', 'mm', 'a4'); const d = admissions[index];
+            doc.rect(10, 10, 190, 277); doc.rect(12, 12, 186, 273);
+            doc.setFont("times", "bold"); doc.setFontSize(32); doc.text(sName, 105, 30, {align: 'center'});
+            doc.setFontSize(12); doc.setFont("times", "normal"); doc.text("add ;-Near of B.S College ,Gamharia Rod Singheshwar", 105, 38, {align: 'center'});
+            doc.line(15, 42, 195, 42); doc.setFont("times", "italic"); doc.setFontSize(16); doc.text("SCHOOL FEE-SLIP", 105, 50, {align: 'center'});
+            doc.line(15, 53, 195, 53); doc.line(15, 54, 195, 54);
+            
+            doc.autoTable({
+                startY: 56, theme: 'grid', styles: { font: 'times', textColor: 0, lineColor: 0, lineWidth: 0.2, fontSize: 11, minCellHeight: 8 },
+                body: [
+                    ['Phone Pay-', '7520400029', '', `Admission Date: ${d.date}`],
+                    ['Student Name', d.name, 'Roll No', d.roll],
+                    ['Father Name', d.fname, 'Class', d.cls],
+                    ['Contact No', d.contact || '-', '', ''],
+                    [{content: 'Monthly fee Structure', colSpan: 2, styles: {fontStyle: 'bold', halign: 'center', fontSize: 12}}, {content: 'Extra Accessories', colSpan: 2, styles: {fontStyle: 'bold', halign: 'center', fontSize: 12}}],
+                    ['Monthly fee Amount', d.v.m, 'Bus Fee', d.v.bs], ['Registration Fee', d.v.r, 'Sport fee', d.v.sp],
+                    ['Admission Fee', d.v.a, 'Caution Money', d.v.c], ['Annual Fee', d.v.an, 'Development Fee', d.v.d],
+                    ['Tution fee', d.v.t, 'Library Fee', d.v.l], ['', '', 'Book', d.v.bk],
+                    [{content: 'Total Pay', styles: {fontStyle: 'bold'}}, {content: d.v.pay, styles: {fontStyle: 'bold'}}, '', ''],
+                    [{content: 'Month', styles: {fontStyle: 'bold'}}, {content: d.month, styles: {fontStyle: 'bold'}}, '', ''],
+                    [{content: 'Total Due Month', styles: {fontStyle: 'bold'}}, {content: d.due, styles: {fontStyle: 'bold'}}, {content: 'Total Extra', styles: {fontStyle: 'bold'}}, d.v.ext],
+                    [{content: 'Total Fee Amount', colSpan: 2, styles: {fontStyle: 'bold', halign: 'center', fontSize: 14}}, {content: d.v.final, colSpan: 2, styles: {halign: 'center', fontStyle: 'bold', fontSize: 14}}]
+                ]
+            });
+            let finalY = doc.lastAutoTable.finalY + 12; 
+            doc.setFontSize(12); 
+            doc.setFont("times", "bold");
+            
+            doc.text("Parents Signature................................", 15, finalY); 
+            doc.text("AccountantSig................................", 120, finalY);
+            
+            if(d.photo) doc.addImage(d.photo, 'JPEG', 160, 15, 25, 30);
+            if(d.parentSig) doc.addImage(d.parentSig, 'PNG', 25, finalY - 14, 45, 14);
+            if(d.accSig) doc.addImage(d.accSig, 'PNG', 130, finalY - 14, 45, 14);
+            
+            doc.save(`FeeSlip_${d.name}.pdf`);
         }
     </script>
 </body>
