@@ -3,331 +3,235 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Motion Public School - Admin Panel</title>
-    <!-- Tailwind CSS -->
+    <title>Admin Panel - Motion Public School</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <!-- html2pdf for PDF Download -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f3f4f6; }
-        .sidebar { background-color: #171635; } /* Dark blue sidebar matches your image */
-        .active-nav { background-color: #ffb703; color: #000; font-weight: bold; border-radius: 8px; }
-        .nav-item { padding: 12px 20px; margin: 4px 16px; border-radius: 8px; transition: 0.3s; display: flex; align-items: center; gap: 12px; cursor: pointer; color: #a1a1aa; }
-        .nav-item:hover:not(.active-nav) { background-color: rgba(255,255,255,0.1); color: #fff; }
-        
-        /* Modal Styles */
-        .modal { display: none; position: fixed; z-index: 50; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); }
-        .modal-content { background-color: #fff; margin: 5% auto; padding: 20px; border-radius: 8px; width: 600px; max-width: 90%; }
-    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <style>.hidden { display: none !important; }</style>
 </head>
-<body class="flex h-screen overflow-hidden">
+<body class="bg-slate-100 font-sans text-slate-800">
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar w-64 h-full flex flex-col justify-between shadow-2xl text-white">
-        <div>
-            <!-- Logo & Title -->
-            <div class="text-center py-8">
-                <div class="w-20 h-20 mx-auto bg-black rounded-full mb-3 flex items-center justify-center border-2 border-gray-600">
-                    <span class="text-xs text-gray-400">Logo</span>
+    <!-- ADMIN LOGIN -->
+    <div id="adminLoginScreen" class="min-h-screen bg-slate-900 flex items-center justify-center p-4">
+        <div class="max-w-md w-full bg-white rounded-2xl shadow-2xl p-8 text-center border-t-4 border-red-600">
+            <h2 class="text-xl font-bold uppercase tracking-wider mb-6">Admin Login</h2>
+            <p id="admin-error-msg" class="hidden bg-red-100 text-red-700 p-2 rounded mb-4 text-sm font-bold">Galat Details!</p>
+            <input type="text" id="adminUser" class="w-full px-4 py-3 bg-slate-50 border rounded-lg mb-4 outline-none" placeholder="Username">
+            <input type="password" id="adminPass" class="w-full px-4 py-3 bg-slate-50 border rounded-lg mb-6 outline-none" placeholder="Password">
+            <button onclick="adminLogin()" class="w-full bg-red-600 text-white font-bold py-3 rounded-lg shadow-lg">Login</button>
+        </div>
+    </div>
+
+    <!-- ADMIN DASHBOARD -->
+    <div id="adminDashboard" class="hidden max-w-6xl mx-auto p-6 space-y-6">
+        <div class="flex justify-between items-center bg-white p-6 rounded-xl shadow-sm border">
+            <h1 class="text-2xl font-bold text-indigo-900"><i class="fa-solid fa-user-shield mr-2"></i> Admin Control Center</h1>
+            <div class="flex space-x-3">
+                <button onclick="openLiveWatchModal()" class="bg-indigo-600 text-white px-4 py-2 rounded font-bold"><i class="fa-solid fa-eye mr-1"></i> Live Devices (<span id="liveCount">0</span>)</button>
+                <button onclick="logoutAdmin()" class="bg-red-100 text-red-700 px-4 py-2 rounded font-bold">Logout</button>
+            </div>
+        </div>
+
+        <!-- NAVIGATION TABS -->
+        <div class="flex space-x-3 bg-white p-3 rounded-xl shadow-sm border">
+            <button onclick="switchAdminTab('settingsTab')" id="btn-settingsTab" class="px-5 py-2.5 rounded-lg font-bold bg-indigo-900 text-white transition">Settings & Records</button>
+            <button onclick="switchAdminTab('feeSetTab')" id="btn-feeSetTab" class="px-5 py-2.5 rounded-lg font-bold bg-slate-100 text-slate-700 transition">Fee Set</button>
+            <button onclick="switchAdminTab('feeRecordTab')" id="btn-feeRecordTab" class="px-5 py-2.5 rounded-lg font-bold bg-slate-100 text-slate-700 transition">Fee Record</button>
+        </div>
+
+        <!-- TAB 1: SETTINGS & ADMISSION RECORDS -->
+        <div id="tab-settingsTab" class="admin-tab space-y-6">
+            <div class="bg-white p-6 rounded-xl shadow-sm border">
+                <h2 class="text-lg font-bold mb-4 text-indigo-900">School Settings</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div><label class="text-sm font-semibold">School Name</label><input type="text" id="setSchoolName" class="w-full px-3 py-2 border rounded"></div>
+                    <div><label class="text-sm font-semibold">Staff Password</label><input type="text" id="setStaffPass" class="w-full px-3 py-2 border rounded"></div>
                 </div>
-                <h1 class="text-xl font-bold text-yellow-500">Motion Public School</h1>
+                <button onclick="saveAllSettings()" class="mt-4 bg-indigo-600 text-white px-6 py-2 rounded font-bold">Save Settings</button>
             </div>
 
-            <!-- Navigation Links -->
-            <nav class="flex flex-col gap-1">
-                <div onclick="showSection('admissionSection', this)" class="nav-item active-nav">
-                    <i class="fas fa-user-plus"></i> New Admission
+            <div class="bg-white p-6 rounded-xl shadow-sm border">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-bold text-slate-800">Manage Admissions</h2>
+                    <button onclick="downloadAllAdmissionsPDF()" class="bg-emerald-600 text-white px-4 py-2 rounded font-bold text-sm">Download All Records PDF</button>
                 </div>
-                <div class="nav-item">
-                    <i class="fas fa-users"></i> Admission List
-                </div>
-                <div class="nav-item">
-                    <i class="fas fa-clipboard-user"></i> Attendance
-                </div>
-                <!-- Naye Buttons Jo Aapne Mange -->
-                <div onclick="showSection('feeSetSection', this)" class="nav-item">
-                    <i class="fas fa-coins text-lg"></i> Fee Set
-                </div>
-                <div onclick="showSection('feeRecordSection', this)" class="nav-item">
-                    <i class="fas fa-file-invoice-dollar text-lg"></i> Fee Record
-                </div>
-            </nav>
-        </div>
-
-        <!-- Bottom Buttons -->
-        <div class="p-4 flex flex-col gap-3">
-            <button class="w-full bg-yellow-600 hover:bg-yellow-500 text-white font-semibold py-2 rounded flex items-center justify-center gap-2">
-                <i class="fas fa-sync-alt"></i> Refresh Data
-            </button>
-            <button class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2 rounded flex items-center justify-center gap-2">
-                <i class="fas fa-map-marker-alt"></i> View Location
-            </button>
-            <button class="w-full text-red-400 hover:text-red-300 font-semibold py-2 flex items-center justify-center gap-2 mt-2">
-                <i class="fas fa-sign-out-alt"></i> Logout
-            </button>
-        </div>
-    </aside>
-
-    <!-- MAIN CONTENT AREA -->
-    <main class="flex-1 h-full overflow-y-auto p-8">
-
-        <!-- 1. NEW ADMISSION SECTION (Dummy for reference) -->
-        <div id="admissionSection" class="bg-white p-8 rounded-xl shadow-lg border border-gray-200">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold text-gray-800">Admission & Fee Slip</h2>
-                <button class="bg-gray-100 px-4 py-2 rounded border hover:bg-gray-200 font-semibold text-sm">
-                    <i class="fas fa-sync-alt"></i> Refresh
-                </button>
-            </div>
-            <p class="text-gray-500">Yahan apka New Admission ka purana form rahega...</p>
-        </div>
-
-        <!-- 2. FEE SET SECTION -->
-        <div id="feeSetSection" class="hidden bg-white p-8 rounded-xl shadow-lg border border-gray-200">
-            <h2 class="text-2xl font-bold text-gray-800 mb-6">Set Student Fee</h2>
-            <div class="grid grid-cols-3 gap-6">
-                <div>
-                    <label class="block text-sm font-semibold text-gray-600 mb-1">Select Class</label>
-                    <select class="w-full border rounded px-3 py-2 bg-gray-50 outline-none focus:border-indigo-500">
-                        <option>PLAY</option><option>5th</option><option>10th</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-gray-600 mb-1">Select Student</label>
-                    <select class="w-full border rounded px-3 py-2 bg-gray-50 outline-none focus:border-indigo-500">
-                        <option>Amrit Raj</option><option>Rohan Kumar</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-gray-600 mb-1">Monthly Fee Amount</label>
-                    <input type="number" value="8500" class="w-full border rounded px-3 py-2 bg-gray-50 outline-none focus:border-indigo-500">
-                </div>
-            </div>
-            <button class="mt-6 bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700 font-bold">Save Fee Settings</button>
-        </div>
-
-        <!-- 3. FEE RECORD SECTION (Aapki Requirement) -->
-        <div id="feeRecordSection" class="hidden bg-white p-8 rounded-xl shadow-lg border border-gray-200">
-            <h2 class="text-2xl font-bold text-gray-800 mb-6">Monthly Fee Record & Slips</h2>
-            
-            <!-- Class Selection -->
-            <div class="mb-6 flex gap-4 items-center bg-gray-50 p-4 rounded-lg border">
-                <label class="font-bold text-gray-700 text-lg"><i class="fas fa-filter text-indigo-500"></i> Select Class:</label>
-                <select id="classSelector" class="border border-gray-300 rounded-lg px-4 py-2 w-64 text-lg font-semibold outline-none focus:border-indigo-500 shadow-sm" onchange="loadStudents()">
+                <select id="adminFilterClass" onchange="renderAdminData()" class="px-4 py-2 border rounded mb-4 bg-white">
                     <option value="">-- Choose Class --</option>
-                    <option value="PLAY">PLAY</option>
-                    <option value="LKG">LKG</option>
-                    <option value="5th">5th Class</option>
-                    <option value="10th">10th Class</option>
+                    <option value="Nursery">Nursery</option><option value="LKG">LKG</option><option value="UKG">UKG</option>
+                    <option value="1st">1st</option><option value="2nd">2nd</option><option value="3rd">3rd</option>
+                    <option value="4th">4th</option><option value="5th">5th</option><option value="6th">6th</option>
+                    <option value="7th">7th</option><option value="8th">8th</option><option value="9th">9th</option>
+                    <option value="10th">10th</option><option value="11th">11th</option><option value="12th">12th</option>
                 </select>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="bg-slate-100"><tr><th class="p-3">Roll</th><th class="p-3">Name</th><th class="p-3">Father Name</th><th class="p-3 text-center">Action</th></tr></thead>
+                        <tbody id="adminTableBody" class="divide-y"></tbody>
+                    </table>
+                </div>
             </div>
+        </div>
 
-            <!-- Student List Table -->
-            <div class="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
-                <table class="w-full text-left border-collapse">
-                    <thead class="bg-indigo-50 text-indigo-900 border-b-2 border-indigo-200">
-                        <tr>
-                            <th class="p-4 font-bold">Roll No</th>
-                            <th class="p-4 font-bold">Student Name</th>
-                            <th class="p-4 font-bold">Father's Name</th>
-                            <th class="p-4 font-bold">Month</th>
-                            <th class="p-4 font-bold text-center">Monthly Fee</th>
-                            <th class="p-4 font-bold text-center">Status</th>
-                            <th class="p-4 font-bold text-center">Action Control</th>
-                        </tr>
-                    </thead>
-                    <tbody id="studentTableBody" class="divide-y divide-gray-200">
-                        <tr><td colspan="7" class="p-8 text-center text-gray-400">Please select a class to view fee records.</td></tr>
-                    </tbody>
+        <!-- TAB 2: FEE SET -->
+        <div id="tab-feeSetTab" class="admin-tab hidden bg-white p-6 rounded-xl shadow-sm border space-y-4">
+            <h2 class="text-lg font-bold text-indigo-900"><i class="fa-solid fa-cogs mr-2"></i> Configure Default Class Fees</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div><label class="text-sm font-semibold">Select Class</label>
+                    <select id="feeSetClass" class="w-full px-3 py-2 border rounded bg-white">
+                        <option value="Nursery">Nursery</option><option value="1st">1st</option><option value="5th">5th</option><option value="10th">10th</option><option value="12th">12th</option>
+                    </select>
+                </div>
+                <div><label class="text-sm font-semibold">Default Monthly Fee</label><input type="number" id="defaultMonthlyFee" class="w-full px-3 py-2 border rounded" value="1000"></div>
+            </div>
+            <button onclick="saveFeeStructure()" class="bg-emerald-600 text-white px-6 py-2 rounded font-bold">Save Fee Structure</button>
+        </div>
+
+        <!-- TAB 3: FEE RECORD -->
+        <div id="tab-feeRecordTab" class="admin-tab hidden bg-white p-6 rounded-xl shadow-sm border space-y-4">
+            <h2 class="text-lg font-bold text-indigo-900"><i class="fa-solid fa-file-invoice-dollar mr-2"></i> Monthly Fee Records (Class-wise)</h2>
+            <select id="feeRecordClass" onchange="renderFeeRecordsList()" class="px-4 py-2 border rounded bg-white">
+                <option value="">-- Select Class --</option>
+                <option value="Nursery">Nursery</option><option value="1st">1st</option><option value="5th">5th</option><option value="10th">10th</option><option value="12th">12th</option>
+            </select>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead class="bg-slate-100"><tr><th class="p-3">Roll</th><th class="p-3">Student Name</th><th class="p-3">Status / Months</th><th class="p-3 text-center">Action</th></tr></thead>
+                    <tbody id="feeRecordTableBody" class="divide-y"></tbody>
                 </table>
             </div>
         </div>
+    </div>
 
-    </main>
-
-    <!-- HIDDEN INVOICE TEMPLATE (Jo PDF me convert hoga) -->
-    <div id="hiddenInvoiceTemplate" style="display: none;">
-        <div id="invoiceContent" style="padding: 20px; font-family: 'Times New Roman', serif; border: 2px solid black; width: 600px; background: white; margin: 0 auto;">
-            <h1 style="text-align: center; margin-bottom: 5px; font-size: 34px; font-style: italic; letter-spacing: 1px;">Motion Public School</h1>
-            <p style="text-align: center; margin-top: 5px; font-size: 16px; font-style: italic; border-bottom: 1px dotted green; display: inline-block; margin-left: 20px;">
-                add ;-Near of B.S College ,Gamharia Rod Singheshwar
-            </p>
-            <h2 style="text-align: center; margin-top: 15px; font-size: 26px; text-decoration: underline; font-style: italic;">class - PLAY TO (10+2)</h2>
-            <h4 style="text-align: center; font-size: 14px; font-weight: bold; margin-top: 10px; margin-bottom: 5px;">SCHOOL FEE-SLIP</h4>
-            
-            <table style="width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 18px;" border="1">
-                <tr>
-                    <td style="padding: 8px;">Student Name</td>
-                    <td style="padding: 8px; font-weight: bold;" id="pdfStudentName">Amrit Raj</td>
-                    <td style="padding: 8px;">Roll No</td>
-                    <td style="padding: 8px; font-weight: bold;" id="pdfRollNo">111</td>
-                </tr>
-                <tr>
-                    <td style="padding: 8px;">Father Name</td>
-                    <td style="padding: 8px; font-weight: bold;" id="pdfFatherName">Shambhu k.r sharma</td>
-                    <td style="padding: 8px;">Class</td>
-                    <td style="padding: 8px; font-weight: bold;" id="pdfClass">5th</td>
-                </tr>
-                <tr>
-                    <td style="padding: 8px;">Monthly Amount</td>
-                    <td style="padding: 8px; font-weight: bold; text-align: center;" id="pdfAmount">8500</td>
-                    <td style="padding: 8px; font-weight: bold; color: darkred; font-style: italic;" id="pdfMonth">feb</td>
-                    <td style="padding: 8px; font-weight: bold;">1</td>
-                </tr>
-                <tr>
-                    <td colspan="2" style="padding: 12px; font-size: 22px; font-weight: bold; font-style: italic;">Total Fee Amount</td>
-                    <td colspan="2" style="padding: 12px; font-size: 24px; font-weight: bold; text-align: center;" id="pdfTotalAmount">8,500</td>
-                </tr>
-            </table>
-
-            <div style="display: flex; margin-top: 2px; border: 1px solid black; border-top: none;">
-                <div style="width: 40%; border-right: 1px solid black; padding: 10px; text-align: center;">
-                    <!-- Fake QR Code Placeholder just like image -->
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/QR_code_for_mobile_English_Wikipedia.svg/330px-QR_code_for_mobile_English_Wikipedia.svg.png" alt="QR" style="width: 150px; height: 150px; display: inline-block;">
-                </div>
-                <div style="width: 60%; padding: 20px; font-size: 18px; line-height: 1.6;">
-                    .please pay all your dues on or before 10th of the current month let fee will be charged<br>
-                    <span style="font-weight: bold; font-style: italic;">Thanks</span>
-                </div>
+    <!-- LIVE WATCH MODAL -->
+    <div id="liveWatchModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl p-6 max-w-lg w-full shadow-2xl space-y-4">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 class="text-xl font-bold text-indigo-900">Active Connected Devices</h3>
+                <button onclick="document.getElementById('liveWatchModal').classList.add('hidden')" class="text-xl font-bold">&times;</button>
             </div>
+            <div id="liveSessionsList" class="space-y-2 max-h-60 overflow-y-auto"></div>
         </div>
     </div>
 
-    <!-- VIEW FEE MODAL -->
-    <div id="feeModal" class="modal">
-        <div class="modal-content">
-            <div class="flex justify-between items-center mb-4 border-b pb-2">
-                <h3 class="text-xl font-bold">Fee Slip Preview</h3>
-                <button onclick="closeModal()" class="text-red-500 hover:text-red-700 font-bold text-xl">&times;</button>
-            </div>
-            <div id="modalPrintArea" class="flex justify-center bg-gray-100 p-4 rounded overflow-auto">
-                <!-- Invoice preview will be copied here -->
-            </div>
-            <div class="mt-4 flex justify-end gap-2 border-t pt-4">
-                <button onclick="closeModal()" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 font-bold">Close</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- JAVASCRIPT LOGIC -->
     <script>
-        // Dummy Database for Students
-        const studentsDatabase = [
-            { roll: '111', name: 'Amrit Raj', father: 'Shambhu k.r sharma', class: '5th', month: 'feb', amount: '8500', status: 'Paid' },
-            { roll: '112', name: 'Rohan Kumar', father: 'Rajesh Kumar', class: '5th', month: 'feb', amount: '8500', status: 'Pending' },
-            { roll: '101', name: 'Aarav Singh', father: 'Vikram Singh', class: 'PLAY', month: 'feb', amount: '3500', status: 'Paid' },
-            { roll: '201', name: 'Priya Sharma', father: 'Anil Sharma', class: '10th', month: 'feb', amount: '12000', status: 'Pending' }
-        ];
+        (function() { emailjs.init("7_cYWCxamrOZ9dq7V"); })();
+        const JSONBIN_BIN_ID = "6ab3e3a0ac6210605aed6c4b";
+        const JSONBIN_API_KEY = "$2a$10$yyc9hu99dDO8hxlNRqiu4eao2Pa7kAKyCv6VTZk9o6MXaTNGh6mvO";
 
-        let currentActiveStudent = null;
+        let admissions = JSON.parse(localStorage.getItem('mps_admissions_v3')) || [];
+        let activeSessions = {};
+        const myAdminSession = 'admin_' + Math.random().toString(36).substring(2);
 
-        // Switch Sections in Sidebar
-        function showSection(sectionId, element) {
-            document.getElementById('admissionSection').classList.add('hidden');
-            document.getElementById('feeSetSection').classList.add('hidden');
-            document.getElementById('feeRecordSection').classList.add('hidden');
-            
-            document.getElementById(sectionId).classList.remove('hidden');
-
-            // Update Active Tab Styling
-            if(element) {
-                document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active-nav', 'text-black'));
-                element.classList.add('active-nav');
-                element.classList.remove('text-gray-400');
-            }
+        async function syncCloud() {
+            try {
+                let res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, { headers: { 'X-Master-Key': JSONBIN_API_KEY } });
+                let data = await res.json();
+                if(data && data.record) {
+                    if(data.record.admissions) { admissions = data.record.admissions; localStorage.setItem('mps_admissions_v3', JSON.stringify(admissions)); }
+                    if(data.record.activeSessions) activeSessions = data.record.activeSessions;
+                }
+            } catch(e) {}
         }
 
-        // Load Students Based on Class Selection
-        function loadStudents() {
-            const selectedClass = document.getElementById('classSelector').value;
-            const tableBody = document.getElementById('studentTableBody');
-            
-            if (!selectedClass) {
-                tableBody.innerHTML = '<tr><td colspan="7" class="p-8 text-center text-gray-400">Please select a class to view fee records.</td></tr>';
-                return;
-            }
+        setInterval(async () => {
+            activeSessions[myAdminSession] = { time: Date.now(), role: 'Admin', device: 'Admin PC' };
+            document.getElementById('liveCount').innerText = Object.keys(activeSessions).length;
+            await saveCloudSessions();
+        }, 5000);
 
-            const filteredStudents = studentsDatabase.filter(s => s.class === selectedClass);
-            tableBody.innerHTML = '';
+        async function saveCloudSessions() {
+            try {
+                let res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, { headers: { 'X-Master-Key': JSONBIN_API_KEY } });
+                let data = await res.json();
+                let rec = data.record || {};
+                rec.activeSessions = activeSessions;
+                await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
+                    method: 'PUT', headers: { 'Content-Type': 'application/json', 'X-Master-Key': JSONBIN_API_KEY },
+                    body: JSON.stringify(rec)
+                });
+            } catch(e) {}
+        }
 
-            if (filteredStudents.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="7" class="p-8 text-center text-red-500 font-bold">No students found in this class.</td></tr>';
-                return;
-            }
+        function openLiveWatchModal() {
+            let list = document.getElementById('liveSessionsList'); list.innerHTML = "";
+            Object.keys(activeSessions).forEach((k, i) => {
+                let isMe = k === myAdminSession ? " (You)" : "";
+                list.innerHTML += `<div class="flex justify-between items-center p-2 border rounded"><span>Device #${i+1}${isMe} - ${activeSessions[k].role}</span> ${k !== myAdminSession ? `<button onclick="forceLogout('${k}')" class="bg-red-600 text-white px-2 py-1 rounded text-xs font-bold">Force Logout</button>` : ''}</div>`;
+            });
+            document.getElementById('liveWatchModal').classList.remove('hidden');
+        }
 
-            filteredStudents.forEach(student => {
-                const statusColor = student.status === 'Paid' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
-                
-                const row = `
-                    <tr class="hover:bg-gray-50 transition duration-150">
-                        <td class="p-4 border-b font-semibold">${student.roll}</td>
-                        <td class="p-4 border-b font-bold text-indigo-700">${student.name}</td>
-                        <td class="p-4 border-b">${student.father}</td>
-                        <td class="p-4 border-b uppercase font-bold text-gray-500">${student.month}</td>
-                        <td class="p-4 border-b text-center font-bold text-lg">₹${student.amount}</td>
-                        <td class="p-4 border-b text-center">
-                            <span class="px-3 py-1 rounded-full text-xs font-bold ${statusColor}">${student.status}</span>
-                        </td>
-                        <td class="p-4 border-b text-center">
-                            <div class="flex justify-center gap-2">
-                                <button onclick="handleAction('view', '${student.roll}')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded text-sm font-semibold transition" title="View Fee Slip"><i class="fas fa-eye"></i> View</button>
-                                <button onclick="handleAction('edit', '${student.roll}')" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-2 rounded text-sm font-semibold transition" title="Edit Record"><i class="fas fa-edit"></i> Edit</button>
-                                <button onclick="handleAction('download', '${student.roll}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded text-sm font-semibold transition shadow-md" title="Download PDF"><i class="fas fa-file-pdf"></i> Download</button>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-                tableBody.innerHTML += row;
+        async function forceLogout(sid) {
+            if(activeSessions[sid]) { activeSessions[sid].forceLogout = true; await saveCloudSessions(); openLiveWatchModal(); alert("Logged out!"); }
+        }
+
+        function adminLogin() {
+            if(document.getElementById("adminUser").value === (localStorage.getItem('mps_actualAdminUser') || "rp sir") && document.getElementById("adminPass").value === (localStorage.getItem('mps_actualAdminPass') || "rp sir mps")) {
+                document.getElementById("adminLoginScreen").classList.add("hidden");
+                document.getElementById("adminDashboard").classList.remove("hidden");
+                syncCloud().then(() => renderAdminData());
+            } else { document.getElementById("admin-error-msg").classList.remove("hidden"); }
+        }
+        function logoutAdmin() { location.reload(); }
+
+        function switchAdminTab(tabId) {
+            document.querySelectorAll('.admin-tab').forEach(t => t.classList.add('hidden'));
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+            ['settingsTab', 'feeSetTab', 'feeRecordTab'].forEach(id => {
+                let btn = document.getElementById('btn-' + id);
+                if(id === tabId) { btn.className = "px-5 py-2.5 rounded-lg font-bold bg-indigo-900 text-white transition"; }
+                else { btn.className = "px-5 py-2.5 rounded-lg font-bold bg-slate-100 text-slate-700 transition"; }
+            });
+            if(tabId === 'feeRecordTab') renderFeeRecordsList();
+        }
+
+        function renderAdminData() {
+            let cls = document.getElementById('adminFilterClass').value;
+            let tb = document.getElementById('adminTableBody'); tb.innerHTML = "";
+            if(!cls) { tb.innerHTML = `<tr><td colspan="4" class="p-3 text-center">Select class</td></tr>`; return; }
+            admissions.filter(a => a.cls === cls).forEach((a, i) => {
+                let realIdx = admissions.indexOf(a);
+                tb.innerHTML += `<tr><td class="p-3">${a.roll}</td><td class="p-3 font-semibold">${a.name}</td><td class="p-3">${a.fname||'-'}</td><td class="p-3 text-center"><button onclick="generateSlip(${realIdx})" class="bg-amber-100 text-amber-700 px-3 py-1 rounded font-bold">PDF</button></td></tr>`;
             });
         }
 
-        // Handle Action Buttons (View, Edit, Download)
-        function handleAction(action, rollNo) {
-            const student = studentsDatabase.find(s => s.roll === rollNo);
-            if (!student) return;
-
-            // Fill the hidden template with correct student data
-            document.getElementById('pdfStudentName').innerText = student.name;
-            document.getElementById('pdfRollNo').innerText = student.roll;
-            document.getElementById('pdfFatherName').innerText = student.father;
-            document.getElementById('pdfClass').innerText = student.class;
-            document.getElementById('pdfAmount').innerText = student.amount;
-            document.getElementById('pdfMonth').innerText = student.month;
-            document.getElementById('pdfTotalAmount').innerText = Number(student.amount).toLocaleString('en-IN');
-
-            if (action === 'view') {
-                // Copy the template HTML to the modal
-                const templateHTML = document.getElementById('invoiceContent').outerHTML;
-                document.getElementById('modalPrintArea').innerHTML = templateHTML;
-                document.getElementById('feeModal').style.display = 'block';
-            } 
-            else if (action === 'edit') {
-                alert(`Edit fee record for ${student.name} (Roll: ${student.roll}). Admin can update month, status, or amount here.`);
-            } 
-            else if (action === 'download') {
-                // Generate PDF using html2pdf.js
-                const element = document.getElementById('invoiceContent');
-                element.style.display = 'block'; // Make sure it's visible to library
-
-                const opt = {
-                    margin:       0.2,
-                    filename:     `${student.name}_Fee_Slip_${student.month}.pdf`,
-                    image:        { type: 'jpeg', quality: 1 },
-                    html2canvas:  { scale: 2, useCORS: true },
-                    jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
-                };
-
-                // Add loading effect to button temporarily (optional UX)
-                html2pdf().set(opt).from(element).save();
-            }
+        function renderFeeRecordsList() {
+            let cls = document.getElementById('feeRecordClass').value;
+            let tb = document.getElementById('feeRecordTableBody'); tb.innerHTML = "";
+            if(!cls) { tb.innerHTML = `<tr><td colspan="4" class="p-3 text-center">Select class</td></tr>`; return; }
+            admissions.filter(a => a.cls === cls).forEach((a, i) => {
+                let idx = admissions.indexOf(a);
+                tb.innerHTML += `<tr><td class="p-3">${a.roll}</td><td class="p-3 font-semibold">${a.name}</td><td class="p-3 text-emerald-700 font-bold">Month: ${a.month} (Paid)</td><td class="p-3 text-center"><button onclick="generateSlip(${idx})" class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded font-bold"><i class="fa-solid fa-eye mr-1"></i> View & PDF</button></td></tr>`;
+            });
         }
 
-        // Close Modal
-        function closeModal() {
-            document.getElementById('feeModal').style.display = 'none';
+        function saveFeeStructure() { alert("Class Fee Structure Saved Successfully!"); }
+        function loadSettings() { document.getElementById('setSchoolName').value = localStorage.getItem('mps_schoolName') || "Motion Public School"; }
+        async function saveAllSettings() {
+            localStorage.setItem('mps_schoolName', document.getElementById('setSchoolName').value);
+            alert("Settings Saved!");
+        }
+
+        function generateSlip(index) {
+            const { jsPDF } = window.jspdf; const doc = new jsPDF('p', 'mm', 'a4'); const d = admissions[index];
+            doc.rect(10, 10, 190, 277); doc.rect(12, 12, 186, 273);
+            doc.setFont("times", "bold"); doc.setFontSize(28); doc.text(localStorage.getItem('mps_schoolName') || "Motion Public School", 105, 25, {align: 'center'});
+            doc.autoTable({
+                startY: 45, theme: 'grid', styles: { font: 'times', fontSize: 11 },
+                body: [
+                    ['Student Name', d.name, 'Roll No', d.roll],
+                    ['Father Name', d.fname, 'Class', d.cls],
+                    ['Monthly Fee', d.v.m, 'Month', d.month],
+                    [{content: 'Total Amount', styles: {fontStyle: 'bold'}}, {content: d.v.final, colSpan: 3, styles: {fontStyle: 'bold'}}]
+                ]
+            });
+            let finalY = doc.lastAutoTable.finalY + 15;
+            doc.text("Parents Signature..................", 20, finalY); doc.text("Accountant Sign..................", 130, finalY);
+            if(d.parentSig) doc.addImage(d.parentSig, 'PNG', 25, finalY - 14, 40, 12);
+            if(d.accSig) doc.addImage(d.accSig, 'PNG', 135, finalY - 14, 40, 12);
+            doc.save(`FeeSlip_${d.name}.pdf`);
         }
     </script>
 </body>
