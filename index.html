@@ -200,16 +200,24 @@
                             </select>
                         </div>
                         <div>
+                            <label class="block text-sm font-semibold mb-1">Select Roll No / Student</label>
+                            <select id="setFeeRoll" class="w-full px-3 py-2 border rounded-lg bg-white">
+                                <option value="all">All Students (Class-wise)</option>
+                            </select>
+                        </div>
+                        <div>
                             <label class="block text-sm font-semibold mb-1">Monthly Amount</label>
                             <input type="number" id="setFeeMonthly" class="w-full px-3 py-2 border rounded-lg" placeholder="e.g. 8500">
                         </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
                             <label class="block text-sm font-semibold mb-1">Set Date (0 to 31)</label>
                             <select id="setFeeDate" class="w-full px-3 py-2 border rounded-lg bg-white">
-                                <option value="">Select Date</option>
                                 <script>
                                     for(let i=0; i<=31; i++) {
-                                        document.write(`<option value="${i}">${i === 0 ? 'Last Day' : i}</option>`);
+                                        document.write(`<option value="${i}">${i === 0 ? '0 (Generate Fee)' : i}</option>`);
                                     }
                                 </script>
                             </select>
@@ -217,7 +225,7 @@
                     </div>
 
                     <div id="feeSetStudentsContainer" class="hidden mt-4 space-y-3">
-                        <h4 class="font-bold text-slate-700 text-sm">Students in this Class (Auto-included for fee generation):</h4>
+                        <h4 class="font-bold text-slate-700 text-sm">Students in this Class:</h4>
                         <div class="overflow-x-auto border rounded-lg max-h-60">
                             <table class="w-full text-left text-sm">
                                 <thead class="bg-slate-100"><tr><th class="p-2">Roll No</th><th class="p-2">Student Name</th><th class="p-2">Father Name</th></tr></thead>
@@ -272,6 +280,7 @@
         let admissions = JSON.parse(localStorage.getItem('mps_admissions_v3')) || [];
         let attendanceRecords = JSON.parse(localStorage.getItem('mps_attendance_records')) || [];
         let classFeeStructures = JSON.parse(localStorage.getItem('mps_class_fee_structures')) || {};
+        let studentCustomFees = JSON.parse(localStorage.getItem('mps_student_custom_fees')) || {};
         let t_p = "", t_ps = "", t_as = ""; 
 
         const sessionId = 'session_' + Math.random().toString(36).substring(2);
@@ -315,6 +324,7 @@
                 if(result && result.record) {
                     if(result.record.admissions) { admissions = result.record.admissions; reindexAdmissions(); localStorage.setItem('mps_admissions_v3', JSON.stringify(admissions)); }
                     if(result.record.classFeeStructures) { classFeeStructures = result.record.classFeeStructures; localStorage.setItem('mps_class_fee_structures', JSON.stringify(classFeeStructures)); }
+                    if(result.record.studentCustomFees) { studentCustomFees = result.record.studentCustomFees; localStorage.setItem('mps_student_custom_fees', JSON.stringify(studentCustomFees)); }
                     applySettingsToUI();
                 }
             } catch (err) {}
@@ -330,6 +340,7 @@
             reindexAdmissions();
             localStorage.setItem('mps_admissions_v3', JSON.stringify(admissions));
             localStorage.setItem('mps_class_fee_structures', JSON.stringify(classFeeStructures));
+            localStorage.setItem('mps_student_custom_fees', JSON.stringify(studentCustomFees));
             try {
                 let response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
                     headers: { 'X-Master-Key': JSONBIN_API_KEY }
@@ -338,6 +349,7 @@
                 let currentData = result.record || {};
                 currentData.admissions = admissions;
                 currentData.classFeeStructures = classFeeStructures;
+                currentData.studentCustomFees = studentCustomFees;
 
                 await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
                     method: 'PUT',
@@ -357,8 +369,11 @@
 
         function loadClassStudentsForFeeSet() {
             let cls = document.getElementById('setFeeClass').value;
+            let rollSelect = document.getElementById('setFeeRoll');
             let tbody = document.getElementById('feeSetStudentsBody');
             let container = document.getElementById('feeSetStudentsContainer');
+            
+            rollSelect.innerHTML = `<option value="all">All Students (Class-wise)</option>`;
             tbody.innerHTML = "";
 
             if(!cls) { container.classList.add('hidden'); return; }
@@ -376,6 +391,7 @@
                 tbody.innerHTML = `<tr><td colspan="3" class="p-3 text-center text-slate-500">No students registered in this class yet.</td></tr>`;
             } else {
                 students.forEach(st => {
+                    rollSelect.innerHTML += `<option value="${st.roll}">Roll No: ${st.roll} - ${st.name}</option>`;
                     tbody.innerHTML += `<tr><td class="p-2 font-bold">${st.roll}</td><td class="p-2">${st.name}</td><td class="p-2">${st.fname || '-'}</td></tr>`;
                 });
             }
@@ -384,13 +400,37 @@
 
         function saveFeeSet() {
             let cls = document.getElementById('setFeeClass').value;
+            let targetRoll = document.getElementById('setFeeRoll').value;
             let mFee = document.getElementById('setFeeMonthly').value;
-            let fDate = document.getElementById('setFeeDate').value;
-            if(!cls || !mFee || fDate === "") return alert("Please select class, monthly amount and generation date!");
-            
-            classFeeStructures[cls] = { amount: mFee, date: fDate };
+            let fDate = Number(document.getElementById('setFeeDate').value);
+
+            if(!cls || !mFee || isNaN(fDate)) return alert("Please fill class, amount and set date!");
+
+            // Check condition: Fee generates only if Set Date is 0
+            if(fDate === 0) {
+                if(targetRoll === 'all') {
+                    classFeeStructures[cls] = { amount: mFee, date: fDate };
+                    admissions.filter(a => a.cls === cls).forEach(st => {
+                        st.v.m = mFee;
+                    });
+                } else {
+                    let st = admissions.find(a => a.cls === cls && a.roll === targetRoll);
+                    if(st) {
+                        st.v.m = mFee;
+                        studentCustomFees[`${cls}_${targetRoll}`] = { amount: mFee, date: fDate };
+                    }
+                }
+                alert(`Fee successfully generated for Date = 0!`);
+            } else {
+                alert(`Fee structure saved with Date = ${fDate}. Fee will generate when date matches 0.`);
+                if(targetRoll === 'all') {
+                    classFeeStructures[cls] = { amount: mFee, date: fDate };
+                } else {
+                    studentCustomFees[`${cls}_${targetRoll}`] = { amount: mFee, date: fDate };
+                }
+            }
+
             saveCloudData();
-            alert(`Fee structure and generation date (Day: ${fDate}) for class ${cls} saved successfully!`);
         }
 
         function renderFeeRecordList() {
@@ -405,13 +445,19 @@
 
             filtered.forEach(st => {
                 let idx = admissions.indexOf(st);
-                let currentFee = st.v.m && st.v.m > 0 ? st.v.m : classFeeInfo.amount;
+                let custom = studentCustomFees[`${cls}_${st.roll}`];
+                let currentFee = custom ? custom.amount : (st.v.m && st.v.m > 0 ? st.v.m : classFeeInfo.amount);
+                let currentDate = custom ? custom.date : classFeeInfo.date;
+
+                // Show record only if date is 0 as per rule
+                let displayStatus = currentDate === 0 ? `Generated (₹${currentFee})` : `Pending (Set Date: ${currentDate})`;
+
                 tb.innerHTML += `
                     <tr class="hover:bg-slate-50">
                         <td class="p-3 font-bold text-indigo-900">${st.roll}</td>
                         <td class="p-3 font-semibold">${st.name}</td>
                         <td class="p-3 text-slate-600">${st.fname || '-'}</td>
-                        <td class="p-3 font-medium text-emerald-700">${st.month || 'Monthly'} : ₹${currentFee} (Gen Date: ${classFeeInfo.date})</td>
+                        <td class="p-3 font-medium text-emerald-700">${displayStatus}</td>
                         <td class="p-3 text-center space-x-2">
                             <button onclick="editStudentFee(${idx})" class="bg-blue-100 text-blue-700 px-3 py-1 rounded font-bold hover:bg-blue-600 hover:text-white transition"><i class="fa-solid fa-pen"></i> Edit Fee</button>
                             <button onclick="generateExactSlip(${idx})" class="bg-amber-100 text-amber-700 px-3 py-1 rounded font-bold hover:bg-amber-500 hover:text-white transition"><i class="fa-solid fa-download"></i> Download PDF</button>
