@@ -180,7 +180,76 @@
                 </div>
 
                 <!-- ATTENDANCE SECTION -->
-                <div id="attendanceSection" class="section hidden max-w-5xl mx-auto space-y-6"></div>
+                <div id="attendanceSection" class="section hidden max-w-5xl mx-auto space-y-6">
+                    <div class="bg-white rounded-2xl shadow-sm border p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-bold text-indigo-900"><i class="fa-solid fa-calendar-days mr-2"></i>Attendance Records & Report</h3>
+                            <button onclick="softRefresh()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1 rounded text-sm font-bold"><i class="fa-solid fa-rotate mr-1"></i> Refresh</button>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 items-end">
+                            <div><label class="block text-sm font-semibold mb-1">Start Date</label><input type="date" id="attStartDate" class="w-full px-3 py-2 border rounded-lg outline-none"></div>
+                            <div><label class="block text-sm font-semibold mb-1">End Date</label><input type="date" id="attEndDate" class="w-full px-3 py-2 border rounded-lg outline-none"></div>
+                            <div>
+                                <label class="block text-sm font-semibold mb-1">Select Class</label>
+                                <select id="attReportClassSelect" class="w-full px-3 py-2 border rounded-lg outline-none bg-white">
+                                    <option value="">-- All Classes --</option>
+                                    <option value="Nursery">Nursery</option><option value="LKG">LKG</option><option value="UKG">UKG</option>
+                                    <option value="1st">1st</option><option value="2nd">2nd</option><option value="3rd">3rd</option>
+                                    <option value="4th">4th</option><option value="5th">5th</option><option value="6th">6th</option>
+                                    <option value="7th">7th</option><option value="8th">8th</option><option value="9th">9th</option>
+                                    <option value="10th">10th</option><option value="11th">11th</option><option value="12th">12th</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <button onclick="viewAdminAttendanceReport()" class="w-full bg-indigo-900 hover:bg-indigo-800 text-white font-bold py-2 px-4 rounded-lg shadow transition-all">View Report</button>
+                        </div>
+                        
+                        <div id="attendanceReportContainer" class="hidden mt-4">
+                            <div class="flex justify-between items-center mb-3">
+                                <h4 class="font-bold text-slate-700" id="reportDateRangeTitle">Report List</h4>
+                                <button onclick="downloadAttendancePDF()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-bold text-sm shadow"><i class="fa-solid fa-download mr-1"></i> Download PDF</button>
+                            </div>
+                            <div class="overflow-x-auto border rounded-lg">
+                                <table class="w-full text-left text-sm">
+                                    <thead class="bg-slate-100 text-slate-700"><tr><th class="p-3">Date</th><th class="p-3">Class</th><th class="p-3">Student Name</th><th class="p-3">Roll No</th><th class="p-3">Status</th></tr></thead>
+                                    <tbody id="attendanceReportTableBody" class="divide-y divide-slate-100"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl shadow-sm border p-6">
+                        <h3 class="text-xl font-bold mb-4 text-indigo-900"><i class="fa-solid fa-user-check mr-2"></i>Daily Attendance Entry</h3>
+                        <div class="flex flex-col md:flex-row gap-4 mb-6 items-end">
+                            <div class="flex-1">
+                                <label class="block text-sm font-semibold mb-1">Select Class</label>
+                                <select id="attClassSelect" class="w-full px-3 py-2 border rounded-lg outline-none bg-white" onchange="loadAttendanceStudents()">
+                                    <option value="">-- Choose Class --</option>
+                                    <option value="Nursery">Nursery</option><option value="LKG">LKG</option><option value="UKG">UKG</option>
+                                    <option value="1st">1st</option><option value="2nd">2nd</option><option value="3rd">3rd</option>
+                                    <option value="4th">4th</option><option value="5th">5th</option><option value="6th">6th</option>
+                                    <option value="7th">7th</option><option value="8th">8th</option><option value="9th">9th</option>
+                                    <option value="10th">10th</option><option value="11th">11th</option><option value="12th">12th</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div id="attendanceLockMsg" class="hidden bg-amber-100 text-amber-800 p-4 rounded-lg font-semibold mb-4 text-center">
+                            <i class="fa-solid fa-lock mr-2"></i> Attendance for this class has already been submitted today. Next entry will open tomorrow after 5:00 AM.
+                        </div>
+
+                        <div id="attendanceFormContainer" class="hidden">
+                            <div class="overflow-x-auto border rounded-lg mb-4">
+                                <table class="w-full text-left">
+                                    <thead class="bg-slate-100 text-slate-700 text-sm"><tr><th class="p-3">Roll No</th><th class="p-3">Student Name</th><th class="p-3 text-center">Attendance (Present / Absent)</th></tr></thead>
+                                    <tbody id="attendanceStudentTableBody" class="divide-y divide-slate-100"></tbody>
+                                </table>
+                            </div>
+                            <button onclick="submitAttendance()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg shadow-lg transition-all text-lg">Submit Attendance</button>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- FEE SET SECTION -->
                 <div id="feeSetSection" class="section hidden max-w-4xl mx-auto bg-white rounded-2xl shadow-sm border p-6 space-y-6">
@@ -284,6 +353,7 @@
         const JSONBIN_API_KEY = "$2a$10$yyc9hu99dDO8hxlNRqiu4eao2Pa7kAKyCv6VTZk9o6MXaTNGh6mvO";
 
         let admissions = JSON.parse(localStorage.getItem('mps_admissions_v3')) || [];
+        let attendanceRecords = JSON.parse(localStorage.getItem('mps_attendance_records')) || [];
         let feeRecordsList = JSON.parse(localStorage.getItem('mps_fee_records_list')) || [];
         let t_p = "", t_ps = "", t_as = ""; 
 
@@ -327,6 +397,7 @@
                 let result = await response.json();
                 if(result && result.record) {
                     if(result.record.admissions) { admissions = result.record.admissions; reindexAdmissions(); localStorage.setItem('mps_admissions_v3', JSON.stringify(admissions)); }
+                    if(result.record.attendanceRecords) { attendanceRecords = result.record.attendanceRecords; localStorage.setItem('mps_attendance_records', JSON.stringify(attendanceRecords)); }
                     if(result.record.feeRecordsList) { feeRecordsList = result.record.feeRecordsList; localStorage.setItem('mps_fee_records_list', JSON.stringify(feeRecordsList)); }
                     applySettingsToUI();
                 }
@@ -342,6 +413,7 @@
         async function saveCloudData() {
             reindexAdmissions();
             localStorage.setItem('mps_admissions_v3', JSON.stringify(admissions));
+            localStorage.setItem('mps_attendance_records', JSON.stringify(attendanceRecords));
             localStorage.setItem('mps_fee_records_list', JSON.stringify(feeRecordsList));
             try {
                 let response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
@@ -350,6 +422,7 @@
                 let result = await response.json();
                 let currentData = result.record || {};
                 currentData.admissions = admissions;
+                currentData.attendanceRecords = attendanceRecords;
                 currentData.feeRecordsList = feeRecordsList;
 
                 await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
@@ -404,64 +477,34 @@
 
             let timestamp = new Date().toLocaleDateString('en-GB');
 
-            if(fDate === 0) {
-                if(targetRoll === 'all') {
-                    admissions.filter(a => a.cls === cls).forEach(st => {
-                        feeRecordsList.push({
-                            cls: cls,
-                            roll: st.roll,
-                            name: st.name,
-                            fname: st.fname,
-                            amount: mFee,
-                            date: fDate,
-                            timestamp: timestamp
-                        });
+            if(targetRoll === 'all') {
+                admissions.filter(a => a.cls === cls).forEach(st => {
+                    feeRecordsList.push({
+                        cls: cls,
+                        roll: st.roll,
+                        name: st.name,
+                        fname: st.fname,
+                        amount: mFee,
+                        date: fDate,
+                        timestamp: timestamp
                     });
-                } else {
-                    let st = admissions.find(a => a.cls === cls && a.roll === targetRoll);
-                    if(st) {
-                        feeRecordsList.push({
-                            cls: cls,
-                            roll: st.roll,
-                            name: st.name,
-                            fname: st.fname,
-                            amount: mFee,
-                            date: fDate,
-                            timestamp: timestamp
-                        });
-                    }
-                }
-                alert(`New fee record successfully added and generated as Date = 0!`);
+                });
             } else {
-                alert(`New fee structure added with Date = ${fDate}. It will generate when date matches 0.`);
-                if(targetRoll === 'all') {
-                    admissions.filter(a => a.cls === cls).forEach(st => {
-                        feeRecordsList.push({
-                            cls: cls,
-                            roll: st.roll,
-                            name: st.name,
-                            fname: st.fname,
-                            amount: mFee,
-                            date: fDate,
-                            timestamp: timestamp
-                        });
+                let st = admissions.find(a => a.cls === cls && a.roll === targetRoll);
+                if(st) {
+                    feeRecordsList.push({
+                        cls: cls,
+                        roll: st.roll,
+                        name: st.name,
+                        fname: st.fname,
+                        amount: mFee,
+                        date: fDate,
+                        timestamp: timestamp
                     });
-                } else {
-                    let st = admissions.find(a => a.cls === cls && a.roll === targetRoll);
-                    if(st) {
-                        feeRecordsList.push({
-                            cls: cls,
-                            roll: st.roll,
-                            name: st.name,
-                            fname: st.fname,
-                            amount: mFee,
-                            date: fDate,
-                            timestamp: timestamp
-                        });
-                    }
                 }
             }
 
+            alert("New fee record successfully added!");
             saveCloudData();
         }
 
@@ -502,7 +545,7 @@
                         <td class="p-3 font-bold text-indigo-900">${rec.roll}</td>
                         <td class="p-3 font-semibold">${rec.name}</td>
                         <td class="p-3 text-slate-600">${rec.fname || '-'}</td>
-                        <td class="p-3 font-medium text-emerald-700">${displayStatus} [Added: ${rec.timestamp}]</td>
+                        <td class="p-3 font-medium text-red-600">${displayStatus} [Added: ${rec.timestamp}]</td>
                         <td class="p-3 text-center space-x-2">
                             <button onclick="editFeeRecord(${globalIdx})" class="bg-blue-100 text-blue-700 px-3 py-1 rounded font-bold hover:bg-blue-600 hover:text-white transition"><i class="fa-solid fa-pen"></i> Edit Fee</button>
                             <button onclick="generateSlipFromRecord(${globalIdx})" class="bg-amber-100 text-amber-700 px-3 py-1 rounded font-bold hover:bg-amber-500 hover:text-white transition"><i class="fa-solid fa-download"></i> Download PDF</button>
@@ -650,6 +693,69 @@
                 let idx = admissions.indexOf(ad);
                 tb.innerHTML += `<tr class="hover:bg-slate-50"><td class="p-4 font-bold text-indigo-900">${ad.roll}</td><td class="p-4 font-semibold">${ad.name}</td><td class="p-4">${ad.fname||'-'}</td><td class="p-4">${ad.contact||'-'}</td><td class="p-4 text-center"><button onclick="generateExactSlip(${idx})" class="bg-amber-100 text-amber-700 px-3 py-1 rounded font-bold"><i class="fa-solid fa-download"></i> PDF</button></td></tr>`;
             });
+        }
+
+        function initAttendanceClasses() {
+            document.getElementById('attendanceFormContainer').classList.add('hidden');
+            document.getElementById('attendanceLockMsg').classList.add('hidden');
+        }
+
+        function getTodayAttendanceKey(className) {
+            let now = new Date();
+            let targetDate = new Date(now);
+            if(now.getHours() < 5) targetDate.setDate(targetDate.getDate() - 1);
+            return `att_${className}_${targetDate.toISOString().split('T')[0]}`;
+        }
+
+        function loadAttendanceStudents() {
+            let className = document.getElementById('attClassSelect').value;
+            let formContainer = document.getElementById('attendanceFormContainer');
+            let lockMsg = document.getElementById('attendanceLockMsg');
+            if(!className) { formContainer.classList.add('hidden'); lockMsg.classList.add('hidden'); return; }
+            if(localStorage.getItem(getTodayAttendanceKey(className))) {
+                formContainer.classList.add('hidden'); lockMsg.classList.remove('hidden'); return;
+            } else { lockMsg.classList.add('hidden'); }
+            
+            let classStudents = admissions.filter(a => a.cls === className);
+            let tb = document.getElementById('attendanceStudentTableBody'); tb.innerHTML = "";
+            classStudents.forEach((st, index) => {
+                tb.innerHTML += `<tr class="hover:bg-slate-50"><td class="p-3 font-semibold">${st.roll}</td><td class="p-3">${st.name}</td><td class="p-3 text-center"><label class="mr-4"><input type="radio" name="att_${index}" value="Present" checked> Present</label><label><input type="radio" name="att_${index}" value="Absent"> Absent</label></td></tr>`;
+            });
+            formContainer.classList.remove('hidden');
+        }
+
+        async function submitAttendance() {
+            let className = document.getElementById('attClassSelect').value;
+            admissions.filter(a => a.cls === className).forEach((st, index) => {
+                let status = "Present";
+                let radios = document.getElementsByName(`att_${index}`);
+                for(let r of radios) { if(r.checked) status = r.value; }
+                attendanceRecords.push({ date: new Date().toISOString().split('T')[0], cls: className, name: st.name, roll: st.roll, status: status });
+            });
+            localStorage.setItem(getTodayAttendanceKey(className), "true");
+            await saveCloudData();
+            alert("Attendance Submitted!");
+            loadAttendanceStudents();
+        }
+
+        function viewAdminAttendanceReport() {
+            let start = document.getElementById('attStartDate').value;
+            let end = document.getElementById('attEndDate').value;
+            let cls = document.getElementById('attReportClassSelect').value;
+            if(!start || !end) return alert("Select Date Range!");
+            let filtered = attendanceRecords.filter(r => r.date >= start && r.date <= end && (cls ? r.cls === cls : true));
+            let tb = document.getElementById('attendanceReportTableBody'); tb.innerHTML = "";
+            filtered.forEach(r => {
+                tb.innerHTML += `<tr class="hover:bg-slate-50"><td class="p-3">${r.date}</td><td class="p-3">${r.cls}</td><td class="p-3 font-semibold">${r.name}</td><td class="p-3">${r.roll}</td><td class="p-3">${r.status}</td></tr>`;
+            });
+            document.getElementById('attendanceReportContainer').classList.remove('hidden');
+        }
+
+        function downloadAttendancePDF() {
+            const { jsPDF } = window.jspdf; const doc = new jsPDF('p', 'mm', 'a4');
+            doc.text("Attendance Report", 105, 20, {align: 'center'});
+            doc.autoTable({ startY: 30, head: [['Date', 'Class', 'Name', 'Roll', 'Status']], body: attendanceRecords.map(r => [r.date, r.cls, r.name, r.roll, r.status]) });
+            doc.save("Attendance_Report.pdf");
         }
     </script>
 </body>
