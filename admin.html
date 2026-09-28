@@ -6,330 +6,1114 @@
     <title>Admin Panel - Motion Public School</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
-    <style>.hidden { display: none !important; }</style>
+    
+    <style>
+        .hidden { display: none !important; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
+    </style>
 </head>
 <body class="bg-slate-100 font-sans text-slate-800">
 
     <!-- ADMIN LOGIN SCREEN -->
     <div id="adminLoginScreen" class="min-h-screen bg-slate-900 flex items-center justify-center p-4">
-        <div id="loginBox" class="max-w-md w-full bg-white rounded-2xl shadow-2xl p-8 border-t-4 border-red-600 text-center">
-            <h2 class="text-xl font-bold uppercase tracking-wider mb-6">Admin Login</h2>
+        <div id="loginBox" class="max-w-md w-full bg-white rounded-2xl shadow-2xl p-8 border-t-4 border-red-600 text-center relative transition-all duration-300">
+            <h1 class="text-3xl font-bold text-slate-900 mb-2"><i class="fa-solid fa-user-shield text-red-600"></i></h1>
+            <h2 class="text-xl font-bold text-slate-800 uppercase tracking-wider mb-6">Admin Login</h2>
             <p id="admin-error-msg" class="hidden bg-red-100 text-red-700 p-2 rounded mb-4 text-sm font-bold">Galat Details!</p>
-            <input type="text" id="adminUser" class="w-full px-4 py-3 bg-slate-50 border rounded-lg mb-4 outline-none" placeholder="Admin Username">
-            <input type="password" id="adminPass" class="w-full px-4 py-3 bg-slate-50 border rounded-lg mb-6 outline-none" placeholder="Admin Password">
-            <button onclick="adminLogin()" class="w-full bg-red-600 text-white font-bold py-3 rounded-lg shadow-lg">Login</button>
+            
+            <input type="text" id="adminUser" class="w-full px-4 py-3 bg-slate-50 border rounded-lg mb-4 outline-none focus:ring-2 focus:ring-red-500" placeholder="Admin Username">
+            <input type="password" id="adminPass" class="w-full px-4 py-3 bg-slate-50 border rounded-lg mb-6 outline-none focus:ring-2 focus:ring-red-500" placeholder="Admin Password">
+            
+            <button onclick="adminLogin()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg shadow-lg transition-all">Unlock Admin Panel</button>
+            
             <div class="mt-6 border-t pt-4">
-                <button onclick="toggleResetFlow(true)" class="text-sm font-bold text-slate-500 hover:text-red-600">Reset Username/Password</button>
+                <button onclick="toggleResetFlow(true)" class="text-sm font-bold text-slate-500 hover:text-red-600 transition-all"><i class="fa-solid fa-unlock-keyhole mr-1"></i> Reset Username/Password</button>
             </div>
         </div>
 
-        <!-- Reset Password Box -->
-        <div id="resetBox" class="hidden max-w-md w-full bg-white rounded-2xl shadow-2xl p-8 border-t-4 border-amber-500 text-center">
-            <h2 class="text-xl font-bold mb-2">Reset Access</h2>
+        <div id="resetBox" class="hidden max-w-md w-full bg-white rounded-2xl shadow-2xl p-8 border-t-4 border-amber-500 text-center relative transition-all duration-300 animate-fade-in">
+            <h2 class="text-xl font-bold text-slate-800 uppercase tracking-wider mb-2"><i class="fa-solid fa-key text-amber-500 mr-2"></i>Reset Access</h2>
+            <p class="text-xs text-slate-500 mb-6">Verify your registered email to change credentials.</p>
+            
             <div id="resetStep1">
-                <input type="text" value="rajpurushottamraj1@gmail.com" readonly class="w-full px-4 py-3 bg-slate-200 border rounded-lg mb-4 text-center text-slate-500">
-                <button id="sendResetOtpBtn" onclick="sendResetOTP()" class="w-full bg-amber-500 text-white font-bold py-3 rounded-lg mb-3">Send Email OTP</button>
+                <label class="block text-left text-sm font-bold text-slate-700 mb-1">Registered Email</label>
+                <input type="text" value="rajpurushottamraj1@gmail.com" readonly class="w-full px-4 py-3 bg-slate-200 border rounded-lg mb-4 outline-none text-slate-500 cursor-not-allowed font-medium text-center">
+                <button id="sendResetOtpBtn" onclick="sendResetOTP()" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 rounded-lg shadow-lg transition-all mb-3 flex items-center justify-center space-x-2">
+                    <span>Send Email OTP</span>
+                </button>
             </div>
-            <div id="resetStep2" class="hidden">
-                <input type="text" id="resetOtpInput" class="w-full px-4 py-3 bg-slate-50 border rounded-lg mb-4 text-center font-bold text-xl tracking-widest" placeholder="Enter 4-Digit OTP">
-                <button id="verifyOtpBtn" onclick="verifyResetOTP()" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-lg mb-4">Verify OTP</button>
+
+            <div id="resetStep2" class="hidden animate-fade-in">
+                <p class="text-sm text-emerald-600 font-bold mb-3"><i class="fa-solid fa-circle-check mr-1"></i> OTP Sent to Email Successfully!</p>
+                <input type="text" id="resetOtpInput" class="w-full px-4 py-3 bg-slate-50 border rounded-lg mb-4 outline-none focus:ring-2 focus:ring-amber-500 tracking-widest text-center font-bold text-xl" placeholder="Enter 4-Digit OTP">
+                <button id="verifyOtpBtn" onclick="verifyResetOTP()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-lg shadow-lg transition-all mb-4 flex items-center justify-center space-x-2">
+                    <span>Verify OTP</span>
+                </button>
             </div>
-            <div id="resetStep3" class="hidden text-left space-y-3">
-                <input type="text" id="newAdminUser" class="w-full px-3 py-2 border rounded" placeholder="New Admin Username">
-                <input type="password" id="newAdminPass" class="w-full px-3 py-2 border rounded" placeholder="New Password">
-                <input type="password" id="confirmAdminPass" class="w-full px-3 py-2 border rounded" placeholder="Confirm Password">
-                <button onclick="changeAdminCredentials()" class="w-full bg-emerald-600 text-white font-bold py-3 rounded mt-2">Change Password</button>
+
+            <div id="resetStep3" class="hidden text-left space-y-3 animate-fade-in">
+                <p class="text-sm text-emerald-600 font-bold mb-2 text-center"><i class="fa-solid fa-shield-check mr-1"></i> Verified! Create New Login.</p>
+                <div>
+                    <label class="block text-sm font-bold text-slate-700">New Admin Username</label>
+                    <input type="text" id="newAdminUser" class="w-full px-4 py-2 bg-slate-50 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-slate-700">New Password</label>
+                    <input type="password" id="newAdminPass" class="w-full px-4 py-2 bg-slate-50 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-slate-700">Confirm Password</label>
+                    <input type="password" id="confirmAdminPass" class="w-full px-4 py-2 bg-slate-50 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <button onclick="changeAdminCredentials()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 mt-4 rounded-lg shadow-lg transition-all">Change Password & Login</button>
             </div>
-            <button onclick="toggleResetFlow(false)" class="mt-4 text-sm text-slate-400">Back to Login</button>
+
+            <button onclick="toggleResetFlow(false)" class="mt-6 text-sm font-bold text-slate-400 hover:text-slate-600">Back to Login</button>
         </div>
     </div>
 
     <!-- ADMIN DASHBOARD -->
-    <div id="adminDashboard" class="hidden max-w-6xl mx-auto p-6 space-y-6">
-        <div class="flex justify-between items-center bg-white p-6 rounded-xl shadow-sm border">
-            <h1 class="text-2xl font-bold text-indigo-900"><i class="fa-solid fa-user-shield mr-2"></i> Admin Control Center</h1>
+    <div id="adminDashboard" class="hidden max-w-5xl mx-auto p-8">
+        <div class="flex justify-between items-center bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-8">
+            <h1 class="text-3xl font-bold text-indigo-900"><i class="fa-solid fa-user-shield mr-2"></i> Admin Control Center</h1>
             <div class="flex space-x-3">
-                <button onclick="openLiveWatchModal()" class="bg-indigo-600 text-white px-4 py-2 rounded font-bold"><i class="fa-solid fa-eye mr-1"></i> Live Devices (<span id="liveCount">0</span>)</button>
-                <button onclick="logoutAdmin()" class="bg-red-100 text-red-700 px-4 py-2 rounded font-bold">Logout</button>
+                <button onclick="openLiveWatchModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded font-bold transition-all"><i class="fa-solid fa-eye mr-1"></i> Watch Live (<span id="liveCount">0</span>)</button>
+                <button onclick="softRefreshAdmin()" class="bg-slate-200 text-slate-700 px-4 py-2 rounded font-bold hover:bg-slate-300"><i class="fa-solid fa-rotate"></i> Refresh</button>
+                <button onclick="logoutAdmin()" class="bg-red-100 text-red-700 px-4 py-2 rounded font-bold hover:bg-red-200"><i class="fa-solid fa-power-off"></i> Logout</button>
             </div>
         </div>
-
-        <!-- NAVIGATION TABS -->
-        <div class="flex space-x-3 bg-white p-3 rounded-xl shadow-sm border">
-            <button onclick="switchAdminTab('settingsTab')" id="btn-settingsTab" class="px-5 py-2.5 rounded-lg font-bold bg-indigo-900 text-white transition">Settings & Records</button>
-            <button onclick="switchAdminTab('feeSetTab')" id="btn-feeSetTab" class="px-5 py-2.5 rounded-lg font-bold bg-slate-100 text-slate-700 transition">Fee Set</button>
-            <button onclick="switchAdminTab('feeRecordTab')" id="btn-feeRecordTab" class="px-5 py-2.5 rounded-lg font-bold bg-slate-100 text-slate-700 transition">Fee Record</button>
-        </div>
-
-        <!-- TAB 1: SETTINGS & RECORDS -->
-        <div id="tab-settingsTab" class="admin-tab space-y-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white p-6 rounded-xl shadow-sm border">
-                <div>
-                    <h2 class="text-lg font-bold mb-4 text-indigo-950">School Identity Setup</h2>
-                    <label class="block text-sm font-semibold mb-1">School Name</label>
-                    <input type="text" id="setSchoolName" class="w-full px-3 py-2 border rounded mb-3">
-                    <label class="block text-sm font-semibold mb-1">Google Maps URL</label>
-                    <input type="text" id="mapUrl" class="w-full px-3 py-2 border rounded mb-3">
-                    <button onclick="saveAllSettings()" class="bg-indigo-600 text-white px-5 py-2 rounded font-bold">Save Settings</button>
-                </div>
-                <div>
-                    <h2 class="text-lg font-bold mb-4 text-red-900">Staff Portal Setup</h2>
-                    <label class="block text-sm font-semibold mb-1">Staff Username</label>
-                    <input type="text" id="setStaffUser" class="w-full px-3 py-2 border rounded mb-3">
-                    <label class="block text-sm font-semibold mb-1">Staff Password</label>
-                    <input type="text" id="setStaffPass" class="w-full px-3 py-2 border rounded mb-3">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <div class="bg-indigo-50 p-6 rounded-lg border border-indigo-100 shadow-sm">
+                <h2 class="text-xl font-bold mb-4 text-indigo-900"><i class="fa-solid fa-school"></i> School Identity Setup</h2>
+                <div class="space-y-4">
+                    <div><label class="block font-semibold mb-1 text-sm">Change School Name</label><input type="text" id="setSchoolName" class="w-full px-4 py-2 border rounded outline-none focus:ring-2 focus:ring-indigo-500"></div>
+                    <div>
+                        <label class="block font-semibold mb-1 text-sm">Upload School Logo (Image)</label>
+                        <input type="file" accept="image/*" onchange="processAdminLogo(event)" class="w-full px-4 py-2 border rounded outline-none bg-white text-sm">
+                    </div>
+                    <div><label class="block font-semibold mb-1 text-sm">Google Maps URL</label><input type="text" id="mapUrl" class="w-full px-4 py-2 border rounded outline-none focus:ring-2 focus:ring-indigo-500"></div>
                 </div>
             </div>
 
-            <div class="bg-white p-6 rounded-xl shadow-sm border">
-                <div class="flex justify-between items-center mb-4 flex-wrap gap-4">
-                    <h2 class="text-lg font-bold text-slate-800">Manage Admissions (Class-wise)</h2>
-                    <button onclick="downloadAllAdmissionsPDF()" class="bg-emerald-600 text-white px-4 py-2 rounded font-bold text-sm shadow"><i class="fa-solid fa-download mr-1"></i> All Records Download</button>
+            <div class="bg-red-50 p-6 rounded-lg border border-red-100 shadow-sm">
+                <h2 class="text-xl font-bold mb-4 text-red-900"><i class="fa-solid fa-lock"></i> Staff Portal Login Setup</h2>
+                <div class="space-y-4">
+                    <div><label class="block font-semibold mb-1 text-sm">Login Page Name/Title</label><input type="text" id="setLoginTitle" class="w-full px-4 py-2 border rounded outline-none focus:ring-2 focus:ring-red-500" placeholder="e.g. mps"></div>
+                    <div><label class="block font-semibold mb-1 text-sm">Change Staff Username</label><input type="text" id="setStaffUser" class="w-full px-4 py-2 border rounded outline-none focus:ring-2 focus:ring-red-500"></div>
+                    <div><label class="block font-semibold mb-1 text-sm">Change Staff Password</label><input type="text" id="setStaffPass" class="w-full px-4 py-2 border rounded outline-none focus:ring-2 focus:ring-red-500"></div>
                 </div>
-                <select id="adminFilterClass" onchange="renderAdminData()" class="px-4 py-2 border rounded mb-4 bg-white font-medium">
+            </div>
+        </div>
+
+        <div class="flex justify-center mb-10 border-b pb-8">
+            <button onclick="saveAllSettings()" class="bg-indigo-600 text-white px-10 py-3 rounded-lg font-bold text-lg hover:bg-indigo-700 shadow-lg transition-all"><i class="fa-solid fa-save mr-2"></i> Save All Changes & Sync</button>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-8 space-y-6">
+            <h2 class="text-xl font-bold text-indigo-900"><i class="fa-solid fa-calendar-days text-indigo-600 mr-2"></i> Attendance Records, Reports & Editing</h2>
+            
+            <div class="bg-slate-50 p-4 rounded-lg border">
+                <h4 class="font-bold text-slate-700 mb-3"><i class="fa-solid fa-pen-to-square text-amber-600 mr-1"></i> Edit Today's Class Attendance</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3 items-end">
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Select Class</label>
+                        <select id="editAttClass" class="w-full px-3 py-2 border rounded-lg outline-none bg-white">
+                            <option value="">-- Choose Class --</option>
+                            <option value="Nursery">Nursery</option>
+                            <option value="LKG">LKG</option>
+                            <option value="UKG">UKG</option>
+                            <option value="1st">1st</option>
+                            <option value="2nd">2nd</option>
+                            <option value="3rd">3rd</option>
+                            <option value="4th">4th</option>
+                            <option value="5th">5th</option>
+                            <option value="6th">6th</option>
+                            <option value="7th">7th</option>
+                            <option value="8th">8th</option>
+                            <option value="9th">9th</option>
+                            <option value="10th">10th</option>
+                            <option value="11th">11th</option>
+                            <option value="12th">12th</option>
+                        </select>
+                    </div>
+                    <div>
+                        <button onclick="loadAttendanceForEdit()" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 px-4 rounded-lg shadow transition-all">Load Today's Attendance</button>
+                    </div>
+                </div>
+
+                <div id="adminEditAttendanceContainer" class="hidden mt-4 space-y-3">
+                    <div class="overflow-x-auto border rounded-lg max-h-60 bg-white">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-slate-100 text-slate-700 sticky top-0">
+                                <tr><th class="p-2">Roll</th><th class="p-2">Student Name</th><th class="p-2 text-center">Status</th></tr>
+                            </thead>
+                            <tbody id="adminEditAttendanceBody" class="divide-y divide-slate-100"></tbody>
+                        </table>
+                    </div>
+                    <button onclick="saveEditedAttendance()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-lg font-bold text-sm shadow">Save Attendance Changes</button>
+                </div>
+            </div>
+
+            <div class="border-t pt-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 items-end">
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Start Date</label>
+                        <input type="date" id="adminAttStartDate" class="w-full px-3 py-2 border rounded-lg outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">End Date</label>
+                        <input type="date" id="adminAttEndDate" class="w-full px-3 py-2 border rounded-lg outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Select Class</label>
+                        <select id="adminAttReportClassSelect" class="w-full px-3 py-2 border rounded-lg outline-none bg-white">
+                            <option value="">-- All Classes --</option>
+                            <option value="Nursery">Nursery</option>
+                            <option value="LKG">LKG</option>
+                            <option value="UKG">UKG</option>
+                            <option value="1st">1st</option>
+                            <option value="2nd">2nd</option>
+                            <option value="3rd">3rd</option>
+                            <option value="4th">4th</option>
+                            <option value="5th">5th</option>
+                            <option value="6th">6th</option>
+                            <option value="7th">7th</option>
+                            <option value="8th">8th</option>
+                            <option value="9th">9th</option>
+                            <option value="10th">10th</option>
+                            <option value="11th">11th</option>
+                            <option value="12th">12th</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <button onclick="viewAdminAttendanceReport()" class="w-full bg-indigo-900 hover:bg-indigo-800 text-white font-bold py-2 px-4 rounded-lg shadow transition-all">View Report</button>
+                </div>
+                
+                <div id="adminAttendanceReportContainer" class="hidden mt-4">
+                    <div class="flex justify-between items-center mb-3">
+                        <h4 class="font-bold text-slate-700" id="adminReportDateRangeTitle">Report List</h4>
+                        <button onclick="downloadAdminAttendancePDF()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-bold text-sm shadow"><i class="fa-solid fa-download mr-1"></i> Download PDF</button>
+                    </div>
+                    <div class="overflow-x-auto border rounded-lg max-h-96">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-slate-100 text-slate-700 sticky top-0">
+                                <tr><th class="p-3">Date</th><th class="p-3">Class</th><th class="p-3">Student Name</th><th class="p-3">Roll No</th><th class="p-3">Status</th></tr>
+                            </thead>
+                            <tbody id="adminAttendanceReportTableBody" class="divide-y divide-slate-100"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="recordsView" class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+            <div class="flex justify-between items-center mb-4 flex-wrap gap-4">
+                <h2 class="text-xl font-bold text-slate-800"><i class="fa-solid fa-database text-red-600"></i> Manage Admission Records (Class-wise)</h2>
+                <div class="flex items-center space-x-3">
+                    <button onclick="softRefreshAdmin()" class="bg-slate-100 px-3 py-2 rounded text-sm font-bold hover:bg-slate-200"><i class="fa-solid fa-rotate mr-1"></i> Refresh</button>
+                    <button onclick="downloadAllAdmissionsPDF()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-bold text-sm shadow"><i class="fa-solid fa-download mr-1"></i> All Records Download</button>
+                </div>
+            </div>
+            <div class="p-4 border-b bg-slate-50 flex items-center space-x-4 mb-4">
+                <label class="font-bold text-sm text-indigo-950">Select Class to Manage Students:</label>
+                <select id="adminFilterClass" onchange="renderAdminData()" class="px-4 py-2 border rounded-lg bg-white font-medium outline-none">
                     <option value="">-- Choose Class --</option>
-                    <option value="Nursery">Nursery</option><option value="LKG">LKG</option><option value="UKG">UKG</option>
-                    <option value="1st">1st</option><option value="2nd">2nd</option><option value="3rd">3rd</option>
-                    <option value="4th">4th</option><option value="5th">5th</option><option value="6th">6th</option>
-                    <option value="7th">7th</option><option value="8th">8th</option><option value="9th">9th</option>
-                    <option value="10th">10th</option><option value="11th">11th</option><option value="12th">12th</option>
+                    <option value="Nursery">Nursery</option>
+                    <option value="LKG">LKG</option>
+                    <option value="UKG">UKG</option>
+                    <option value="1st">1st</option>
+                    <option value="2nd">2nd</option>
+                    <option value="3rd">3rd</option>
+                    <option value="4th">4th</option>
+                    <option value="5th">5th</option>
+                    <option value="6th">6th</option>
+                    <option value="7th">7th</option>
+                    <option value="8th">8th</option>
+                    <option value="9th">9th</option>
+                    <option value="10th">10th</option>
+                    <option value="11th">11th</option>
+                    <option value="12th">12th</option>
                 </select>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left">
-                        <thead class="bg-slate-100"><tr><th class="p-3">Roll</th><th class="p-3">Name</th><th class="p-3">Father Name</th><th class="p-3">Contact</th><th class="p-3 text-center">Action</th></tr></thead>
-                        <tbody id="adminTableBody" class="divide-y"></tbody>
-                    </table>
-                </div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-slate-200"><tr><th class="p-3">Roll No</th><th class="p-3">Student Name</th><th class="p-3">Father Name</th><th class="p-3">Contact</th><th class="p-3 text-center">Action</th></tr></thead>
+                    <tbody id="adminTableBody" class="divide-y divide-slate-100"></tbody>
+                </table>
             </div>
         </div>
 
-        <!-- TAB 2: FEE SET -->
-        <div id="tab-feeSetTab" class="admin-tab hidden bg-white p-6 rounded-xl shadow-sm border space-y-4">
-            <h2 class="text-lg font-bold text-indigo-900"><i class="fa-solid fa-cogs mr-2"></i> Configure Class Fees</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div id="fullEditSection" class="hidden bg-white p-8 rounded-xl shadow-lg border-2 border-amber-400 mt-8">
+            <h2 class="text-2xl font-bold mb-6 text-amber-600 border-b pb-2"><i class="fa-solid fa-pen-to-square"></i> Full Record Edit</h2>
+            <input type="hidden" id="adminEditIndex">
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div><label class="block text-sm font-semibold mb-1">Student Name</label><input type="text" id="e_name" class="w-full px-3 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-amber-500"></div>
+                <div><label class="block text-sm font-semibold mb-1">Father Name</label><input type="text" id="e_fname" class="w-full px-3 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-amber-500"></div>
+                <div><label class="block text-sm font-semibold mb-1">Parents Contact No</label><input type="text" id="e_contact" class="w-full px-3 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-amber-500"></div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                 <div>
-                    <label class="text-sm font-semibold">Select Class</label>
-                    <select id="feeSetClass" class="w-full px-3 py-2 border rounded bg-white">
-                        <option value="Nursery">Nursery</option><option value="1st">1st</option><option value="5th">5th</option><option value="10th">10th</option><option value="12th">12th</option>
+                    <label class="block text-sm font-semibold mb-1">Class</label>
+                    <select id="e_class" class="w-full px-3 py-2 border rounded-lg outline-none bg-white focus:ring-2 focus:ring-amber-500">
+                        <option value="">Select Class</option>
+                        <option value="Nursery">Nursery</option>
+                        <option value="LKG">LKG</option>
+                        <option value="UKG">UKG</option>
+                        <option value="1st">1st</option>
+                        <option value="2nd">2nd</option>
+                        <option value="3rd">3rd</option>
+                        <option value="4th">4th</option>
+                        <option value="5th">5th</option>
+                        <option value="6th">6th</option>
+                        <option value="7th">7th</option>
+                        <option value="8th">8th</option>
+                        <option value="9th">9th</option>
+                        <option value="10th">10th</option>
+                        <option value="11th">11th</option>
+                        <option value="12th">12th</option>
                     </select>
                 </div>
                 <div>
-                    <label class="text-sm font-semibold">Default Monthly Fee Amount</label>
-                    <input type="number" id="defaultMonthlyFee" class="w-full px-3 py-2 border rounded" value="1000">
+                    <label class="block text-sm font-semibold mb-1">Month</label>
+                    <select id="e_month" class="w-full px-3 py-2 border rounded-lg outline-none bg-white focus:ring-2 focus:ring-amber-500">
+                        <option value="">Select Month</option>
+                        <option value="January">January</option>
+                        <option value="February">February</option>
+                        <option value="March">March</option>
+                        <option value="April">April</option>
+                        <option value="May">May</option>
+                        <option value="June">June</option>
+                        <option value="July">July</option>
+                        <option value="August">August</option>
+                        <option value="September">September</option>
+                        <option value="October">October</option>
+                        <option value="November">November</option>
+                        <option value="December">December</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1">Admission Date</label>
+                    <input type="date" id="e_date" class="w-full px-3 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-amber-500">
                 </div>
             </div>
-            <button onclick="saveFeeStructure()" class="bg-emerald-600 text-white px-6 py-2 rounded font-bold">Save Fee Structure</button>
-        </div>
 
-        <!-- TAB 3: FEE RECORD -->
-        <div id="tab-feeRecordTab" class="admin-tab hidden bg-white p-6 rounded-xl shadow-sm border space-y-4">
-            <h2 class="text-lg font-bold text-indigo-900"><i class="fa-solid fa-file-invoice-dollar mr-2"></i> Monthly Fee Records (Class-wise)</h2>
-            <select id="feeRecordClass" onchange="renderFeeRecordsList()" class="px-4 py-2 border rounded bg-white font-medium">
-                <option value="">-- Select Class --</option>
-                <option value="Nursery">Nursery</option><option value="1st">1st</option><option value="5th">5th</option><option value="10th">10th</option><option value="12th">12th</option>
-            </select>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left">
-                    <thead class="bg-slate-100"><tr><th class="p-3">Roll</th><th class="p-3">Student Name</th><th class="p-3">Monthly Status</th><th class="p-3 text-center">Action</th></tr></thead>
-                    <tbody id="feeRecordTableBody" class="divide-y"></tbody>
-                </table>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-6">
+                <div class="border p-4 rounded-lg bg-slate-50">
+                    <h4 class="font-bold border-b pb-2 mb-4 text-indigo-900">Monthly fee Structure</h4>
+                    <div class="space-y-3">
+                        <div class="flex justify-between"><label class="text-sm font-semibold">Monthly fee Amount</label><input type="number" id="e_m" oninput="calcAdminAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="0"></div>
+                        <div class="flex justify-between"><label class="text-sm font-semibold">Registration Fee</label><input type="number" id="e_r" oninput="calcAdminAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="0"></div>
+                        <div class="flex justify-between"><label class="text-sm font-semibold">Admission Fee</label><input type="number" id="e_a" oninput="calcAdminAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="0"></div>
+                        <div class="flex justify-between"><label class="text-sm font-semibold">Annual Fee</label><input type="number" id="e_an" oninput="calcAdminAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="0"></div>
+                        <div class="flex justify-between"><label class="text-sm font-semibold">Tution fee</label><input type="number" id="e_t" oninput="calcAdminAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="0"></div>
+                        <div class="flex justify-between pt-2 border-t"><label class="font-bold">Total Pay</label><input type="number" id="e_pay" readonly class="w-1/3 px-2 py-1 border rounded bg-slate-200 font-bold" value="0"></div>
+                        <div class="flex justify-between"><label class="font-bold">Total Due</label><input type="number" id="e_due" class="w-1/3 px-2 py-1 border rounded" value="0"></div>
+                    </div>
+                </div>
+                <div class="border p-4 rounded-lg bg-slate-50">
+                    <h4 class="font-bold border-b pb-2 mb-4 text-indigo-900">Extra Accessories</h4>
+                    <div class="space-y-3">
+                        <div class="flex justify-between"><label class="text-sm font-semibold">Bus Fee</label><input type="number" id="e_bs" oninput="calcAdminAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="0"></div>
+                        <div class="flex justify-between"><label class="text-sm font-semibold">Sport fee</label><input type="number" id="e_sp" oninput="calcAdminAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="0"></div>
+                        <div class="flex justify-between"><label class="text-sm font-semibold">Caution Money</label><input type="number" id="e_c" oninput="calcAdminAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="0"></div>
+                        <div class="flex justify-between"><label class="text-sm font-semibold">Development Fee</label><input type="number" id="e_d" oninput="calcAdminAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="0"></div>
+                        <div class="flex justify-between"><label class="text-sm font-semibold">Library Fee</label><input type="number" id="e_l" oninput="calcAdminAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="0"></div>
+                        <div class="flex justify-between"><label class="text-sm font-semibold">Book</label><input type="number" id="e_bk" oninput="calcAdminAdTotal()" class="w-1/3 px-2 py-1 border rounded" value="0"></div>
+                        <div class="flex justify-between pt-2 border-t"><label class="font-bold">Total Extra</label><input type="number" id="e_ext" readonly class="w-1/3 px-2 py-1 border rounded bg-slate-200 font-bold" value="0"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-emerald-100 p-4 rounded-lg flex justify-between items-center border border-emerald-200 mb-6">
+                <h3 class="font-bold text-emerald-900 text-lg">Total Fee Amount</h3>
+                <input type="number" id="e_final" readonly class="bg-transparent text-right font-bold text-emerald-800 text-2xl w-32 outline-none" value="0">
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t mb-6 bg-slate-50 p-4 rounded-lg">
+                <div><label class="block text-sm font-bold mb-2">Change Photo</label><input type="file" accept="image/*" onchange="processAdminEditImg(event, 'p')" class="text-sm"></div>
+                <div><label class="block text-sm font-bold mb-2">Change Parent Sig</label><input type="file" accept="image/*" onchange="processAdminEditImg(event, 'ps')" class="text-sm"></div>
+                <div><label class="block text-sm font-bold mb-2">Change Acc. Sig</label><input type="file" accept="image/*" onchange="processAdminEditImg(event, 'as')" class="text-sm"></div>
+            </div>
+
+            <div class="flex space-x-4">
+                <button onclick="saveFullEdit()" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white py-3 rounded-lg font-bold shadow-lg text-lg transition-all"><i class="fa-solid fa-check mr-2"></i> Save Full Edit</button>
+                <button onclick="document.getElementById('fullEditSection').classList.add('hidden')" class="bg-slate-400 hover:bg-slate-500 text-white px-8 py-3 rounded-lg font-bold shadow-lg transition-all">Cancel</button>
             </div>
         </div>
     </div>
 
     <!-- LIVE WATCH MODAL -->
-    <div id="liveWatchModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-2xl p-6 max-w-lg w-full shadow-2xl space-y-4">
-            <div class="flex justify-between items-center border-b pb-2">
-                <h3 class="text-xl font-bold text-indigo-900">Active Connected Devices</h3>
-                <button onclick="document.getElementById('liveWatchModal').classList.add('hidden')" class="text-xl font-bold">&times;</button>
+    <div id="liveWatchModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 animate-fade-in">
+        <div class="bg-white rounded-2xl p-6 max-w-xl w-full shadow-2xl">
+            <div class="flex justify-between items-center mb-4 border-b pb-2">
+                <h3 class="text-xl font-bold text-indigo-900"><i class="fa-solid fa-eye text-indigo-600 mr-2"></i> Active Sessions & Devices Watch Live</h3>
+                <button onclick="document.getElementById('liveWatchModal').classList.add('hidden')" class="text-slate-500 hover:text-red-600 font-bold text-lg"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div id="liveSessionsList" class="space-y-2 max-h-60 overflow-y-auto"></div>
+            <p class="text-sm text-slate-600 mb-4">All devices currently connected or logged into the portal across the network:</p>
+            <div id="liveSessionsList" class="space-y-2 max-h-72 overflow-y-auto border p-3 rounded-lg bg-slate-50"></div>
+            <button onclick="document.getElementById('liveWatchModal').classList.add('hidden')" class="w-full mt-4 bg-slate-800 hover:bg-slate-900 text-white font-bold py-2 rounded-lg">Close</button>
         </div>
     </div>
 
     <script>
-        (function() { emailjs.init("7_cYWCxamrOZ9dq7V"); })();
+        (function() {
+            emailjs.init("7_cYWCxamrOZ9dq7V");
+        })();
         const EMAILJS_SERVICE_ID = "service_uxj16r9";
         const EMAILJS_TEMPLATE_ID = "template_q3yq1vk";
+
         const JSONBIN_BIN_ID = "6ab3e3a0ac6210605aed6c4b";
         const JSONBIN_API_KEY = "$2a$10$yyc9hu99dDO8hxlNRqiu4eao2Pa7kAKyCv6VTZk9o6MXaTNGh6mvO";
 
         let admissions = JSON.parse(localStorage.getItem('mps_admissions_v3')) || [];
+        let attendanceRecords = JSON.parse(localStorage.getItem('mps_attendance_records')) || [];
         let activeSessions = {};
+        let newLogoBase64 = localStorage.getItem('mps_logo') || ""; 
+        let temp_p = "", temp_ps = "", temp_as = ""; 
         let resetOTP = "";
-        const myAdminSession = 'admin_' + Math.random().toString(36).substring(2);
 
-        async function syncCloud() {
+        const mySessionId = 'admin_session_' + Math.random().toString(36).substring(2);
+
+        async function syncCloudDataInBackground() {
             try {
-                let res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, { headers: { 'X-Master-Key': JSONBIN_API_KEY } });
-                let data = await res.json();
-                if(data && data.record) {
-                    if(data.record.admissions) { admissions = data.record.admissions; localStorage.setItem('mps_admissions_v3', JSON.stringify(admissions)); }
-                    if(data.record.activeSessions) activeSessions = data.record.activeSessions;
-                    if(data.record.settings) {
-                        let s = data.record.settings;
+                let response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
+                    headers: { 'X-Master-Key': JSONBIN_API_KEY }
+                });
+                let result = await response.json();
+                if(result && result.record) {
+                    if(result.record.admissions) {
+                        admissions = result.record.admissions;
+                        reindexAdmissions();
+                        localStorage.setItem('mps_admissions_v3', JSON.stringify(admissions));
+                    }
+                    if(result.record.attendanceRecords) {
+                        attendanceRecords = result.record.attendanceRecords;
+                        localStorage.setItem('mps_attendance_records', JSON.stringify(attendanceRecords));
+                    }
+                    if(result.record.activeSessions) {
+                        activeSessions = result.record.activeSessions;
+                    }
+                    if(result.record.settings) {
+                        let s = result.record.settings;
                         if(s.schoolName) localStorage.setItem('mps_schoolName', s.schoolName);
                         if(s.staffUser) localStorage.setItem('mps_staffUser', s.staffUser);
                         if(s.staffPass) localStorage.setItem('mps_staffPass', s.staffPass);
+                        if(s.loginTitle) localStorage.setItem('mps_loginTitle', s.loginTitle);
+                        if(s.map) localStorage.setItem('mps_map', s.map);
+                        if(s.logo) localStorage.setItem('mps_logo', s.logo);
+                        if(s.adminUser) localStorage.setItem('mps_actualAdminUser', s.adminUser);
+                        if(s.adminPass) localStorage.setItem('mps_actualAdminPass', s.adminPass);
                     }
                 }
-            } catch(e) {}
+            } catch (err) {
+                console.log("Background sync skipped");
+            }
         }
 
-        setInterval(async () => {
-            activeSessions[myAdminSession] = { time: Date.now(), role: 'Admin Panel', device: 'Admin PC' };
-            document.getElementById('liveCount').innerText = Object.keys(activeSessions).length;
-            await saveCloudSessions();
-        }, 5000);
+        async function updateCloudSessions() {
+            let now = Date.now();
+            let cleanedSessions = {};
+            
+            // Clean up sessions older than 20 seconds
+            Object.keys(activeSessions).forEach(id => {
+                if(now - activeSessions[id].time <= 20000 && !activeSessions[id].forceLogout) {
+                    cleanedSessions[id] = activeSessions[id];
+                }
+            });
 
-        async function saveCloudSessions() {
+            // Register admin session
+            cleanedSessions[mySessionId] = {
+                time: now,
+                role: 'Admin Panel',
+                device: navigator.userAgent.includes('Mobile') ? 'Mobile Device' : 'Desktop PC'
+            };
+
+            activeSessions = cleanedSessions;
+            
+            // Check if this admin session was forced to logout remotely
+            if(activeSessions[mySessionId] && activeSessions[mySessionId].forceLogout) {
+                alert("⚠️ Your session was terminated by Admin.");
+                location.reload();
+                return;
+            }
+
+            document.getElementById('liveCount').innerText = Object.keys(activeSessions).length;
+
             try {
-                let res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, { headers: { 'X-Master-Key': JSONBIN_API_KEY } });
-                let data = await res.json();
-                let rec = data.record || {};
-                rec.activeSessions = activeSessions;
+                let response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
+                    headers: { 'X-Master-Key': JSONBIN_API_KEY }
+                });
+                let result = await response.json();
+                let currentData = result.record || {};
+                currentData.activeSessions = activeSessions;
+
                 await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
-                    method: 'PUT', headers: { 'Content-Type': 'application/json', 'X-Master-Key': JSONBIN_API_KEY },
-                    body: JSON.stringify(rec)
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': JSONBIN_API_KEY
+                    },
+                    body: JSON.stringify(currentData)
                 });
             } catch(e) {}
         }
 
+        syncCloudDataInBackground().then(() => {
+            setInterval(updateCloudSessions, 5000);
+            updateCloudSessions();
+        });
+
         function openLiveWatchModal() {
-            let list = document.getElementById('liveSessionsList'); list.innerHTML = "";
-            Object.keys(activeSessions).forEach((k, i) => {
-                let isMe = k === myAdminSession ? " (You)" : "";
-                list.innerHTML += `<div class="flex justify-between items-center p-2 border rounded"><span>Device #${i+1}${isMe} - ${activeSessions[k].role}</span> ${k !== myAdminSession ? `<button onclick="forceLogout('${k}')" class="bg-red-600 text-white px-2 py-1 rounded text-xs font-bold">Force Logout</button>` : ''}</div>`;
-            });
+            let listDiv = document.getElementById('liveSessionsList');
+            listDiv.innerHTML = "";
+            let keys = Object.keys(activeSessions);
+            
+            if(keys.length === 0) {
+                listDiv.innerHTML = `<p class="text-slate-500 text-center py-4">No active devices running currently.</p>`;
+            } else {
+                keys.forEach((k, idx) => {
+                    let sess = activeSessions[k];
+                    let isMe = k === mySessionId ? ' (You)' : '';
+                    listDiv.innerHTML += `<div class="flex justify-between items-center bg-white p-3 border rounded shadow-sm text-sm">
+                        <div>
+                            <span class="font-bold text-indigo-900"><i class="fa-solid fa-circle text-emerald-500 text-xs mr-2"></i>Device #${idx + 1}${isMe}</span>
+                            <p class="text-xs text-slate-500 mt-1">Type: ${sess.device || 'Browser'} | Role: ${sess.role}</p>
+                        </div>
+                        ${k !== mySessionId ? `<button onclick="forceLogoutSession('${k}')" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-xs font-bold transition"><i class="fa-solid fa-power-off mr-1"></i> Force Logout</button>` : '<span class="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-1 rounded">Connected</span>'}
+                    </div>`;
+                });
+            }
             document.getElementById('liveWatchModal').classList.remove('hidden');
         }
 
-        async function forceLogout(sid) {
-            if(activeSessions[sid]) { activeSessions[sid].forceLogout = true; await saveCloudSessions(); openLiveWatchModal(); alert("Device Terminated!"); }
+        async function forceLogoutSession(sessionId) {
+            if(confirm("Are you sure you want to log out this device remotely?")) {
+                if(activeSessions[sessionId]) {
+                    activeSessions[sessionId].forceLogout = true;
+                    await saveCloudDataSessionsOnly();
+                    openLiveWatchModal();
+                    alert("Device logged out successfully!");
+                }
+            }
         }
 
-        function adminLogin() {
+        async function saveCloudDataSessionsOnly() {
+            try {
+                let response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
+                    headers: { 'X-Master-Key': JSONBIN_API_KEY }
+                });
+                let result = await response.json();
+                let currentData = result.record || {};
+                currentData.activeSessions = activeSessions;
+
+                await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': JSONBIN_API_KEY
+                    },
+                    body: JSON.stringify(currentData)
+                });
+            } catch(e) {}
+        }
+
+        async function saveCloudData() {
+            reindexAdmissions();
+            localStorage.setItem('mps_admissions_v3', JSON.stringify(admissions));
+            localStorage.setItem('mps_attendance_records', JSON.stringify(attendanceRecords));
+            try {
+                let response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
+                    headers: { 'X-Master-Key': JSONBIN_API_KEY }
+                });
+                let result = await response.json();
+                let currentData = result.record || {};
+                
+                currentData.admissions = admissions;
+                currentData.attendanceRecords = attendanceRecords;
+                currentData.activeSessions = activeSessions;
+                currentData.settings = {
+                    schoolName: localStorage.getItem('mps_schoolName') || "Motion Public School",
+                    staffUser: localStorage.getItem('mps_staffUser') || "Motion Public School",
+                    staffPass: localStorage.getItem('mps_staffPass') || "MPS 752040",
+                    loginTitle: localStorage.getItem('mps_loginTitle') || "mps",
+                    map: localStorage.getItem('mps_map') || "",
+                    logo: localStorage.getItem('mps_logo') || "",
+                    adminUser: localStorage.getItem('mps_actualAdminUser') || "rp sir",
+                    adminPass: localStorage.getItem('mps_actualAdminPass') || "rp sir mps"
+                };
+
+                await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': JSONBIN_API_KEY
+                    },
+                    body: JSON.stringify(currentData)
+                });
+            } catch (err) {
+                console.log("Cloud sync error");
+            }
+        }
+
+        function reindexAdmissions() {
+            let classesList = ["Nursery", "LKG", "UKG", "1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th", "10th", "11th", "12th"];
+            classesList.forEach(cls => {
+                let classStudents = admissions.filter(a => a.cls === cls);
+                classStudents.forEach((st, idx) => {
+                    st.roll = (idx + 1).toString();
+                });
+            });
+        }
+
+        async function adminLogin() {
             let u = document.getElementById("adminUser").value;
             let p = document.getElementById("adminPass").value;
-            let realU = localStorage.getItem('mps_actualAdminUser') || "rp sir";
-            let realP = localStorage.getItem('mps_actualAdminPass') || "rp sir mps";
-            if(u === realU && p === realP) {
-                document.getElementById("adminLoginScreen").classList.add("hidden");
+
+            let realAdminUser = localStorage.getItem('mps_actualAdminUser') || "rp sir";
+            let realAdminPass = localStorage.getItem('mps_actualAdminPass') || "rp sir mps";
+
+            if(u === realAdminUser && p === realAdminPass) {
+                document.getElementById("adminLoginScreen").classList.add("hidden"); 
                 document.getElementById("adminDashboard").classList.remove("hidden");
-                loadSettings();
-                syncCloud().then(() => renderAdminData());
-            } else { document.getElementById("admin-error-msg").classList.remove("hidden"); }
+                
+                loadSettings(); 
+                renderAdminData();
+            } else {
+                let errBox = document.getElementById("admin-error-msg");
+                errBox.classList.remove("hidden");
+                errBox.classList.add("animate-fade-in");
+            }
         }
         function logoutAdmin() { location.reload(); }
 
+        async function softRefreshAdmin() {
+            await syncCloudDataInBackground();
+            renderAdminData();
+            alert("Admin data refreshed successfully from cloud!");
+        }
+
+        // Attendance & Edit Functions remain intact
+        function getTodayDateStr() {
+            let now = new Date();
+            let targetDate = new Date(now);
+            if(now.getHours() < 5) {
+                targetDate.setDate(targetDate.getDate() - 1);
+            }
+            return targetDate.toISOString().split('T')[0];
+        }
+
+        function loadAttendanceForEdit() {
+            let cls = document.getElementById('editAttClass').value;
+            if(!cls) return alert("Please select a Class!");
+
+            let todayStr = getTodayDateStr();
+            let classRecords = attendanceRecords.filter(r => r.date === todayStr && r.cls === cls);
+            let tbody = document.getElementById('adminEditAttendanceBody');
+            tbody.innerHTML = "";
+
+            if(classRecords.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="3" class="p-3 text-center text-slate-500">No attendance submitted for this class today yet.</td></tr>`;
+            } else {
+                classRecords.forEach((rec, idx) => {
+                    let isPresent = rec.status === 'Present' ? 'checked' : '';
+                    let isAbsent = rec.status === 'Absent' ? 'checked' : '';
+                    tbody.innerHTML += `
+                        <tr>
+                            <td class="p-2">${rec.roll}</td>
+                            <td class="p-2 font-semibold">${rec.name}</td>
+                            <td class="p-2 text-center">
+                                <label class="inline-flex items-center mr-3 cursor-pointer">
+                                    <input type="radio" name="edit_att_${idx}" value="Present" ${isPresent} class="form-radio text-emerald-600">
+                                    <span class="ml-1 text-xs text-emerald-700 font-bold">P</span>
+                                </label>
+                                <label class="inline-flex items-center cursor-pointer">
+                                    <input type="radio" name="edit_att_${idx}" value="Absent" ${isAbsent} class="form-radio text-red-600">
+                                    <span class="ml-1 text-xs text-red-700 font-bold">A</span>
+                                </label>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+            document.getElementById('adminEditAttendanceContainer').classList.remove('hidden');
+        }
+
+        async function saveEditedAttendance() {
+            let cls = document.getElementById('editAttClass').value;
+            let todayStr = getTodayDateStr();
+            let classRecords = attendanceRecords.filter(r => r.date === todayStr && r.cls === cls);
+
+            classRecords.forEach((rec, idx) => {
+                let radios = document.getElementsByName(`edit_att_${idx}`);
+                for(let r of radios) {
+                    if(r.checked) rec.status = r.value;
+                }
+            });
+
+            await saveCloudData();
+            alert("Today's attendance successfully updated!");
+            document.getElementById('adminEditAttendanceContainer').classList.add('hidden');
+        }
+
+        function viewAdminAttendanceReport() {
+            let start = document.getElementById('adminAttStartDate').value;
+            let end = document.getElementById('adminAttEndDate').value;
+            let selectedClass = document.getElementById('adminAttReportClassSelect').value;
+
+            if(!start || !end) return alert("Please select both Start Date and End Date!");
+
+            let filtered = attendanceRecords.filter(r => {
+                let matchDate = r.date >= start && r.date <= end;
+                let matchClass = selectedClass ? r.cls === selectedClass : true;
+                return matchDate && matchClass;
+            });
+
+            let tb = document.getElementById('adminAttendanceReportTableBody');
+            tb.innerHTML = "";
+
+            if(filtered.length === 0) {
+                tb.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500">No attendance records found for the selected criteria.</td></tr>`;
+            } else {
+                filtered.forEach(r => {
+                    let badgeColor = r.status === 'Present' ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800';
+                    tb.innerHTML += `
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-3">${r.date}</td>
+                            <td class="p-3">${r.cls}</td>
+                            <td class="p-3 font-semibold">${r.name}</td>
+                            <td class="p-3">${r.roll}</td>
+                            <td class="p-3"><span class="px-2 py-1 rounded text-xs font-bold ${badgeColor}">${r.status}</span></td>
+                        </tr>
+                    `;
+                });
+            }
+
+            let classText = selectedClass ? ` for Class ${selectedClass}` : '';
+            document.getElementById('adminReportDateRangeTitle').innerText = `Report from ${start} to ${end}${classText}`;
+            document.getElementById('adminAttendanceReportContainer').classList.remove('hidden');
+        }
+
+        function downloadAdminAttendancePDF() {
+            let start = document.getElementById('adminAttStartDate').value;
+            let end = document.getElementById('adminAttEndDate').value;
+            let selectedClass = document.getElementById('adminAttReportClassSelect').value;
+
+            let filtered = attendanceRecords.filter(r => {
+                let matchDate = r.date >= start && r.date <= end;
+                let matchClass = selectedClass ? r.cls === selectedClass : true;
+                return matchDate && matchClass;
+            });
+
+            if(filtered.length === 0) return alert("No data available to download for this selection!");
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'mm', 'a4');
+            let sName = localStorage.getItem('mps_schoolName') || "Motion Public School";
+
+            doc.setFont("times", "bold");
+            doc.setFontSize(22);
+            doc.text(sName, 105, 20, {align: 'center'});
+            
+            doc.setFontSize(14);
+            doc.setFont("times", "normal");
+            let subTitle = selectedClass ? `Attendance Report - Class ${selectedClass}` : "Attendance Report (All Classes)";
+            doc.text(subTitle, 105, 28, {align: 'center'});
+            
+            doc.setFontSize(11);
+            doc.text(`Date Range: ${start} to ${end}`, 14, 38);
+            doc.line(14, 42, 196, 42);
+
+            let tableData = filtered.map(r => [r.date, r.cls, r.name, r.roll, r.status]);
+
+            doc.autoTable({
+                startY: 46,
+                theme: 'grid',
+                styles: { font: 'times', fontSize: 10 },
+                head: [['Date', 'Class', 'Student Name', 'Roll No', 'Status']],
+                body: tableData
+            });
+
+            let filename = selectedClass ? `Admin_Attendance_${selectedClass}_${start}_to_${end}.pdf` : `Admin_Attendance_All_${start}_to_${end}.pdf`;
+            doc.save(filename);
+        }
+
         function toggleResetFlow(show) {
-            if(show) { document.getElementById('loginBox').classList.add('hidden'); document.getElementById('resetBox').classList.remove('hidden'); }
-            else { document.getElementById('resetBox').classList.add('hidden'); document.getElementById('loginBox').classList.remove('hidden'); }
+            if(show) {
+                document.getElementById('loginBox').classList.add('hidden');
+                let rb = document.getElementById('resetBox');
+                rb.classList.remove('hidden');
+            } else {
+                document.getElementById('resetBox').classList.add('hidden');
+                document.getElementById('loginBox').classList.remove('hidden');
+                document.getElementById('resetStep1').classList.remove('hidden');
+                document.getElementById('resetStep2').classList.add('hidden');
+                document.getElementById('resetStep3').classList.add('hidden');
+                document.getElementById('resetOtpInput').value = "";
+                resetOTP = "";
+            }
         }
 
         function sendResetOTP() {
+            let btn = document.getElementById("sendResetOtpBtn");
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Sending OTP...`; 
+            btn.disabled = true;
             resetOTP = Math.floor(1000 + Math.random() * 9000).toString();
-            emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, { otp: resetOTP, to_email: "rajpurushottamraj1@gmail.com" }).then(() => {
-                document.getElementById('resetStep1').classList.add('hidden');
-                document.getElementById('resetStep2').classList.remove('hidden');
+            
+            emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+                otp: resetOTP,
+                to_email: "rajpurushottamraj1@gmail.com"
+            }).then(function(response) {
+                btn.innerHTML = `<span>Send Email OTP</span>`; 
+                btn.disabled = false;
+                let step1 = document.getElementById('resetStep1');
+                step1.classList.add('hidden');
+                let step2 = document.getElementById('resetStep2');
+                step2.classList.remove('hidden');
+            }, function(error) {
+                alert("❌ Failed to send OTP email. Please check internet connection.");
+                btn.innerHTML = `<span>Send Email OTP</span>`; 
+                btn.disabled = false;
             });
         }
 
         function verifyResetOTP() {
-            if(document.getElementById('resetOtpInput').value === resetOTP && resetOTP !== "") {
-                document.getElementById('resetStep2').classList.add('hidden');
-                document.getElementById('resetStep3').classList.remove('hidden');
-            } else { alert("Invalid OTP!"); }
+            let enteredOtp = document.getElementById('resetOtpInput').value;
+            let btn = document.getElementById('verifyOtpBtn');
+
+            if(!enteredOtp || enteredOtp.length < 4) {
+                alert("⚠️ Please enter a valid 4-digit OTP!");
+                return;
+            }
+
+            btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin mr-2"></i> Verifying OTP...`;
+            btn.disabled = true;
+
+            setTimeout(() => {
+                if(enteredOtp === resetOTP && resetOTP !== "") {
+                    btn.innerHTML = `<i class="fa-solid fa-check mr-2"></i> Verified Successfully!`;
+                    btn.className = "w-full bg-emerald-600 text-white font-bold py-3 rounded-lg shadow-lg transition-all mb-4 flex items-center justify-center space-x-2 animate-fade-in";
+                    
+                    setTimeout(() => {
+                        document.getElementById('resetStep2').classList.add('hidden');
+                        let step3 = document.getElementById('resetStep3');
+                        step3.classList.remove('hidden');
+                        btn.innerHTML = `<span>Verify OTP</span>`;
+                        btn.className = "w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-lg shadow-lg transition-all mb-4 flex items-center justify-center space-x-2";
+                        btn.disabled = false;
+                    }, 800);
+                } else {
+                    btn.innerHTML = `<i class="fa-solid fa-xmark mr-2"></i> Invalid OTP! Try Again`;
+                    btn.className = "w-full bg-red-600 text-white font-bold py-3 rounded-lg shadow-lg transition-all mb-4 flex items-center justify-center space-x-2 animate-fade-in";
+                    
+                    setTimeout(() => {
+                        btn.innerHTML = `<span>Verify OTP</span>`;
+                        btn.className = "w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-lg shadow-lg transition-all mb-4 flex items-center justify-center space-x-2";
+                        btn.disabled = false;
+                    }, 1200);
+                }
+            }, 1000);
         }
 
         async function changeAdminCredentials() {
-            let u = document.getElementById('newAdminUser').value;
+            let u = document.getElementById('newAdminUser').value.trim();
             let p1 = document.getElementById('newAdminPass').value;
             let p2 = document.getElementById('confirmAdminPass').value;
-            if(p1 !== p2) return alert("Passwords don't match!");
+
+            if(!u || !p1 || !p2) return alert("All fields are required!");
+            if(p1 !== p2) return alert("Passwords do not match!");
+
             localStorage.setItem('mps_actualAdminUser', u);
             localStorage.setItem('mps_actualAdminPass', p1);
-            alert("Credentials updated!");
-            toggleResetFlow(false);
+            resetOTP = ""; 
+
+            await saveCloudData();
+            alert("✅ Admin Credentials successfully updated and synced to cloud!");
+            toggleResetFlow(false); 
         }
 
-        function switchAdminTab(tabId) {
-            document.querySelectorAll('.admin-tab').forEach(t => t.classList.add('hidden'));
-            document.getElementById('tab-' + tabId).classList.remove('hidden');
-            ['settingsTab', 'feeSetTab', 'feeRecordTab'].forEach(id => {
-                let btn = document.getElementById('btn-' + id);
-                if(id === tabId) btn.className = "px-5 py-2.5 rounded-lg font-bold bg-indigo-900 text-white transition";
-                else btn.className = "px-5 py-2.5 rounded-lg font-bold bg-slate-100 text-slate-700 transition";
-            });
-            if(tabId === 'feeRecordTab') renderFeeRecordsList();
+        function processAdminLogo(e) {
+            let file = e.target.files[0]; if(!file) return;
+            let r = new FileReader(); r.onload = function(ev) {
+                let img = new Image(); img.onload = function() {
+                    let canvas = document.createElement('canvas'); let ctx = canvas.getContext('2d');
+                    let scale = img.width > 200 ? 200 / img.width : 1;
+                    canvas.width = img.width * scale; canvas.height = img.height * scale;
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    newLogoBase64 = canvas.toDataURL('image/jpeg', 0.8);
+                }; img.src = ev.target.result;
+            }; r.readAsDataURL(file);
         }
 
         function loadSettings() {
             document.getElementById('setSchoolName').value = localStorage.getItem('mps_schoolName') || "Motion Public School";
             document.getElementById('setStaffUser').value = localStorage.getItem('mps_staffUser') || "Motion Public School";
             document.getElementById('setStaffPass').value = localStorage.getItem('mps_staffPass') || "MPS 752040";
+            document.getElementById('setLoginTitle').value = localStorage.getItem('mps_loginTitle') || "mps";
             document.getElementById('mapUrl').value = localStorage.getItem('mps_map') || "";
         }
 
         async function saveAllSettings() {
-            localStorage.setItem('mps_schoolName', document.getElementById('setSchoolName').value);
-            localStorage.setItem('mps_staffUser', document.getElementById('setStaffUser').value);
-            localStorage.setItem('mps_staffPass', document.getElementById('setStaffPass').value);
-            localStorage.setItem('mps_map', document.getElementById('mapUrl').value);
-            alert("Settings saved successfully!");
+            let settingsData = {
+                schoolName: document.getElementById('setSchoolName').value,
+                staffUser: document.getElementById('setStaffUser').value,
+                staffPass: document.getElementById('setStaffPass').value,
+                loginTitle: document.getElementById('setLoginTitle').value,
+                map: document.getElementById('mapUrl').value,
+                logo: newLogoBase64 || localStorage.getItem('mps_logo') || "",
+                adminUser: localStorage.getItem('mps_actualAdminUser') || "rp sir",
+                adminPass: localStorage.getItem('mps_actualAdminPass') || "rp sir mps"
+            };
+
+            localStorage.setItem('mps_schoolName', settingsData.schoolName);
+            localStorage.setItem('mps_staffUser', settingsData.staffUser);
+            localStorage.setItem('mps_staffPass', settingsData.staffPass);
+            localStorage.setItem('mps_loginTitle', settingsData.loginTitle);
+            localStorage.setItem('mps_map', settingsData.map);
+            if(settingsData.logo) localStorage.setItem('mps_logo', settingsData.logo);
+
+            alert("✅ Success! Settings saved instantly.");
+            await saveCloudData();
         }
 
         function renderAdminData() {
-            let cls = document.getElementById('adminFilterClass').value;
-            let tb = document.getElementById('adminTableBody'); tb.innerHTML = "";
-            if(!cls) { tb.innerHTML = `<tr><td colspan="5" class="p-3 text-center">Select class</td></tr>`; return; }
-            admissions.filter(a => a.cls === cls).forEach(a => {
-                let idx = admissions.indexOf(a);
-                tb.innerHTML += `<tr><td class="p-3 font-bold">${a.roll}</td><td class="p-3 font-semibold">${a.name}</td><td class="p-3">${a.fname||'-'}</td><td class="p-3">${a.contact||'-'}</td><td class="p-3 text-center"><button onclick="generateSlip(${idx})" class="bg-amber-100 text-amber-700 px-3 py-1 rounded font-bold">PDF</button></td></tr>`;
+            let selectedClass = document.getElementById('adminFilterClass').value;
+            let tb = document.getElementById("adminTableBody"); 
+            tb.innerHTML = "";
+
+            if(!selectedClass) {
+                tb.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500">Please select a class above to manage records.</td></tr>`;
+                return;
+            }
+
+            let classStudents = admissions.filter(ad => ad.cls === selectedClass);
+            if (classStudents.length === 0) { 
+                tb.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500">No records found for class ${selectedClass}.</td></tr>`; 
+                return; 
+            }
+
+            classStudents.forEach((ad) => {
+                let actualGlobalIndex = admissions.indexOf(ad);
+                tb.innerHTML += `<tr>
+                    <td class="p-3 font-bold text-indigo-900">${ad.roll}</td>
+                    <td class="p-3 font-semibold">${ad.name}</td>
+                    <td class="p-3 text-slate-600">${ad.fname || '-'}</td>
+                    <td class="p-3 text-slate-600">${ad.contact || '-'}</td>
+                    <td class="p-3 text-center space-x-2">
+                        <button onclick="generateSlip(${actualGlobalIndex})" class="bg-amber-100 text-amber-700 px-3 py-1 rounded font-bold hover:bg-amber-500 hover:text-white transition"><i class="fa-solid fa-download"></i> PDF</button>
+                        <button onclick="openFullEdit(${actualGlobalIndex})" class="bg-blue-100 text-blue-600 px-3 py-1 rounded font-bold hover:bg-blue-500 hover:text-white transition"><i class="fa-solid fa-pen"></i> Edit</button>
+                        <button onclick="deleteData(${actualGlobalIndex})" class="bg-red-100 text-red-600 px-3 py-1 rounded font-bold hover:bg-red-500 hover:text-white transition"><i class="fa-solid fa-trash"></i> Delete</button>
+                    </td>
+                </tr>`;
             });
         }
 
-        function renderFeeRecordsList() {
-            let cls = document.getElementById('feeRecordClass').value;
-            let tb = document.getElementById('feeRecordTableBody'); tb.innerHTML = "";
-            if(!cls) { tb.innerHTML = `<tr><td colspan="4" class="p-3 text-center">Select class</td></tr>`; return; }
-            admissions.filter(a => a.cls === cls).forEach(a => {
-                let idx = admissions.indexOf(a);
-                tb.innerHTML += `<tr><td class="p-3 font-bold">${a.roll}</td><td class="p-3 font-semibold">${a.name}</td><td class="p-3 text-emerald-700 font-bold">Month: ${a.month} (Paid)</td><td class="p-3 text-center"><button onclick="generateSlip(${idx})" class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded font-bold"><i class="fa-solid fa-eye mr-1"></i> View & PDF</button></td></tr>`;
-            });
+        function calcAdminAdTotal() {
+            let g = (id) => Number(document.getElementById(id).value) || 0;
+            let pay = g('e_m') + g('e_r') + g('e_a') + g('e_an') + g('e_t');
+            let ext = g('e_bs') + g('e_sp') + g('e_c') + g('e_d') + g('e_l') + g('e_bk');
+            document.getElementById('e_pay').value = pay; document.getElementById('e_ext').value = ext;
+            document.getElementById('e_final').value = pay + ext;
         }
 
-        function saveFeeStructure() { alert("Fee Structure saved successfully!"); }
+        function processAdminEditImg(e, type) {
+            let file = e.target.files[0]; if(!file) return;
+            let r = new FileReader(); r.onload = function(ev) {
+                let img = new Image(); img.onload = function() {
+                    let canvas = document.createElement('canvas'); let ctx = canvas.getContext('2d');
+                    let scale = img.width > 400 ? 400 / img.width : 1;
+                    canvas.width = img.width * scale; canvas.height = img.height * scale;
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    let b64 = canvas.toDataURL('image/jpeg', 0.6);
+                    if(type === 'p') {
+                        temp_p = b64;
+                    } else if(type === 'ps') {
+                        removeWhiteBackground(b64, function(transparentB64) { temp_ps = transparentB64; });
+                    } else if(type === 'as') {
+                        removeWhiteBackground(b64, function(transparentB64) { temp_as = transparentB64; });
+                    }
+                }; img.src = ev.target.result;
+            }; r.readAsDataURL(file);
+        }
+
+        function removeWhiteBackground(dataUrl, callback) {
+            let img = new Image();
+            img.onload = function() {
+                let canvas = document.createElement('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                let ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0);
+                let imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                let data = imgData.data;
+                for (let i = 0; i < data.length; i += 4) {
+                    let r = data[i], g = data[i + 1], b = data[i + 2];
+                    if (r > 200 && g > 200 && b > 200) {
+                        data[i + 3] = 0;
+                    }
+                }
+                ctx.putImageData(imgData, 0, 0);
+                callback(canvas.toDataURL('image/png'));
+            };
+            img.src = dataUrl;
+        }
+
+        function openFullEdit(i) {
+            temp_p = ""; temp_ps = ""; temp_as = ""; 
+            document.getElementById('adminEditIndex').value = i;
+            let d = admissions[i];
+            
+            document.getElementById('e_name').value = d.name; 
+            document.getElementById('e_fname').value = d.fname;
+            document.getElementById('e_contact').value = d.contact || '';
+            document.getElementById('e_class').value = d.cls;
+            document.getElementById('e_month').value = d.month; 
+            document.getElementById('e_due').value = d.due;
+            if(d.date) {
+                let parts = d.date.split('/');
+                if(parts.length === 3) {
+                    document.getElementById('e_date').value = `${parts[2]}-${parts[1]}-${parts[0]}`;
+                }
+            }
+            
+            document.getElementById('e_m').value = d.v.m; document.getElementById('e_r').value = d.v.r;
+            document.getElementById('e_a').value = d.v.a; document.getElementById('e_an').value = d.v.an;
+            document.getElementById('e_t').value = d.v.t; document.getElementById('e_pay').value = d.v.pay;
+            
+            document.getElementById('e_bs').value = d.v.bs; document.getElementById('e_sp').value = d.v.sp;
+            document.getElementById('e_c').value = d.v.c; document.getElementById('e_d').value = d.v.d;
+            document.getElementById('e_l').value = d.v.l; document.getElementById('e_bk').value = d.v.bk;
+            document.getElementById('e_ext').value = d.v.ext; document.getElementById('e_final').value = d.v.final;
+
+            document.getElementById('fullEditSection').classList.remove('hidden');
+            document.getElementById('fullEditSection').scrollIntoView({behavior: "smooth"});
+        }
+
+        async function saveFullEdit() {
+            let i = document.getElementById('adminEditIndex').value;
+            let d = admissions[i];
+            
+            d.name = document.getElementById('e_name').value; 
+            d.fname = document.getElementById('e_fname').value;
+            d.contact = document.getElementById('e_contact').value;
+            d.cls = document.getElementById('e_class').value;
+            d.month = document.getElementById('e_month').value; 
+            d.due = document.getElementById('e_due').value;
+            
+            let inputDate = document.getElementById('e_date').value;
+            if(inputDate) {
+                let parts = inputDate.split('-');
+                if(parts.length === 3) d.date = `${parts[2]}-${parts[1]}-${parts[0]}`;
+            }
+            
+            d.v.m = document.getElementById('e_m').value; d.v.r = document.getElementById('e_r').value;
+            d.v.a = document.getElementById('e_a').value; d.v.an = document.getElementById('e_an').value;
+            d.v.t = document.getElementById('e_t').value; d.v.pay = document.getElementById('e_pay').value;
+            
+            d.v.bs = document.getElementById('e_bs').value; d.v.sp = document.getElementById('e_sp').value;
+            d.v.c = document.getElementById('e_c').value; d.v.d = document.getElementById('e_d').value;
+            d.v.l = document.getElementById('e_l').value; d.v.bk = document.getElementById('e_bk').value;
+            d.v.ext = document.getElementById('e_ext').value; d.v.final = document.getElementById('e_final').value;
+            
+            if(temp_p) d.photo = temp_p; if(temp_ps) d.parentSig = temp_ps; if(temp_as) d.accSig = temp_as;
+
+            reindexAdmissions();
+            document.getElementById('fullEditSection').classList.add('hidden');
+            renderAdminData(); 
+            alert("Record Fully Updated!");
+            await saveCloudData();
+        }
+
+        async function deleteData(index) {
+            if(confirm("Permanently delete this record? Roll numbers will automatically re-index.")) {
+                let deletedClass = admissions[index].cls;
+                admissions.splice(index, 1);
+                reindexAdmissions();
+                renderAdminData();
+                document.getElementById('adminFilterClass').value = deletedClass;
+                renderAdminData();
+                await saveCloudData();
+            }
+        }
 
         function downloadAllAdmissionsPDF() {
-            if(admissions.length === 0) return alert("No records!");
-            const { jsPDF } = window.jspdf; const doc = new jsPDF('p', 'mm', 'a4');
-            doc.text(localStorage.getItem('mps_schoolName') || "Motion Public School", 105, 20, {align: 'center'});
-            doc.autoTable({ startY: 46, head: [['Class', 'Roll No', 'Student Name', 'Father Name', 'Contact', 'Date']], body: admissions.map(a => [a.cls, a.roll, a.name, a.fname||'-', a.contact||'-', a.date]) });
-            doc.save(`All_Admissions.pdf`);
+            if(admissions.length === 0) return alert("No admission records available!");
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'mm', 'a4');
+            let sName = localStorage.getItem('mps_schoolName') || "Motion Public School";
+
+            doc.setFont("times", "bold");
+            doc.setFontSize(22);
+            doc.text(sName, 105, 20, {align: 'center'});
+            
+            doc.setFontSize(14);
+            doc.setFont("times", "normal");
+            doc.text("All Students Admission Records (Class-wise)", 105, 28, {align: 'center'});
+            
+            doc.setFontSize(11);
+            doc.text(`Generated Date: ${new Date().toLocaleDateString('en-GB')}`, 14, 38);
+            doc.line(14, 42, 196, 42);
+
+            let tableData = admissions.map(a => [a.cls, a.roll, a.name, a.fname || '-', a.contact || '-', a.date]);
+
+            doc.autoTable({
+                startY: 46,
+                theme: 'grid',
+                styles: { font: 'times', fontSize: 10 },
+                head: [['Class', 'Roll No', 'Student Name', 'Father Name', 'Contact No', 'Admission Date']],
+                body: tableData
+            });
+
+            doc.save(`All_Admissions_Report.pdf`);
         }
 
         function generateSlip(index) {
+            let sName = localStorage.getItem('mps_schoolName') || "Motion Public School";
             const { jsPDF } = window.jspdf; const doc = new jsPDF('p', 'mm', 'a4'); const d = admissions[index];
             doc.rect(10, 10, 190, 277); doc.rect(12, 12, 186, 273);
-            doc.setFont("times", "bold"); doc.setFontSize(28); doc.text(localStorage.getItem('mps_schoolName') || "Motion Public School", 105, 25, {align: 'center'});
+            doc.setFont("times", "bold"); doc.setFontSize(32); doc.text(sName, 105, 30, {align: 'center'});
+            doc.setFontSize(12); doc.setFont("times", "normal"); doc.text("add ;-Near of B.S College ,Gamharia Rod Singheshwar", 105, 38, {align: 'center'});
+            doc.line(15, 42, 195, 42); doc.setFont("times", "italic"); doc.setFontSize(16); doc.text("SCHOOL FEE-SLIP", 105, 50, {align: 'center'});
+            doc.line(15, 53, 195, 53); doc.line(15, 54, 195, 54);
+            
             doc.autoTable({
-                startY: 45, theme: 'grid', styles: { font: 'times', fontSize: 11 },
+                startY: 56, theme: 'grid', styles: { font: 'times', textColor: 0, lineColor: 0, lineWidth: 0.2, fontSize: 11, minCellHeight: 8 },
                 body: [
+                    ['Phone Pay-', '7520400029', '', `Admission Date: ${d.date}`],
                     ['Student Name', d.name, 'Roll No', d.roll],
                     ['Father Name', d.fname, 'Class', d.cls],
-                    ['Monthly Fee', d.v.m, 'Month', d.month],
-                    [{content: 'Total Amount', styles: {fontStyle: 'bold'}}, {content: d.v.final, colSpan: 3, styles: {fontStyle: 'bold'}}]
+                    ['Contact No', d.contact || '-', '', ''],
+                    [{content: 'Monthly fee Structure', colSpan: 2, styles: {fontStyle: 'bold', halign: 'center', fontSize: 12}}, {content: 'Extra Accessories', colSpan: 2, styles: {fontStyle: 'bold', halign: 'center', fontSize: 12}}],
+                    ['Monthly fee Amount', d.v.m, 'Bus Fee', d.v.bs], ['Registration Fee', d.v.r, 'Sport fee', d.v.sp],
+                    ['Admission Fee', d.v.a, 'Caution Money', d.v.c], ['Annual Fee', d.v.an, 'Development Fee', d.v.d],
+                    ['Tution fee', d.v.t, 'Library Fee', d.v.l], ['', '', 'Book', d.v.bk],
+                    [{content: 'Total Pay', styles: {fontStyle: 'bold'}}, {content: d.v.pay, styles: {fontStyle: 'bold'}}, '', ''],
+                    [{content: 'Month', styles: {fontStyle: 'bold'}}, {content: d.month, styles: {fontStyle: 'bold'}}, '', ''],
+                    [{content: 'Total Due Month', styles: {fontStyle: 'bold'}}, {content: d.due, styles: {fontStyle: 'bold'}}, {content: 'Total Extra', styles: {fontStyle: 'bold'}}, d.v.ext],
+                    [{content: 'Total Fee Amount', colSpan: 2, styles: {fontStyle: 'bold', halign: 'center', fontSize: 14}}, {content: d.v.final, colSpan: 2, styles: {halign: 'center', fontStyle: 'bold', fontSize: 14}}]
                 ]
             });
-            let finalY = doc.lastAutoTable.finalY + 15;
-            doc.text("Parents Signature..................", 20, finalY); doc.text("Accountant Sign..................", 130, finalY);
-            if(d.parentSig) doc.addImage(d.parentSig, 'PNG', 25, finalY - 14, 40, 12);
-            if(d.accSig) doc.addImage(d.accSig, 'PNG', 135, finalY - 14, 40, 12);
+            let finalY = doc.lastAutoTable.finalY + 12; 
+            doc.setFontSize(12); 
+            doc.setFont("times", "bold");
+            
+            doc.text("Parents Signature................................", 15, finalY); 
+            doc.text("AccountantSig................................", 120, finalY);
+            
+            if(d.photo) doc.addImage(d.photo, 'JPEG', 160, 15, 25, 30);
+            if(d.parentSig) doc.addImage(d.parentSig, 'PNG', 25, finalY - 14, 45, 14);
+            if(d.accSig) doc.addImage(d.accSig, 'PNG', 130, finalY - 14, 45, 14);
+            
             doc.save(`FeeSlip_${d.name}.pdf`);
         }
     </script>
