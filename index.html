@@ -180,9 +180,7 @@
                 </div>
 
                 <!-- ATTENDANCE SECTION -->
-                <div id="attendanceSection" class="section hidden max-w-5xl mx-auto space-y-6">
-                    <!-- Attendance code intact -->
-                </div>
+                <div id="attendanceSection" class="section hidden max-w-5xl mx-auto space-y-6"></div>
 
                 <!-- FEE SET SECTION -->
                 <div id="feeSetSection" class="section hidden max-w-4xl mx-auto bg-white rounded-2xl shadow-sm border p-6 space-y-6">
@@ -242,16 +240,24 @@
                     <div class="flex justify-between items-center border-b pb-2">
                         <h3 class="text-xl font-bold text-indigo-900"><i class="fa-solid fa-file-invoice-dollar mr-2"></i> Fee Records (Class-wise)</h3>
                     </div>
-                    <div class="flex items-center space-x-4 bg-slate-50 p-4 rounded-lg">
-                        <label class="font-bold text-sm text-indigo-950">Select Class:</label>
-                        <select id="recordClassSelect" onchange="renderFeeRecordList()" class="px-4 py-2 border rounded-lg bg-white font-medium">
-                            <option value="">-- Choose Class --</option>
-                            <option value="Nursery">Nursery</option><option value="LKG">LKG</option><option value="UKG">UKG</option>
-                            <option value="1st">1st</option><option value="2nd">2nd</option><option value="3rd">3rd</option>
-                            <option value="4th">4th</option><option value="5th">5th</option><option value="6th">6th</option>
-                            <option value="7th">7th</option><option value="8th">8th</option><option value="9th">9th</option>
-                            <option value="10th">10th</option><option value="11th">11th</option><option value="12th">12th</option>
-                        </select>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-lg">
+                        <div>
+                            <label class="block font-bold text-sm text-indigo-950 mb-1">Select Class:</label>
+                            <select id="recordClassSelect" onchange="loadRecordRollNos()" class="w-full px-4 py-2 border rounded-lg bg-white font-medium">
+                                <option value="">-- Choose Class --</option>
+                                <option value="Nursery">Nursery</option><option value="LKG">LKG</option><option value="UKG">UKG</option>
+                                <option value="1st">1st</option><option value="2nd">2nd</option><option value="3rd">3rd</option>
+                                <option value="4th">4th</option><option value="5th">5th</option><option value="6th">6th</option>
+                                <option value="7th">7th</option><option value="8th">8th</option><option value="9th">9th</option>
+                                <option value="10th">10th</option><option value="11th">11th</option><option value="12th">12th</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block font-bold text-sm text-indigo-950 mb-1">Select Roll No / Student:</label>
+                            <select id="recordRollSelect" onchange="renderFeeRecordList()" class="w-full px-4 py-2 border rounded-lg bg-white font-medium">
+                                <option value="all">All Students</option>
+                            </select>
+                        </div>
                     </div>
                     <div class="overflow-x-auto border rounded-lg">
                         <table class="w-full text-left">
@@ -278,7 +284,6 @@
         const JSONBIN_API_KEY = "$2a$10$yyc9hu99dDO8hxlNRqiu4eao2Pa7kAKyCv6VTZk9o6MXaTNGh6mvO";
 
         let admissions = JSON.parse(localStorage.getItem('mps_admissions_v3')) || [];
-        let attendanceRecords = JSON.parse(localStorage.getItem('mps_attendance_records')) || [];
         let classFeeStructures = JSON.parse(localStorage.getItem('mps_class_fee_structures')) || {};
         let studentCustomFees = JSON.parse(localStorage.getItem('mps_student_custom_fees')) || {};
         let t_p = "", t_ps = "", t_as = ""; 
@@ -406,13 +411,10 @@
 
             if(!cls || !mFee || isNaN(fDate)) return alert("Please fill class, amount and set date!");
 
-            // Check condition: Fee generates only if Set Date is 0
             if(fDate === 0) {
                 if(targetRoll === 'all') {
                     classFeeStructures[cls] = { amount: mFee, date: fDate };
-                    admissions.filter(a => a.cls === cls).forEach(st => {
-                        st.v.m = mFee;
-                    });
+                    admissions.filter(a => a.cls === cls).forEach(st => { st.v.m = mFee; });
                 } else {
                     let st = admissions.find(a => a.cls === cls && a.roll === targetRoll);
                     if(st) {
@@ -420,7 +422,7 @@
                         studentCustomFees[`${cls}_${targetRoll}`] = { amount: mFee, date: fDate };
                     }
                 }
-                alert(`Fee successfully generated for Date = 0!`);
+                alert(`Fee successfully generated as Set Date is 0!`);
             } else {
                 alert(`Fee structure saved with Date = ${fDate}. Fee will generate when date matches 0.`);
                 if(targetRoll === 'all') {
@@ -433,12 +435,31 @@
             saveCloudData();
         }
 
+        function loadRecordRollNos() {
+            let cls = document.getElementById('recordClassSelect').value;
+            let rollSelect = document.getElementById('recordRollSelect');
+            rollSelect.innerHTML = `<option value="all">All Students</option>`;
+
+            if(!cls) { renderFeeRecordList(); return; }
+            let students = admissions.filter(a => a.cls === cls);
+            students.forEach(st => {
+                rollSelect.innerHTML += `<option value="${st.roll}">Roll No: ${st.roll} - ${st.name}</option>`;
+            });
+            renderFeeRecordList();
+        }
+
         function renderFeeRecordList() {
             let cls = document.getElementById('recordClassSelect').value;
+            let targetRoll = document.getElementById('recordRollSelect').value;
             let tb = document.getElementById('feeRecordTableBody');
             tb.innerHTML = "";
+            
             if(!cls) { tb.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500">Please select a class.</td></tr>`; return; }
             let filtered = admissions.filter(a => a.cls === cls);
+            if(targetRoll !== 'all') {
+                filtered = filtered.filter(a => a.roll === targetRoll);
+            }
+
             if(filtered.length === 0) { tb.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500">No students found.</td></tr>`; return; }
             
             let classFeeInfo = classFeeStructures[cls] || { amount: 0, date: 1 };
@@ -449,7 +470,6 @@
                 let currentFee = custom ? custom.amount : (st.v.m && st.v.m > 0 ? st.v.m : classFeeInfo.amount);
                 let currentDate = custom ? custom.date : classFeeInfo.date;
 
-                // Show record only if date is 0 as per rule
                 let displayStatus = currentDate === 0 ? `Generated (₹${currentFee})` : `Pending (Set Date: ${currentDate})`;
 
                 tb.innerHTML += `
@@ -552,6 +572,7 @@
             
             if(id === 'feeRecordSection') {
                 document.getElementById('recordClassSelect').value = "";
+                document.getElementById('recordRollSelect').innerHTML = `<option value="all">All Students</option>`;
                 document.getElementById('feeRecordTableBody').innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500">Please select a class above.</td></tr>`;
             }
         }
