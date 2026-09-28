@@ -284,8 +284,7 @@
         const JSONBIN_API_KEY = "$2a$10$yyc9hu99dDO8hxlNRqiu4eao2Pa7kAKyCv6VTZk9o6MXaTNGh6mvO";
 
         let admissions = JSON.parse(localStorage.getItem('mps_admissions_v3')) || [];
-        let classFeeStructures = JSON.parse(localStorage.getItem('mps_class_fee_structures')) || {};
-        let studentCustomFees = JSON.parse(localStorage.getItem('mps_student_custom_fees')) || {};
+        let feeRecordsList = JSON.parse(localStorage.getItem('mps_fee_records_list')) || [];
         let t_p = "", t_ps = "", t_as = ""; 
 
         const sessionId = 'session_' + Math.random().toString(36).substring(2);
@@ -328,8 +327,7 @@
                 let result = await response.json();
                 if(result && result.record) {
                     if(result.record.admissions) { admissions = result.record.admissions; reindexAdmissions(); localStorage.setItem('mps_admissions_v3', JSON.stringify(admissions)); }
-                    if(result.record.classFeeStructures) { classFeeStructures = result.record.classFeeStructures; localStorage.setItem('mps_class_fee_structures', JSON.stringify(classFeeStructures)); }
-                    if(result.record.studentCustomFees) { studentCustomFees = result.record.studentCustomFees; localStorage.setItem('mps_student_custom_fees', JSON.stringify(studentCustomFees)); }
+                    if(result.record.feeRecordsList) { feeRecordsList = result.record.feeRecordsList; localStorage.setItem('mps_fee_records_list', JSON.stringify(feeRecordsList)); }
                     applySettingsToUI();
                 }
             } catch (err) {}
@@ -344,8 +342,7 @@
         async function saveCloudData() {
             reindexAdmissions();
             localStorage.setItem('mps_admissions_v3', JSON.stringify(admissions));
-            localStorage.setItem('mps_class_fee_structures', JSON.stringify(classFeeStructures));
-            localStorage.setItem('mps_student_custom_fees', JSON.stringify(studentCustomFees));
+            localStorage.setItem('mps_fee_records_list', JSON.stringify(feeRecordsList));
             try {
                 let response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
                     headers: { 'X-Master-Key': JSONBIN_API_KEY }
@@ -353,8 +350,7 @@
                 let result = await response.json();
                 let currentData = result.record || {};
                 currentData.admissions = admissions;
-                currentData.classFeeStructures = classFeeStructures;
-                currentData.studentCustomFees = studentCustomFees;
+                currentData.feeRecordsList = feeRecordsList;
 
                 await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
                     method: 'PUT',
@@ -383,14 +379,9 @@
 
             if(!cls) { container.classList.add('hidden'); return; }
             let students = admissions.filter(a => a.cls === cls);
-            
-            if(classFeeStructures[cls]) {
-                document.getElementById('setFeeMonthly').value = classFeeStructures[cls].amount || "";
-                document.getElementById('setFeeDate').value = classFeeStructures[cls].date !== undefined ? classFeeStructures[cls].date : "";
-            } else {
-                document.getElementById('setFeeMonthly').value = "";
-                document.getElementById('setFeeDate').value = "";
-            }
+
+            document.getElementById('setFeeMonthly').value = "";
+            document.getElementById('setFeeDate').value = "";
 
             if(students.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="3" class="p-3 text-center text-slate-500">No students registered in this class yet.</td></tr>`;
@@ -411,24 +402,63 @@
 
             if(!cls || !mFee || isNaN(fDate)) return alert("Please fill class, amount and set date!");
 
+            let timestamp = new Date().toLocaleDateString('en-GB');
+
             if(fDate === 0) {
                 if(targetRoll === 'all') {
-                    classFeeStructures[cls] = { amount: mFee, date: fDate };
-                    admissions.filter(a => a.cls === cls).forEach(st => { st.v.m = mFee; });
+                    admissions.filter(a => a.cls === cls).forEach(st => {
+                        feeRecordsList.push({
+                            cls: cls,
+                            roll: st.roll,
+                            name: st.name,
+                            fname: st.fname,
+                            amount: mFee,
+                            date: fDate,
+                            timestamp: timestamp
+                        });
+                    });
                 } else {
                     let st = admissions.find(a => a.cls === cls && a.roll === targetRoll);
                     if(st) {
-                        st.v.m = mFee;
-                        studentCustomFees[`${cls}_${targetRoll}`] = { amount: mFee, date: fDate };
+                        feeRecordsList.push({
+                            cls: cls,
+                            roll: st.roll,
+                            name: st.name,
+                            fname: st.fname,
+                            amount: mFee,
+                            date: fDate,
+                            timestamp: timestamp
+                        });
                     }
                 }
-                alert(`Fee successfully generated as Set Date is 0!`);
+                alert(`New fee record successfully added and generated as Date = 0!`);
             } else {
-                alert(`Fee structure saved with Date = ${fDate}. Fee will generate when date matches 0.`);
+                alert(`New fee structure added with Date = ${fDate}. It will generate when date matches 0.`);
                 if(targetRoll === 'all') {
-                    classFeeStructures[cls] = { amount: mFee, date: fDate };
+                    admissions.filter(a => a.cls === cls).forEach(st => {
+                        feeRecordsList.push({
+                            cls: cls,
+                            roll: st.roll,
+                            name: st.name,
+                            fname: st.fname,
+                            amount: mFee,
+                            date: fDate,
+                            timestamp: timestamp
+                        });
+                    });
                 } else {
-                    studentCustomFees[`${cls}_${targetRoll}`] = { amount: mFee, date: fDate };
+                    let st = admissions.find(a => a.cls === cls && a.roll === targetRoll);
+                    if(st) {
+                        feeRecordsList.push({
+                            cls: cls,
+                            roll: st.roll,
+                            name: st.name,
+                            fname: st.fname,
+                            amount: mFee,
+                            date: fDate,
+                            timestamp: timestamp
+                        });
+                    }
                 }
             }
 
@@ -455,54 +485,48 @@
             tb.innerHTML = "";
             
             if(!cls) { tb.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500">Please select a class.</td></tr>`; return; }
-            let filtered = admissions.filter(a => a.cls === cls);
+            
+            let filteredRecords = feeRecordsList.filter(r => r.cls === cls);
             if(targetRoll !== 'all') {
-                filtered = filtered.filter(a => a.roll === targetRoll);
+                filteredRecords = filteredRecords.filter(r => r.roll === targetRoll);
             }
 
-            if(filtered.length === 0) { tb.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500">No students found.</td></tr>`; return; }
-            
-            let classFeeInfo = classFeeStructures[cls] || { amount: 0, date: 1 };
+            if(filteredRecords.length === 0) { tb.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500">No fee records found.</td></tr>`; return; }
 
-            filtered.forEach(st => {
-                let idx = admissions.indexOf(st);
-                let custom = studentCustomFees[`${cls}_${st.roll}`];
-                let currentFee = custom ? custom.amount : (st.v.m && st.v.m > 0 ? st.v.m : classFeeInfo.amount);
-                let currentDate = custom ? custom.date : classFeeInfo.date;
-
-                let displayStatus = currentDate === 0 ? `Generated (₹${currentFee})` : `Pending (Set Date: ${currentDate})`;
+            filteredRecords.forEach((rec, idx) => {
+                let globalIdx = feeRecordsList.indexOf(rec);
+                let displayStatus = rec.date === 0 ? `Generated (₹${rec.amount})` : `Pending (Set Date: ${rec.date})`;
 
                 tb.innerHTML += `
                     <tr class="hover:bg-slate-50">
-                        <td class="p-3 font-bold text-indigo-900">${st.roll}</td>
-                        <td class="p-3 font-semibold">${st.name}</td>
-                        <td class="p-3 text-slate-600">${st.fname || '-'}</td>
-                        <td class="p-3 font-medium text-emerald-700">${displayStatus}</td>
+                        <td class="p-3 font-bold text-indigo-900">${rec.roll}</td>
+                        <td class="p-3 font-semibold">${rec.name}</td>
+                        <td class="p-3 text-slate-600">${rec.fname || '-'}</td>
+                        <td class="p-3 font-medium text-emerald-700">${displayStatus} [Added: ${rec.timestamp}]</td>
                         <td class="p-3 text-center space-x-2">
-                            <button onclick="editStudentFee(${idx})" class="bg-blue-100 text-blue-700 px-3 py-1 rounded font-bold hover:bg-blue-600 hover:text-white transition"><i class="fa-solid fa-pen"></i> Edit Fee</button>
-                            <button onclick="generateExactSlip(${idx})" class="bg-amber-100 text-amber-700 px-3 py-1 rounded font-bold hover:bg-amber-500 hover:text-white transition"><i class="fa-solid fa-download"></i> Download PDF</button>
+                            <button onclick="editFeeRecord(${globalIdx})" class="bg-blue-100 text-blue-700 px-3 py-1 rounded font-bold hover:bg-blue-600 hover:text-white transition"><i class="fa-solid fa-pen"></i> Edit Fee</button>
+                            <button onclick="generateSlipFromRecord(${globalIdx})" class="bg-amber-100 text-amber-700 px-3 py-1 rounded font-bold hover:bg-amber-500 hover:text-white transition"><i class="fa-solid fa-download"></i> Download PDF</button>
                         </td>
                     </tr>
                 `;
             });
         }
 
-        function editStudentFee(index) {
-            let st = admissions[index];
-            let newAmount = prompt(`Edit Monthly Fee Amount for ${st.name}:`, st.v.m || 0);
+        function editFeeRecord(recordIndex) {
+            let rec = feeRecordsList[recordIndex];
+            let newAmount = prompt(`Edit Fee Amount for ${rec.name}:`, rec.amount);
             if(newAmount !== null) {
-                st.v.m = newAmount;
-                st.v.final = Number(newAmount) + Number(st.v.r || 0) + Number(st.v.a || 0) + Number(st.v.an || 0) + Number(st.v.t || 0) + Number(st.v.ext || 0);
+                rec.amount = newAmount;
                 saveCloudData();
                 renderFeeRecordList();
-                alert("Fee updated successfully!");
+                alert("Fee record updated successfully!");
             }
         }
 
-        function generateExactSlip(index) {
+        function generateSlipFromRecord(recordIndex) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('p', 'mm', 'a4');
-            const d = admissions[index];
+            const rec = feeRecordsList[recordIndex];
             let sName = localStorage.getItem('mps_schoolName') || "Motion Public School";
 
             doc.rect(10, 10, 190, 135);
@@ -516,7 +540,7 @@
 
             doc.setFontSize(14);
             doc.setFont("times", "bold");
-            doc.text(`class - ${d.cls}`, 105, 34, {align: 'center'});
+            doc.text(`class - ${rec.cls}`, 105, 34, {align: 'center'});
 
             doc.setFontSize(12);
             doc.text("SCHOOL FEE-SLIP", 105, 41, {align: 'center'});
@@ -527,10 +551,10 @@
                 theme: 'grid',
                 styles: { font: 'times', textColor: 0, lineColor: 0, lineWidth: 0.2, fontSize: 11, minCellHeight: 9 },
                 body: [
-                    ['Student Name', d.name, 'Roll No', d.roll],
-                    ['Father Name', d.fname || '-', 'Class', d.cls],
-                    ['Monthly Amount', d.v.m || '0', d.month || 'feb', '1'],
-                    [{content: 'Total Fee Amount', styles: {fontStyle: 'bold', fontSize: 12}}, {content: d.v.final || d.v.m || '0', colSpan: 3, styles: {fontStyle: 'bold', fontSize: 12}}]
+                    ['Student Name', rec.name, 'Roll No', rec.roll],
+                    ['Father Name', rec.fname || '-', 'Class', rec.cls],
+                    ['Monthly Amount', rec.amount || '0', 'Date added', rec.timestamp],
+                    [{content: 'Total Fee Amount', styles: {fontStyle: 'bold', fontSize: 12}}, {content: rec.amount || '0', colSpan: 3, styles: {fontStyle: 'bold', fontSize: 12}}]
                 ]
             });
 
@@ -548,7 +572,7 @@
             doc.setFont("times", "bold");
             doc.text("Thanks", 85, finalY + 38);
 
-            doc.save(`FeeSlip_${d.name}.pdf`);
+            doc.save(`FeeSlip_${rec.name}.pdf`);
         }
 
         function login() {
@@ -581,10 +605,6 @@
             let cls = document.getElementById('adClass').value;
             if(!cls) { document.getElementById('adRoll').value = ""; return; }
             document.getElementById('adRoll').value = admissions.filter(a => a.cls === cls).length + 1;
-            if(classFeeStructures[cls] && classFeeStructures[cls].amount) {
-                document.getElementById('f_m').value = classFeeStructures[cls].amount;
-                calcAdTotal();
-            }
         }
 
         function calcAdTotal() {
