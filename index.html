@@ -37,6 +37,9 @@
                 <button id="nav-newAdmission" onclick="showSection('newAdmission', this)" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl bg-amber-500 text-indigo-950 font-bold transition-all"><i class="fa-solid fa-user-plus w-5"></i><span>New Admission</span></button>
                 <button id="nav-admissionList" onclick="showSection('admissionList', this);" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-indigo-200 hover:bg-indigo-900 transition-all"><i class="fa-solid fa-users w-5"></i><span>Admission List</span></button>
                 <button id="nav-attendance" onclick="showSection('attendanceSection', this); initAttendanceClasses();" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-indigo-200 hover:bg-indigo-900 transition-all"><i class="fa-solid fa-clipboard-user w-5"></i><span>Attendance</span></button>
+                <!-- Naye Buttons -->
+                <button id="nav-feeSet" onclick="showSection('feeSetSection', this)" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-indigo-200 hover:bg-indigo-900 transition-all"><i class="fa-solid fa-cogs w-5"></i><span>Fee Set</span></button>
+                <button id="nav-feeRecord" onclick="showSection('feeRecordSection', this)" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-indigo-200 hover:bg-indigo-900 transition-all"><i class="fa-solid fa-file-invoice-dollar w-5"></i><span>Fee Record</span></button>
             </div>
             <div class="p-4 border-t border-indigo-900/50 space-y-2">
                 <button onclick="softRefresh()" class="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg font-bold text-sm transition-all text-amber-400"><i class="fa-solid fa-rotate"></i><span>Refresh Data</span></button>
@@ -72,21 +75,11 @@
                             <label class="block text-sm font-semibold mb-1">Class</label>
                             <select id="adClass" class="w-full px-3 py-2 border rounded-lg outline-none bg-white focus:ring-2 focus:ring-indigo-500" onchange="autoAssignRollNo()">
                                 <option value="">Select Class</option>
-                                <option value="Nursery">Nursery</option>
-                                <option value="LKG">LKG</option>
-                                <option value="UKG">UKG</option>
-                                <option value="1st">1st</option>
-                                <option value="2nd">2nd</option>
-                                <option value="3rd">3rd</option>
-                                <option value="4th">4th</option>
-                                <option value="5th">5th</option>
-                                <option value="6th">6th</option>
-                                <option value="7th">7th</option>
-                                <option value="8th">8th</option>
-                                <option value="9th">9th</option>
-                                <option value="10th">10th</option>
-                                <option value="11th">11th</option>
-                                <option value="12th">12th</option>
+                                <option value="Nursery">Nursery</option><option value="LKG">LKG</option><option value="UKG">UKG</option>
+                                <option value="1st">1st</option><option value="2nd">2nd</option><option value="3rd">3rd</option>
+                                <option value="4th">4th</option><option value="5th">5th</option><option value="6th">6th</option>
+                                <option value="7th">7th</option><option value="8th">8th</option><option value="9th">9th</option>
+                                <option value="10th">10th</option><option value="11th">11th</option><option value="12th">12th</option>
                             </select>
                         </div>
                         <div>
@@ -103,18 +96,10 @@
                             <label class="block text-sm font-semibold mb-1">Month</label>
                             <select id="adMonth" class="w-full px-3 py-2 border rounded-lg outline-none bg-white focus:ring-2 focus:ring-indigo-500">
                                 <option value="">Select Month</option>
-                                <option value="January">January</option>
-                                <option value="February">February</option>
-                                <option value="March">March</option>
-                                <option value="April">April</option>
-                                <option value="May">May</option>
-                                <option value="June">June</option>
-                                <option value="July">July</option>
-                                <option value="August">August</option>
-                                <option value="September">September</option>
-                                <option value="October">October</option>
-                                <option value="November">November</option>
-                                <option value="December">December</option>
+                                <option value="January">January</option><option value="February">February</option><option value="March">March</option>
+                                <option value="April">April</option><option value="May">May</option><option value="June">June</option>
+                                <option value="July">July</option><option value="August">August</option><option value="September">September</option>
+                                <option value="October">October</option><option value="November">November</option><option value="December">December</option>
                             </select>
                         </div>
                     </div>
@@ -178,21 +163,11 @@
                             <label class="font-bold text-sm text-indigo-950">Select Class to View Students:</label>
                             <select id="filterListClass" onchange="renderAdmissions()" class="px-4 py-2 border rounded-lg bg-white font-medium outline-none">
                                 <option value="">-- Choose Class --</option>
-                                <option value="Nursery">Nursery</option>
-                                <option value="LKG">LKG</option>
-                                <option value="UKG">UKG</option>
-                                <option value="1st">1st</option>
-                                <option value="2nd">2nd</option>
-                                <option value="3rd">3rd</option>
-                                <option value="4th">4th</option>
-                                <option value="5th">5th</option>
-                                <option value="6th">6th</option>
-                                <option value="7th">7th</option>
-                                <option value="8th">8th</option>
-                                <option value="9th">9th</option>
-                                <option value="10th">10th</option>
-                                <option value="11th">11th</option>
-                                <option value="12th">12th</option>
+                                <option value="Nursery">Nursery</option><option value="LKG">LKG</option><option value="UKG">UKG</option>
+                                <option value="1st">1st</option><option value="2nd">2nd</option><option value="3rd">3rd</option>
+                                <option value="4th">4th</option><option value="5th">5th</option><option value="6th">6th</option>
+                                <option value="7th">7th</option><option value="8th">8th</option><option value="9th">9th</option>
+                                <option value="10th">10th</option><option value="11th">11th</option><option value="12th">12th</option>
                             </select>
                         </div>
                         <button onclick="downloadAllAdmissionsPDF()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-bold text-sm shadow"><i class="fa-solid fa-download mr-1"></i> Download All Admission PDF</button>
@@ -219,26 +194,16 @@
                                 <label class="block text-sm font-semibold mb-1">Select Class</label>
                                 <select id="attReportClassSelect" class="w-full px-3 py-2 border rounded-lg outline-none bg-white">
                                     <option value="">-- All Classes --</option>
-                                    <option value="Nursery">Nursery</option>
-                                    <option value="LKG">LKG</option>
-                                    <option value="UKG">UKG</option>
-                                    <option value="1st">1st</option>
-                                    <option value="2nd">2nd</option>
-                                    <option value="3rd">3rd</option>
-                                    <option value="4th">4th</option>
-                                    <option value="5th">5th</option>
-                                    <option value="6th">6th</option>
-                                    <option value="7th">7th</option>
-                                    <option value="8th">8th</option>
-                                    <option value="9th">9th</option>
-                                    <option value="10th">10th</option>
-                                    <option value="11th">11th</option>
-                                    <option value="12th">12th</option>
+                                    <option value="Nursery">Nursery</option><option value="LKG">LKG</option><option value="UKG">UKG</option>
+                                    <option value="1st">1st</option><option value="2nd">2nd</option><option value="3rd">3rd</option>
+                                    <option value="4th">4th</option><option value="5th">5th</option><option value="6th">6th</option>
+                                    <option value="7th">7th</option><option value="8th">8th</option><option value="9th">9th</option>
+                                    <option value="10th">10th</option><option value="11th">11th</option><option value="12th">12th</option>
                                 </select>
                             </div>
                         </div>
                         <div class="mb-4">
-                            <button onclick="viewAttendanceReport()" class="w-full bg-indigo-900 hover:bg-indigo-800 text-white font-bold py-2 px-4 rounded-lg shadow transition-all">View Report</button>
+                            <button onclick="viewAdminAttendanceReport()" class="w-full bg-indigo-900 hover:bg-indigo-800 text-white font-bold py-2 px-4 rounded-lg shadow transition-all">View Report</button>
                         </div>
                         
                         <div id="attendanceReportContainer" class="hidden mt-4">
@@ -262,21 +227,11 @@
                                 <label class="block text-sm font-semibold mb-1">Select Class</label>
                                 <select id="attClassSelect" class="w-full px-3 py-2 border rounded-lg outline-none bg-white" onchange="loadAttendanceStudents()">
                                     <option value="">-- Choose Class --</option>
-                                    <option value="Nursery">Nursery</option>
-                                    <option value="LKG">LKG</option>
-                                    <option value="UKG">UKG</option>
-                                    <option value="1st">1st</option>
-                                    <option value="2nd">2nd</option>
-                                    <option value="3rd">3rd</option>
-                                    <option value="4th">4th</option>
-                                    <option value="5th">5th</option>
-                                    <option value="6th">6th</option>
-                                    <option value="7th">7th</option>
-                                    <option value="8th">8th</option>
-                                    <option value="9th">9th</option>
-                                    <option value="10th">10th</option>
-                                    <option value="11th">11th</option>
-                                    <option value="12th">12th</option>
+                                    <option value="Nursery">Nursery</option><option value="LKG">LKG</option><option value="UKG">UKG</option>
+                                    <option value="1st">1st</option><option value="2nd">2nd</option><option value="3rd">3rd</option>
+                                    <option value="4th">4th</option><option value="5th">5th</option><option value="6th">6th</option>
+                                    <option value="7th">7th</option><option value="8th">8th</option><option value="9th">9th</option>
+                                    <option value="10th">10th</option><option value="11th">11th</option><option value="12th">12th</option>
                                 </select>
                             </div>
                         </div>
@@ -297,19 +252,75 @@
                     </div>
                 </div>
 
+                <!-- FEE SET SECTION -->
+                <div id="feeSetSection" class="section hidden max-w-3xl mx-auto bg-white rounded-2xl shadow-sm border p-6 space-y-6">
+                    <h3 class="text-xl font-bold text-indigo-900 border-b pb-2"><i class="fa-solid fa-cogs mr-2"></i> Fee Set Portal</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold mb-1">Select Class</label>
+                            <select id="setFeeClass" class="w-full px-3 py-2 border rounded-lg bg-white">
+                                <option value="">Select Class</option>
+                                <option value="Nursery">Nursery</option><option value="LKG">LKG</option><option value="UKG">UKG</option>
+                                <option value="1st">1st</option><option value="2nd">2nd</option><option value="3rd">3rd</option>
+                                <option value="4th">4th</option><option value="5th">5th</option><option value="6th">6th</option>
+                                <option value="7th">7th</option><option value="8th">8th</option><option value="9th">9th</option>
+                                <option value="10th">10th</option><option value="11th">11th</option><option value="12th">12th</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold mb-1">Monthly Amount</label>
+                            <input type="number" id="setFeeMonthly" class="w-full px-3 py-2 border rounded-lg" placeholder="e.g. 8500">
+                        </div>
+                    </div>
+                    <button onclick="saveFeeSet()" class="w-full bg-indigo-900 hover:bg-indigo-800 text-white py-3 rounded-lg font-bold shadow transition">Submit Fee Structure</button>
+                </div>
+
+                <!-- FEE RECORD SECTION -->
+                <div id="feeRecordSection" class="section hidden max-w-5xl mx-auto bg-white rounded-2xl shadow-sm border p-6 space-y-6">
+                    <div class="flex justify-between items-center border-b pb-2">
+                        <h3 class="text-xl font-bold text-indigo-900"><i class="fa-solid fa-file-invoice-dollar mr-2"></i> Fee Records (Class-wise)</h3>
+                    </div>
+                    <div class="flex items-center space-x-4 bg-slate-50 p-4 rounded-lg">
+                        <label class="font-bold text-sm text-indigo-950">Select Class:</label>
+                        <select id="recordClassSelect" onchange="renderFeeRecordList()" class="px-4 py-2 border rounded-lg bg-white font-medium">
+                            <option value="">-- Choose Class --</option>
+                            <option value="Nursery">Nursery</option><option value="LKG">LKG</option><option value="UKG">UKG</option>
+                            <option value="1st">1st</option><option value="2nd">2nd</option><option value="3rd">3rd</option>
+                            <option value="4th">4th</option><option value="5th">5th</option><option value="6th">6th</option>
+                            <option value="7th">7th</option><option value="8th">8th</option><option value="9th">9th</option>
+                            <option value="10th">10th</option><option value="11th">11th</option><option value="12th">12th</option>
+                        </select>
+                    </div>
+                    <div class="overflow-x-auto border rounded-lg">
+                        <table class="w-full text-left">
+                            <thead class="bg-slate-100 text-slate-700 text-sm">
+                                <tr>
+                                    <th class="p-3">Roll No</th>
+                                    <th class="p-3">Student Name</th>
+                                    <th class="p-3">Father Name</th>
+                                    <th class="p-3">Month / Amount</th>
+                                    <th class="p-3 text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="feeRecordTableBody" class="divide-y divide-slate-100"></tbody>
+                        </table>
+                    </div>
+                </div>
+
             </main>
         </div>
     </div>
 
+    <!-- SCRIPT -->
     <script>
         const JSONBIN_BIN_ID = "6ab3e3a0ac6210605aed6c4b";
         const JSONBIN_API_KEY = "$2a$10$yyc9hu99dDO8hxlNRqiu4eao2Pa7kAKyCv6VTZk9o6MXaTNGh6mvO";
 
         let admissions = JSON.parse(localStorage.getItem('mps_admissions_v3')) || [];
         let attendanceRecords = JSON.parse(localStorage.getItem('mps_attendance_records')) || [];
+        let classFeeStructures = JSON.parse(localStorage.getItem('mps_class_fee_structures')) || {};
         let t_p = "", t_ps = "", t_as = ""; 
 
-        // Active session tracking for Live Watch
         const sessionId = 'session_' + Math.random().toString(36).substring(2);
         function registerActiveSession() {
             let activeSessions = JSON.parse(localStorage.getItem('mps_active_sessions')) || {};
@@ -326,11 +337,7 @@
 
         function toggleMobileSidebar() {
             let sidebar = document.getElementById('sidebarContainer');
-            if(sidebar.classList.contains('-translate-x-full')) {
-                sidebar.classList.remove('-translate-x-full');
-            } else {
-                sidebar.classList.add('-translate-x-full');
-            }
+            sidebar.classList.toggle('-translate-x-full');
         }
 
         applySettingsToUI();
@@ -340,7 +347,6 @@
             let sName = localStorage.getItem('mps_schoolName') || "Motion Public School";
             let sTitle = localStorage.getItem('mps_loginTitle') || "mps";
             let logo = localStorage.getItem('mps_logo');
-            
             document.getElementById('displaySchoolName1').innerText = sName;
             document.getElementById('displaySchoolName2').innerText = sName;
             document.getElementById('loginTitleDisplay').innerText = sTitle;
@@ -363,32 +369,26 @@
                         attendanceRecords = result.record.attendanceRecords;
                         localStorage.setItem('mps_attendance_records', JSON.stringify(attendanceRecords));
                     }
-                    if(result.record.settings) {
-                        let s = result.record.settings;
-                        if(s.schoolName) localStorage.setItem('mps_schoolName', s.schoolName);
-                        if(s.staffUser) localStorage.setItem('mps_staffUser', s.staffUser);
-                        if(s.staffPass) localStorage.setItem('mps_staffPass', s.staffPass);
-                        if(s.loginTitle) localStorage.setItem('mps_loginTitle', s.loginTitle);
-                        if(s.map) localStorage.setItem('mps_map', s.map);
-                        if(s.logo) localStorage.setItem('mps_logo', s.logo);
+                    if(result.record.classFeeStructures) {
+                        classFeeStructures = result.record.classFeeStructures;
+                        localStorage.setItem('mps_class_fee_structures', JSON.stringify(classFeeStructures));
                     }
                     applySettingsToUI();
                 }
-            } catch (err) {
-                console.log("Background sync skipped");
-            }
+            } catch (err) {}
         }
 
         async function softRefresh() {
             await syncCloudDataInBackground();
             renderAdmissions();
-            alert("Data refreshed successfully from cloud!");
+            alert("Data refreshed successfully!");
         }
 
         async function saveCloudData() {
             reindexAdmissions();
             localStorage.setItem('mps_admissions_v3', JSON.stringify(admissions));
             localStorage.setItem('mps_attendance_records', JSON.stringify(attendanceRecords));
+            localStorage.setItem('mps_class_fee_structures', JSON.stringify(classFeeStructures));
             try {
                 let response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
                     headers: { 'X-Master-Key': JSONBIN_API_KEY }
@@ -397,39 +397,34 @@
                 let currentData = result.record || {};
                 currentData.admissions = admissions;
                 currentData.attendanceRecords = attendanceRecords;
+                currentData.classFeeStructures = classFeeStructures;
 
                 await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
                     method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Master-Key': JSONBIN_API_KEY
-                    },
+                    headers: { 'Content-Type': 'application/json', 'X-Master-Key': JSONBIN_API_KEY },
                     body: JSON.stringify(currentData)
                 });
-            } catch (err) {
-                console.log("Cloud sync error");
-            }
+            } catch (err) {}
         }
 
         function reindexAdmissions() {
             let classesList = ["Nursery", "LKG", "UKG", "1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th", "10th", "11th", "12th"];
             classesList.forEach(cls => {
                 let classStudents = admissions.filter(a => a.cls === cls);
-                classStudents.forEach((st, idx) => {
-                    st.roll = (idx + 1).toString();
-                });
+                classStudents.forEach((st, idx) => { st.roll = (idx + 1).toString(); });
             });
         }
 
         function autoAssignRollNo() {
             let cls = document.getElementById('adClass').value;
-            if(!cls) {
-                document.getElementById('adRoll').value = "";
-                return;
+            if(!cls) { document.getElementById('adRoll').value = ""; return; }
+            document.getElementById('adRoll').value = admissions.filter(a => a.cls === cls).length + 1;
+            
+            // Auto-fill monthly fee if fee set exists
+            if(classFeeStructures[cls]) {
+                document.getElementById('f_m').value = classFeeStructures[cls];
+                calcAdTotal();
             }
-            let classStudents = admissions.filter(a => a.cls === cls);
-            let nextRoll = classStudents.length + 1;
-            document.getElementById('adRoll').value = nextRoll;
         }
 
         function openMap() {
@@ -440,11 +435,7 @@
         function login() {
             let sUser = localStorage.getItem('mps_staffUser') || "Motion Public School";
             let sPass = localStorage.getItem('mps_staffPass') || "MPS 752040";
-
-            let enteredUser = document.getElementById("username").value;
-            let enteredPass = document.getElementById("password").value;
-
-            if(enteredUser === sUser && enteredPass === sPass) {
+            if(document.getElementById("username").value === sUser && document.getElementById("password").value === sPass) {
                 document.getElementById("loginScreen").classList.add("hidden"); 
                 document.getElementById("dashboard").classList.remove("hidden");
             } else {
@@ -458,33 +449,129 @@
             document.getElementById(id).classList.remove('hidden');
             document.querySelectorAll('.nav-btn').forEach(b => { b.classList.remove('bg-amber-500','text-indigo-950'); b.classList.add('text-indigo-200'); });
             if(btn) { btn.classList.remove('text-indigo-200'); btn.classList.add('bg-amber-500','text-indigo-950'); }
+            if(window.innerWidth < 768) document.getElementById('sidebarContainer').classList.add('-translate-x-full');
             
-            if(id === 'admissionList') {
-                document.getElementById('filterListClass').value = "";
-                document.getElementById('adTableBody').innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500">Please select a class above to view records.</td></tr>`;
+            if(id === 'feeRecordSection') {
+                document.getElementById('recordClassSelect').value = "";
+                document.getElementById('feeRecordTableBody').innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500">Please select a class above.</td></tr>`;
             }
+        }
 
-            if(window.innerWidth < 768) {
-                let sb = document.getElementById('sidebarContainer');
-                sb.classList.add('-translate-x-full');
+        function saveFeeSet() {
+            let cls = document.getElementById('setFeeClass').value;
+            let mFee = document.getElementById('setFeeMonthly').value;
+            if(!cls || !mFee) return alert("Please select class and enter monthly fee!");
+            classFeeStructures[cls] = mFee;
+            saveCloudData();
+            alert(`Fee structure for class ${cls} saved successfully!`);
+        }
+
+        function renderFeeRecordList() {
+            let cls = document.getElementById('recordClassSelect').value;
+            let tb = document.getElementById('feeRecordTableBody');
+            tb.innerHTML = "";
+            if(!cls) { tb.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500">Please select a class.</td></tr>`; return; }
+            let filtered = admissions.filter(a => a.cls === cls);
+            if(filtered.length === 0) { tb.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500">No students found in this class.</td></tr>`; return; }
+            
+            filtered.forEach(st => {
+                let idx = admissions.indexOf(st);
+                tb.innerHTML += `
+                    <tr class="hover:bg-slate-50">
+                        <td class="p-3 font-bold text-indigo-900">${st.roll}</td>
+                        <td class="p-3 font-semibold">${st.name}</td>
+                        <td class="p-3 text-slate-600">${st.fname || '-'}</td>
+                        <td class="p-3 font-medium text-emerald-700">${st.month || 'Current'} : ₹${st.v.m || 0}</td>
+                        <td class="p-3 text-center space-x-2">
+                            <button onclick="editStudentFee(${idx})" class="bg-blue-100 text-blue-700 px-3 py-1 rounded font-bold hover:bg-blue-600 hover:text-white transition"><i class="fa-solid fa-pen"></i> Edit Fee</button>
+                            <button onclick="generateExactSlip(${idx})" class="bg-amber-100 text-amber-700 px-3 py-1 rounded font-bold hover:bg-amber-500 hover:text-white transition"><i class="fa-solid fa-download"></i> Download PDF</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function editStudentFee(index) {
+            let st = admissions[index];
+            let newAmount = prompt(`Edit Monthly Fee Amount for ${st.name}:`, st.v.m || 0);
+            if(newAmount !== null) {
+                st.v.m = newAmount;
+                st.v.final = Number(newAmount) + Number(st.v.r || 0) + Number(st.v.a || 0) + Number(st.v.an || 0) + Number(st.v.t || 0) + Number(st.v.ext || 0);
+                saveCloudData();
+                renderFeeRecordList();
+                alert("Fee updated successfully!");
             }
+        }
+
+        // Exact matching Slip layout as per user uploaded image
+        function generateExactSlip(index) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'mm', 'a4');
+            const d = admissions[index];
+            let sName = localStorage.getItem('mps_schoolName') || "Motion Public School";
+
+            // Border box matching image
+            doc.rect(10, 10, 190, 135);
+
+            // School Header
+            doc.setFont("times", "bold");
+            doc.setFontSize(24);
+            doc.text(sName, 105, 20, {align: 'center'});
+
+            doc.setFontSize(11);
+            doc.setFont("times", "italic");
+            doc.text("add ;- Near of B.S College ,Gamharia Rod Singheshwar", 105, 26, {align: 'center'});
+
+            doc.setFontSize(14);
+            doc.setFont("times", "bold");
+            doc.text(`class - ${d.cls}`, 105, 34, {align: 'center'});
+
+            doc.setFontSize(12);
+            doc.text("SCHOOL FEE-SLIP", 105, 41, {align: 'center'});
+            doc.line(10, 44, 200, 44);
+
+            // Table Grid details matching exact picture layout
+            doc.autoTable({
+                startY: 45,
+                theme: 'grid',
+                styles: { font: 'times', textColor: 0, lineColor: 0, lineWidth: 0.2, fontSize: 11, minCellHeight: 9 },
+                body: [
+                    ['Student Name', d.name, 'Roll No', d.roll],
+                    ['Father Name', d.fname || '-', 'Class', d.cls],
+                    ['Monthly Amount', d.v.m || '0', d.month || 'feb', '1'],
+                    [{content: 'Total Fee Amount', styles: {fontStyle: 'bold', fontSize: 12}}, {content: d.v.final || d.v.m || '0', colSpan: 3, styles: {fontStyle: 'bold', fontSize: 12}}]
+                ]
+            });
+
+            // Footer note & QR box as seen in sample image
+            let finalY = doc.lastAutoTable.finalY + 5;
+            doc.rect(10, finalY, 70, 50); // QR placeholder box
+            doc.rect(80, finalY, 120, 50); // Text notice box
+
+            doc.setFontSize(10);
+            doc.setFont("times", "normal");
+            doc.text("PhonePe QR Code", 25, finalY + 25, {align: 'center'});
+
+            doc.text(".please pay all your dues on", 85, finalY + 12);
+            doc.text("or before 10th of the current", 85, finalY + 20);
+            doc.text("month let fee will be charged", 85, finalY + 28);
+            doc.setFont("times", "bold");
+            doc.text("Thanks", 85, finalY + 38);
+
+            doc.save(`FeeSlip_${d.name}.pdf`);
         }
 
         function removeWhiteBackground(dataUrl, callback) {
             let img = new Image();
             img.onload = function() {
                 let canvas = document.createElement('canvas');
-                canvas.width = img.width;
-                canvas.height = img.height;
+                canvas.width = img.width; canvas.height = img.height;
                 let ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0);
                 let imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
                 let data = imgData.data;
                 for (let i = 0; i < data.length; i += 4) {
-                    let r = data[i], g = data[i + 1], b = data[i + 2];
-                    if (r > 200 && g > 200 && b > 200) {
-                        data[i + 3] = 0;
-                    }
+                    if (data[i] > 200 && data[i+1] > 200 && data[i+2] > 200) data[i+3] = 0;
                 }
                 ctx.putImageData(imgData, 0, 0);
                 callback(canvas.toDataURL('image/png'));
@@ -503,19 +590,15 @@
                     canvas.width = img.width * scale; canvas.height = img.height * scale;
                     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                     let b64 = canvas.toDataURL('image/jpeg', 0.6);
-                    if(type === 'p') {
-                        t_p = b64;
-                    } else if(type === 'ps') {
-                        removeWhiteBackground(b64, function(transparentB64) { t_ps = transparentB64; });
-                    } else if(type === 'as') {
-                        removeWhiteBackground(b64, function(transparentB64) { t_as = transparentB64; });
-                    }
+                    if(type === 'p') t_p = b64;
+                    else if(type === 'ps') removeWhiteBackground(b64, t => t_ps = t);
+                    else if(type === 'as') removeWhiteBackground(b64, t => t_as = t);
                 }; img.src = ev.target.result;
             }; reader.readAsDataURL(file);
         }
 
         function calcAdTotal() {
-            let g = (id) => Number(document.getElementById(id).value) || 0;
+            let g = id => Number(document.getElementById(id).value) || 0;
             let pay = g('f_m') + g('f_r') + g('f_a') + g('f_an') + g('f_t');
             let ext = g('f_bs') + g('f_sp') + g('f_c') + g('f_d') + g('f_l') + g('f_bk');
             document.getElementById('f_pay').value = pay; document.getElementById('f_ext').value = ext;
@@ -523,31 +606,15 @@
         }
 
         async function saveAdmission() {
-            let inputDate = document.getElementById("adDate").value;
-            let formattedDate = inputDate ? new Date(inputDate).toLocaleDateString('en-GB') : new Date().toLocaleDateString('en-GB');
-
             let cls = document.getElementById("adClass").value.trim();
             let name = document.getElementById("adName").value.trim();
-            let fname = document.getElementById("adFName").value.trim();
-            let contact = document.getElementById("adContact").value.trim();
             let month = document.getElementById("adMonth").value;
-
-            if(!cls) return alert("Please select a Class!");
-            if(!name) return alert("Enter Student Name!");
-            if(!month) return alert("Please select a Month!");
-
-            let classStudents = admissions.filter(a => a.cls === cls);
-            let nextRoll = classStudents.length + 1;
+            if(!cls || !name || !month) return alert("Please fill Class, Name and Month!");
 
             let data = {
-                date: formattedDate,
-                name: name, 
-                fname: fname,
-                contact: contact,
-                roll: nextRoll.toString(), 
-                cls: cls,
-                month: month, 
-                due: document.getElementById("f_due").value,
+                date: document.getElementById("adDate").value ? new Date(document.getElementById("adDate").value).toLocaleDateString('en-GB') : new Date().toLocaleDateString('en-GB'),
+                name: name, fname: document.getElementById("adFName").value.trim(), contact: document.getElementById("adContact").value.trim(),
+                roll: (admissions.filter(a => a.cls === cls).length + 1).toString(), cls: cls, month: month, due: document.getElementById("f_due").value,
                 v: {
                     m: document.getElementById("f_m").value, r: document.getElementById("f_r").value, a: document.getElementById("f_a").value,
                     an: document.getElementById("f_an").value, t: document.getElementById("f_t").value, pay: document.getElementById("f_pay").value,
@@ -557,96 +624,33 @@
                 },
                 photo: t_p, parentSig: t_ps, accSig: t_as
             };
-            
-            let i = document.getElementById("editAdIndex").value;
-            if(i === "-1") {
-                admissions.push(data);
-            } else {
-                if(!t_p) data.photo = admissions[i].photo; 
-                if(!t_ps) data.parentSig = admissions[i].parentSig; 
-                if(!t_as) data.accSig = admissions[i].accSig;
-                data.roll = admissions[i].roll;
-                admissions[i] = data; 
-                document.getElementById("editAdIndex").value = "-1";
-                document.getElementById("formTitle").innerText = "Admission & Fee Slip";
-            }
-            
-            reindexAdmissions();
-            alert("Saved Successfully! Roll No locked & assigned sequentially.");
-            
-            document.querySelectorAll('#newAdmission input').forEach(inp => { if(inp.type !== 'hidden' && inp.type !== 'date' && inp.id !== 'adRoll') inp.value = inp.type==='number'?'0':'' });
-            document.getElementById("adClass").value = "";
-            document.getElementById("adRoll").value = "";
-            document.getElementById("adMonth").value = "";
-            document.getElementById("adDate").value = "";
-            t_p = ""; t_ps = ""; t_as = "";
-            
+            admissions.push(data);
+            alert("Saved Successfully!");
+            await saveCloudData();
             showSection('admissionList', document.getElementById('nav-admissionList'));
             document.getElementById('filterListClass').value = cls;
             renderAdmissions();
-            await saveCloudData();
         }
 
         function renderAdmissions() {
             let selectedClass = document.getElementById('filterListClass').value;
-            let tb = document.getElementById("adTableBody"); 
-            tb.innerHTML = "";
-
-            if(!selectedClass) {
-                tb.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500">Please select a class above to view records.</td></tr>`;
-                return;
-            }
-
-            let classStudents = admissions.filter(ad => ad.cls === selectedClass);
-            if(classStudents.length === 0) {
-                tb.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500">No records found for class ${selectedClass}.</td></tr>`;
-                return;
-            }
-
-            classStudents.forEach((ad) => {
-                let actualGlobalIndex = admissions.indexOf(ad);
-                tb.innerHTML += `<tr class="hover:bg-slate-50">
-                    <td class="p-4 font-bold text-indigo-900">${ad.roll}</td>
-                    <td class="p-4 font-semibold">${ad.name}</td>
-                    <td class="p-4 text-slate-600">${ad.fname || '-'}</td>
-                    <td class="p-4 text-slate-600">${ad.contact || '-'}</td>
-                    <td class="p-4 text-center space-x-2">
-                        <button onclick="generateSlip(${actualGlobalIndex})" class="bg-amber-100 text-amber-700 px-3 py-1 rounded font-bold hover:bg-amber-500 hover:text-white transition-all"><i class="fa-solid fa-download"></i> PDF</button>
-                    </td>
-                </tr>`;
+            let tb = document.getElementById("adTableBody"); tb.innerHTML = "";
+            if(!selectedClass) { tb.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500">Please select a class.</td></tr>`; return; }
+            admissions.filter(ad => ad.cls === selectedClass).forEach(ad => {
+                let idx = admissions.indexOf(ad);
+                tb.innerHTML += `<tr class="hover:bg-slate-50"><td class="p-4 font-bold text-indigo-900">${ad.roll}</td><td class="p-4 font-semibold">${ad.name}</td><td class="p-4">${ad.fname||'-'}</td><td class="p-4">${ad.contact||'-'}</td><td class="p-4 text-center"><button onclick="generateSlip(${idx})" class="bg-amber-100 text-amber-700 px-3 py-1 rounded font-bold"><i class="fa-solid fa-download"></i> PDF</button></td></tr>`;
             });
         }
 
         function downloadAllAdmissionsPDF() {
-            if(admissions.length === 0) return alert("No admission records available!");
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF('p', 'mm', 'a4');
-            let sName = localStorage.getItem('mps_schoolName') || "Motion Public School";
-
-            doc.setFont("times", "bold");
-            doc.setFontSize(22);
-            doc.text(sName, 105, 20, {align: 'center'});
-            
-            doc.setFontSize(14);
-            doc.setFont("times", "normal");
-            doc.text("All Students Admission Records (Class-wise)", 105, 28, {align: 'center'});
-            
-            doc.setFontSize(11);
-            doc.text(`Generated Date: ${new Date().toLocaleDateString('en-GB')}`, 14, 38);
-            doc.line(14, 42, 196, 42);
-
-            let tableData = admissions.map(a => [a.cls, a.roll, a.name, a.fname || '-', a.contact || '-', a.date]);
-
-            doc.autoTable({
-                startY: 46,
-                theme: 'grid',
-                styles: { font: 'times', fontSize: 10 },
-                head: [['Class', 'Roll No', 'Student Name', 'Father Name', 'Contact No', 'Admission Date']],
-                body: tableData
-            });
-
-            doc.save(`All_Admissions_Report.pdf`);
+            if(admissions.length === 0) return alert("No records!");
+            const { jsPDF } = window.jspdf; const doc = new jsPDF('p', 'mm', 'a4');
+            doc.text(localStorage.getItem('mps_schoolName') || "Motion Public School", 105, 20, {align: 'center'});
+            doc.autoTable({ startY: 46, head: [['Class', 'Roll No', 'Student Name', 'Father Name', 'Contact', 'Date']], body: admissions.map(a => [a.cls, a.roll, a.name, a.fname||'-', a.contact||'-', a.date]) });
+            doc.save(`All_Admissions.pdf`);
         }
+
+        function generateSlip(index) { generateExactSlip(index); }
 
         function initAttendanceClasses() {
             document.getElementById('attendanceFormContainer').classList.add('hidden');
@@ -656,215 +660,59 @@
         function getTodayAttendanceKey(className) {
             let now = new Date();
             let targetDate = new Date(now);
-            if(now.getHours() < 5) {
-                targetDate.setDate(targetDate.getDate() - 1);
-            }
-            let dateStr = targetDate.toISOString().split('T')[0];
-            return `att_${className}_${dateStr}`;
+            if(now.getHours() < 5) targetDate.setDate(targetDate.getDate() - 1);
+            return `att_${className}_${targetDate.toISOString().split('T')[0]}`;
         }
 
         function loadAttendanceStudents() {
             let className = document.getElementById('attClassSelect').value;
             let formContainer = document.getElementById('attendanceFormContainer');
             let lockMsg = document.getElementById('attendanceLockMsg');
-
-            if(!className) {
-                formContainer.classList.add('hidden');
-                lockMsg.classList.add('hidden');
-                return;
-            }
-
-            let lockKey = getTodayAttendanceKey(className);
-            let alreadySubmitted = localStorage.getItem(lockKey);
-
-            if(alreadySubmitted) {
-                formContainer.classList.add('hidden');
-                lockMsg.classList.remove('hidden');
-                return;
-            } else {
-                lockMsg.classList.add('hidden');
-            }
-
+            if(!className) { formContainer.classList.add('hidden'); lockMsg.classList.add('hidden'); return; }
+            if(localStorage.getItem(getTodayAttendanceKey(className))) {
+                formContainer.classList.add('hidden'); lockMsg.classList.remove('hidden'); return;
+            } else { lockMsg.classList.add('hidden'); }
+            
             let classStudents = admissions.filter(a => a.cls === className);
-            let tb = document.getElementById('attendanceStudentTableBody');
-            tb.innerHTML = "";
-
-            if(classStudents.length === 0) {
-                tb.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-slate-500">No students found in admission list for this class.</td></tr>`;
-                formContainer.classList.remove('hidden');
-                return;
-            }
-
+            let tb = document.getElementById('attendanceStudentTableBody'); tb.innerHTML = "";
             classStudents.forEach((st, index) => {
-                tb.innerHTML += `
-                    <tr class="hover:bg-slate-50">
-                        <td class="p-3 font-semibold">${st.roll}</td>
-                        <td class="p-3">${st.name}</td>
-                        <td class="p-3 text-center">
-                            <label class="inline-flex items-center mr-4 cursor-pointer">
-                                <input type="radio" name="att_${index}" value="Present" checked class="form-radio text-emerald-600 h-4 w-4">
-                                <span class="ml-2 font-medium text-emerald-700">Present</span>
-                            </label>
-                            <label class="inline-flex items-center cursor-pointer">
-                                <input type="radio" name="att_${index}" value="Absent" class="form-radio text-red-600 h-4 w-4">
-                                <span class="ml-2 font-medium text-red-700">Absent</span>
-                            </label>
-                        </td>
-                    </tr>
-                `;
+                tb.innerHTML += `<tr class="hover:bg-slate-50"><td class="p-3 font-semibold">${st.roll}</td><td class="p-3">${st.name}</td><td class="p-3 text-center"><label class="mr-4"><input type="radio" name="att_${index}" value="Present" checked> Present</label><label><input type="radio" name="att_${index}" value="Absent"> Absent</label></td></tr>`;
             });
             formContainer.classList.remove('hidden');
         }
 
         async function submitAttendance() {
             let className = document.getElementById('attClassSelect').value;
-            let classStudents = admissions.filter(a => a.cls === className);
-            let now = new Date();
-            let dateStr = now.toISOString().split('T')[0];
-
-            classStudents.forEach((st, index) => {
-                let radios = document.getElementsByName(`att_${index}`);
+            admissions.filter(a => a.cls === className).forEach((st, index) => {
                 let status = "Present";
-                for(let r of radios) {
-                    if(r.checked) status = r.value;
-                }
-                attendanceRecords.push({
-                    date: dateStr,
-                    cls: className,
-                    name: st.name,
-                    roll: st.roll,
-                    status: status
-                });
+                let radios = document.getElementsByName(`att_${index}`);
+                for(let r of radios) { if(r.checked) status = r.value; }
+                attendanceRecords.push({ date: new Date().toISOString().split('T')[0], cls: className, name: st.name, roll: st.roll, status: status });
             });
-
-            let lockKey = getTodayAttendanceKey(className);
-            localStorage.setItem(lockKey, "true");
-
+            localStorage.setItem(getTodayAttendanceKey(className), "true");
             await saveCloudData();
-            alert("Attendance Submitted Successfully!");
+            alert("Attendance Submitted!");
             loadAttendanceStudents();
         }
 
-        function viewAttendanceReport() {
+        function viewAdminAttendanceReport() {
             let start = document.getElementById('attStartDate').value;
             let end = document.getElementById('attEndDate').value;
-            let selectedClass = document.getElementById('attReportClassSelect').value;
-
-            if(!start || !end) return alert("Please select both Start Date and End Date!");
-
-            let filtered = attendanceRecords.filter(r => {
-                let matchDate = r.date >= start && r.date <= end;
-                let matchClass = selectedClass ? r.cls === selectedClass : true;
-                return matchDate && matchClass;
+            let cls = document.getElementById('attReportClassSelect').value;
+            if(!start || !end) return alert("Select Date Range!");
+            let filtered = attendanceRecords.filter(r => r.date >= start && r.date <= end && (cls ? r.cls === cls : true));
+            let tb = document.getElementById('attendanceReportTableBody'); tb.innerHTML = "";
+            filtered.forEach(r => {
+                tb.innerHTML += `<tr class="hover:bg-slate-50"><td class="p-3">${r.date}</td><td class="p-3">${r.cls}</td><td class="p-3 font-semibold">${r.name}</td><td class="p-3">${r.roll}</td><td class="p-3">${r.status}</td></tr>`;
             });
-
-            let tb = document.getElementById('attendanceReportTableBody');
-            tb.innerHTML = "";
-
-            if(filtered.length === 0) {
-                tb.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500">No attendance records found for the selected criteria.</td></tr>`;
-            } else {
-                filtered.forEach(r => {
-                    let badgeColor = r.status === 'Present' ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800';
-                    tb.innerHTML += `
-                        <tr class="hover:bg-slate-50">
-                            <td class="p-3">${r.date}</td>
-                            <td class="p-3">${r.cls}</td>
-                            <td class="p-3 font-semibold">${r.name}</td>
-                            <td class="p-3">${r.roll}</td>
-                            <td class="p-3"><span class="px-2 py-1 rounded text-xs font-bold ${badgeColor}">${r.status}</span></td>
-                        </tr>
-                    `;
-                });
-            }
-
-            let classText = selectedClass ? ` for Class ${selectedClass}` : '';
-            document.getElementById('reportDateRangeTitle').innerText = `Report from ${start} to ${end}${classText}`;
             document.getElementById('attendanceReportContainer').classList.remove('hidden');
         }
 
         function downloadAttendancePDF() {
-            let start = document.getElementById('attStartDate').value;
-            let end = document.getElementById('attEndDate').value;
-            let selectedClass = document.getElementById('attReportClassSelect').value;
-
-            let filtered = attendanceRecords.filter(r => {
-                let matchDate = r.date >= start && r.date <= end;
-                let matchClass = selectedClass ? r.cls === selectedClass : true;
-                return matchDate && matchClass;
-            });
-
-            if(filtered.length === 0) return alert("No data available to download for this selection!");
-
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF('p', 'mm', 'a4');
-            let sName = localStorage.getItem('mps_schoolName') || "Motion Public School";
-
-            doc.setFont("times", "bold");
-            doc.setFontSize(22);
-            doc.text(sName, 105, 20, {align: 'center'});
-            
-            doc.setFontSize(14);
-            doc.setFont("times", "normal");
-            let subTitle = selectedClass ? `Attendance Report - Class ${selectedClass}` : "Attendance Report (All Classes)";
-            doc.text(subTitle, 105, 28, {align: 'center'});
-            
-            doc.setFontSize(11);
-            doc.text(`Date Range: ${start} to ${end}`, 14, 38);
-            doc.line(14, 42, 196, 42);
-
-            let tableData = filtered.map(r => [r.date, r.cls, r.name, r.roll, r.status]);
-
-            doc.autoTable({
-                startY: 46,
-                theme: 'grid',
-                styles: { font: 'times', fontSize: 10 },
-                head: [['Date', 'Class', 'Student Name', 'Roll No', 'Status']],
-                body: tableData
-            });
-
-            let filename = selectedClass ? `Attendance_${selectedClass}_${start}_to_${end}.pdf` : `Attendance_All_${start}_to_${end}.pdf`;
-            doc.save(filename);
-        }
-
-        function generateSlip(index) {
-            let sName = localStorage.getItem('mps_schoolName') || "Motion Public School";
-            const { jsPDF } = window.jspdf; const doc = new jsPDF('p', 'mm', 'a4'); const d = admissions[index];
-            doc.rect(10, 10, 190, 277); doc.rect(12, 12, 186, 273);
-            doc.setFont("times", "bold"); doc.setFontSize(32); doc.text(sName, 105, 30, {align: 'center'});
-            doc.setFontSize(12); doc.setFont("times", "normal"); doc.text("add ;-Near of B.S College ,Gamharia Rod Singheshwar", 105, 38, {align: 'center'});
-            doc.line(15, 42, 195, 42); doc.setFont("times", "italic"); doc.setFontSize(16); doc.text("SCHOOL FEE-SLIP", 105, 50, {align: 'center'});
-            doc.line(15, 53, 195, 53); doc.line(15, 54, 195, 54);
-            
-            doc.autoTable({
-                startY: 56, theme: 'grid', styles: { font: 'times', textColor: 0, lineColor: 0, lineWidth: 0.2, fontSize: 11, minCellHeight: 8 },
-                body: [
-                    ['Phone Pay-', '7520400029', '', `Admission Date: ${d.date}`],
-                    ['Student Name', d.name, 'Roll No', d.roll],
-                    ['Father Name', d.fname, 'Class', d.cls],
-                    ['Contact No', d.contact || '-', '', ''],
-                    [{content: 'Monthly fee Structure', colSpan: 2, styles: {fontStyle: 'bold', halign: 'center', fontSize: 12}}, {content: 'Extra Accessories', colSpan: 2, styles: {fontStyle: 'bold', halign: 'center', fontSize: 12}}],
-                    ['Monthly fee Amount', d.v.m, 'Bus Fee', d.v.bs], ['Registration Fee', d.v.r, 'Sport fee', d.v.sp],
-                    ['Admission Fee', d.v.a, 'Caution Money', d.v.c], ['Annual Fee', d.v.an, 'Development Fee', d.v.d],
-                    ['Tution fee', d.v.t, 'Library Fee', d.v.l], ['', '', 'Book', d.v.bk],
-                    [{content: 'Total Pay', styles: {fontStyle: 'bold'}}, {content: d.v.pay, styles: {fontStyle: 'bold'}}, '', ''],
-                    [{content: 'Month', styles: {fontStyle: 'bold'}}, {content: d.month, styles: {fontStyle: 'bold'}}, '', ''],
-                    [{content: 'Total Due Month', styles: {fontStyle: 'bold'}}, {content: d.due, styles: {fontStyle: 'bold'}}, {content: 'Total Extra', styles: {fontStyle: 'bold'}}, d.v.ext],
-                    [{content: 'Total Fee Amount', colSpan: 2, styles: {fontStyle: 'bold', halign: 'center', fontSize: 14}}, {content: d.v.final, colSpan: 2, styles: {halign: 'center', fontStyle: 'bold', fontSize: 14}}]
-                ]
-            });
-            let finalY = doc.lastAutoTable.finalY + 12; 
-            doc.setFontSize(12); 
-            doc.setFont("times", "bold");
-            
-            doc.text("Parents Signature................................", 15, finalY); 
-            doc.text("AccountantSig................................", 120, finalY);
-            
-            if(d.photo) doc.addImage(d.photo, 'JPEG', 160, 15, 25, 30);
-            if(d.parentSig) doc.addImage(d.parentSig, 'PNG', 25, finalY - 14, 45, 14);
-            if(d.accSig) doc.addImage(d.accSig, 'PNG', 130, finalY - 14, 45, 14);
-            
-            doc.save(`FeeSlip_${d.name}.pdf`);
+            const { jsPDF } = window.jspdf; const doc = new jsPDF('p', 'mm', 'a4');
+            doc.text("Attendance Report", 105, 20, {align: 'center'});
+            doc.autoTable({ startY: 30, head: [['Date', 'Class', 'Name', 'Roll', 'Status']], body: attendanceRecords.map(r => [r.date, r.cls, r.name, r.roll, r.status]) });
+            doc.save("Attendance_Report.pdf");
         }
     </script>
 </body>
